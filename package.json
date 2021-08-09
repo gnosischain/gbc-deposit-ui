@@ -1,0 +1,45 @@
+{
+  "name": "hez-swapper",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-jss": "^10.7.1",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.2"
+  },
+  "devDependencies": {
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.2",
+    "standard": "^16.0.3"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "pre-commit": "lint-staged",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "lint-staged": {
+    "*.{jsx,js}": "standard --fix"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
