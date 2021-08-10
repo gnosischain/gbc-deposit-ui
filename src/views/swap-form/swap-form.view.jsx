@@ -49,7 +49,6 @@ function SwapForm ({ wallet, onSubmit }) {
             value={values.from}
             onChange={event => changeValue(event.target.value)}
           />
-
         </div>
         <p className={classes.toValue}>
           {hezTokenInfo && formatUnits(amounts.to, hezTokenInfo.decimals)} MATIC
