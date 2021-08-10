@@ -16,7 +16,10 @@ const useSwapFormStyles = createUseStyles((theme) => ({
   convertAllButton: {
     background: 'transparent',
     border: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    '&:disabled': {
+      cursor: 'default'
+    }
   },
   form: {
     display: 'flex',

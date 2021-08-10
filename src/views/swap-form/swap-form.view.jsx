@@ -23,16 +23,14 @@ function SwapForm ({ wallet, onSubmit }) {
         <p className={classes.balance}>
           You have {hezTokenBalance && hezTokenInfo ? formatUnits(hezTokenBalance, hezTokenInfo.decimals) : '--'} {hezTokenInfo && hezTokenInfo.symbol}
         </p>
-        {hezTokenBalance && (
-          <button
-            className={classes.convertAllButton}
-            type='button'
-            disabled={!wallet}
-            onClick={convertAll}
-          >
-            Convert All
-          </button>
-        )}
+        <button
+          className={classes.convertAllButton}
+          type='button'
+          disabled={!hezTokenBalance}
+          onClick={convertAll}
+        >
+          Convert All
+        </button>
       </div>
       <form
         className={classes.form}

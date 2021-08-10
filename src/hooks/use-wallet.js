@@ -21,7 +21,7 @@ function useWallet () {
 
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => accounts.length ? loadWallet() : setWallet())
+      window.ethereum.on('accountsChanged', (accounts) => accounts.length ? loadWallet() : window.location.reload())
       window.ethereum.on('chainChanged', () => { window.location.reload() })
     }
   }, [])
