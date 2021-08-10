@@ -33,7 +33,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
         setValues({ from: newFromValue, to: formatUnits(newToAmount, tokenInfo.decimals) })
 
         if (newFromAmount.gt(maxTokenAmount)) {
-          setError('Amount cannot exceed your balance')
+          setError('You don\'t have enough funds')
         } else {
           setError()
         }

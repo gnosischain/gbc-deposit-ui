@@ -22,17 +22,18 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column'
   },
-  fromInputGroup: {
+  fromInputGroup: ({ error }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     marginTop: theme.spacing(3),
     paddingTop: theme.spacing(5),
-    paddingRight: theme.spacing(5),
-    paddingBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(5),
-    border: `2px solid ${theme.palette.grey.light2}`,
-    borderRadius: `${theme.spacing(2.5)}px ${theme.spacing(2.5)}px 0 0`
+    border: `2px solid ${error ? theme.palette.red : theme.palette.grey.light2}`,
+    borderRadius: `${theme.spacing(2.5)}px`
+  }),
+  fromTokenSymbol: {
+    fontSize: theme.spacing(2.5),
+    fontWeight: theme.fontWeights.bold
   },
   fromInput: {
     fontSize: theme.spacing(5),
@@ -44,6 +45,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     textAlign: 'center',
     marginTop: theme.spacing(2),
     caretColor: theme.palette.orange,
+    padding: `0 ${theme.spacing(5)}px`,
     '&:disabled': {
       background: theme.palette.white
     }
@@ -52,10 +54,24 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2),
     color: theme.palette.grey.main,
     textAlign: 'center',
-    padding: `${theme.spacing(2)}px ${theme.spacing(5)}px`,
-    border: `2px solid ${theme.palette.grey.light2}`,
-    borderTop: 'none',
-    borderRadius: `0 0 ${theme.spacing(2.5)}px ${theme.spacing(2.5)}px`
+    width: '100%',
+    marginTop: theme.spacing(4),
+    borderTop: `2px solid ${theme.palette.grey.light2}`,
+    padding: `${theme.spacing(2)}px ${theme.spacing(5)}px`
+  },
+  errorContainer: {
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium,
+    display: 'flex',
+    alignItems: 'center',
+    color: theme.palette.red,
+    marginTop: theme.spacing(2)
+  },
+  errorIcon: {
+    marginRight: theme.spacing(1),
+    '& path': {
+      fill: theme.palette.red
+    }
   },
   submitButton: {
     fontSize: theme.spacing(2),

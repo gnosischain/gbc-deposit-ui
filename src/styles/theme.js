@@ -10,7 +10,8 @@ const theme = {
       main: '#7a7c89',
       dark: '#888baa'
     },
-    orange: '#ffa600'
+    orange: '#ffa600',
+    red: '#ff4b40'
   },
   hoverTransition: 'all 100ms',
   fontWeights: {
