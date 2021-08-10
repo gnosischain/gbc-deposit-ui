@@ -71,7 +71,8 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     transition: theme.buttonTransition,
     cursor: 'pointer',
     '&:disabled': {
-      background: theme.palette.grey.dark
+      background: theme.palette.grey.dark,
+      cursor: 'default'
     }
   }
 }))

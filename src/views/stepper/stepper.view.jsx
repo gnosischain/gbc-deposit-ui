@@ -1,5 +1,3 @@
-import React from 'react'
-
 import useStepperStyles from './stepper.styles'
 import useWallet from '../../hooks/use-wallet'
 import useStep, { Step } from '../../hooks/use-stepper-data'
@@ -28,6 +26,7 @@ function Stepper () {
             return (
               <SwapForm
                 wallet={wallet}
+                onSubmit={(amounts) => console.log(amounts)}
               />
             )
           }

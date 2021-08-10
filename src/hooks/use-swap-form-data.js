@@ -41,7 +41,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
     }
   }
 
-  const sendMax = () => {
+  const convertAll = () => {
     if (maxTokenAmount && tokenInfo) {
       const newToAmount = multiplyAmountBySwapFactor(maxTokenAmount)
 
@@ -54,7 +54,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
     }
   }
 
-  return { values, amounts, error, changeValue, sendMax }
+  return { values, amounts, error, changeValue, convertAll }
 }
 
 export default useSwapFormData
