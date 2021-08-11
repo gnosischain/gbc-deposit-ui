@@ -2,6 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useHeaderStyles = createUseStyles((theme) => ({
   header: {
+    width: '100%',
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
@@ -20,7 +21,10 @@ const useHeaderStyles = createUseStyles((theme) => ({
     cursor: 'pointer',
     padding: theme.spacing(1),
     left: -(theme.spacing(1)),
-    top: -(theme.spacing(1))
+    top: -(theme.spacing(1)),
+    '&:disabled': {
+      cursor: 'default'
+    }
   }
 }))
 

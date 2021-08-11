@@ -1,21 +1,29 @@
+import { useEffect, useRef } from 'react'
 import { BigNumber } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils'
 
 import useSwapFormStyles from './swap-form.styles'
-import useTokenContract from '../../hooks/use-token-contract'
-import useTokenInfo from '../../hooks/use-token-info'
-import useTokenBalance from '../../hooks/use-token-balance'
 import useSwapFormData from '../../hooks/use-swap-form-data'
 import Header from '../header/header.view'
 import { ReactComponent as InfoIcon } from '../../images/info-icon.svg'
 import { TO_TOKEN_SYMBOL } from '../../constants'
 
-function SwapForm ({ wallet, onSubmit }) {
-  const hezContract = useTokenContract(wallet, process.env.REACT_APP_HEZ_TOKEN_ADDRESS)
-  const hezTokenInfo = useTokenInfo(hezContract)
-  const hezTokenBalance = useTokenBalance(wallet, hezContract)
+function SwapForm ({ wallet, hezTokenInfo, hezTokenBalance, swapData, onAmountChange, onSubmit }) {
   const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, hezTokenBalance, hezTokenInfo)
   const classes = useSwapFormStyles({ error })
+  const inputEl = useRef()
+
+  useEffect(() => {
+    if (hezTokenBalance && inputEl) {
+      inputEl.current.focus()
+    }
+  }, [hezTokenBalance, inputEl])
+
+  useEffect(() => {
+    if (!amounts.from.eq(BigNumber.from(0))) {
+      onAmountChange()
+    }
+  }, [amounts, onAmountChange])
 
   return (
     <div>
@@ -37,7 +45,7 @@ function SwapForm ({ wallet, onSubmit }) {
         className={classes.form}
         onSubmit={(event) => {
           event.preventDefault()
-          onSubmit(amounts)
+          onSubmit(amounts.from)
         }}
       >
         <div className={classes.fromInputGroup}>
@@ -45,6 +53,7 @@ function SwapForm ({ wallet, onSubmit }) {
             {hezTokenInfo && hezTokenInfo.symbol}
           </p>
           <input
+            ref={inputEl}
             className={classes.fromInput}
             disabled={!hezTokenBalance}
             placeholder='0.0'
@@ -56,9 +65,9 @@ function SwapForm ({ wallet, onSubmit }) {
           </p>
         </div>
         {error && (
-          <div className={classes.errorContainer}>
-            <InfoIcon className={classes.errorIcon} />
-            <p className={classes.error}>{error}</p>
+          <div className={classes.inputErrorContainer}>
+            <InfoIcon className={classes.inputErrorIcon} />
+            <p>{error}</p>
           </div>
         )}
         <button
@@ -68,6 +77,9 @@ function SwapForm ({ wallet, onSubmit }) {
         >
           Convert
         </button>
+        {swapData.status === 'failed' && (
+          <p className={classes.swapError}>{swapData.error}</p>
+        )}
       </form>
     </div>
   )

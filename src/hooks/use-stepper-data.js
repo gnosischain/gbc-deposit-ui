@@ -3,7 +3,8 @@ const { useState } = require('react')
 export const Step = {
   Login: 'login',
   Swap: 'swap',
-  Confirm: 'success'
+  Confirm: 'confirm',
+  Overview: 'overview'
 }
 
 function useStepperData () {

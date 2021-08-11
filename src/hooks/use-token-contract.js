@@ -8,7 +8,7 @@ function useTokenContract (wallet, tokenAddress) {
 
   useEffect(() => {
     const provider = wallet
-      ? wallet.provider
+      ? wallet.provider.getSigner()
       : window.ethereum
         ? new providers.Web3Provider(window.ethereum)
         : getDefaultProvider()
