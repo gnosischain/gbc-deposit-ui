@@ -62,7 +62,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     borderTop: `2px solid ${theme.palette.grey.light2}`,
     padding: `${theme.spacing(2)}px ${theme.spacing(5)}px`
   },
-  errorContainer: {
+  inputErrorContainer: {
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.medium,
     display: 'flex',
@@ -70,7 +70,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     color: theme.palette.red,
     marginTop: theme.spacing(2)
   },
-  errorIcon: {
+  inputErrorIcon: {
     marginRight: theme.spacing(1),
     '& path': {
       fill: theme.palette.red
@@ -93,6 +93,13 @@ const useSwapFormStyles = createUseStyles((theme) => ({
       background: theme.palette.grey.dark,
       cursor: 'default'
     }
+  },
+  swapError: {
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.medium,
+    color: theme.palette.red,
+    textAlign: 'center',
+    marginTop: theme.spacing(4)
   }
 }))
 

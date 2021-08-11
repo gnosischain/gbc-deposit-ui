@@ -54,7 +54,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
     }
   }
 
-  return { values, amounts, error, changeValue, convertAll }
+  return { values, amounts, error, setError, changeValue, convertAll }
 }
 
 export default useSwapFormData
