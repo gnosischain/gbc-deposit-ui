@@ -8,6 +8,7 @@ import useTokenBalance from '../../hooks/use-token-balance'
 import useSwapFormData from '../../hooks/use-swap-form-data'
 import Header from '../header/header.view'
 import { ReactComponent as InfoIcon } from '../../images/info-icon.svg'
+import { TO_TOKEN_SYMBOL } from '../../constants'
 
 function SwapForm ({ wallet, onSubmit }) {
   const hezContract = useTokenContract(wallet, process.env.REACT_APP_HEZ_TOKEN_ADDRESS)
@@ -51,7 +52,7 @@ function SwapForm ({ wallet, onSubmit }) {
             onChange={event => changeValue(event.target.value)}
           />
           <p className={classes.toValue}>
-            {hezTokenInfo && formatUnits(amounts.to, hezTokenInfo.decimals)} MATIC
+            {hezTokenInfo && formatUnits(amounts.to, hezTokenInfo.decimals)} {TO_TOKEN_SYMBOL}
           </p>
         </div>
         {error && (
