@@ -1,16 +1,13 @@
 import { useState } from 'react'
-import { Contract } from 'ethers'
 
-import swapperABI from '../abis/swapper'
+import { approve, permit } from '../utils/tokens'
 
 const INITIAL_DATA = { status: 'pending' }
 
 function useSwap () {
   const [data, setData] = useState(INITIAL_DATA)
 
-  const swap = async (wallet, hezTokenContract, hezAmount) => {
-    const spender = process.env.REACT_APP_SWAP_CONTRACT_ADDRESS
-
+  const swap = async (wallet, hezTokenContract, swapContract, hezAmount, usePermit) => {
     setData({ status: 'loading' })
 
     if (!wallet) {
@@ -24,14 +21,15 @@ function useSwap () {
     }
 
     try {
-      const hezAllowance = await hezTokenContract.allowance(wallet.address, spender)
-      const swapperContract = new Contract(spender, swapperABI, wallet.provider.getSigner())
+      const permitSignature = usePermit
+        ? await permit(hezTokenContract, wallet, swapContract, hezAmount)
+        : []
 
-      if (hezAllowance.lt(hezAmount)) {
-        await hezTokenContract.approve(spender, hezAmount)
+      if (!usePermit) {
+        await approve(hezTokenContract, wallet, swapContract, hezAmount)
       }
 
-      const txData = await swapperContract.bridge(hezAmount, [], { gasLimit: 150000 })
+      const txData = await swapContract.bridge(hezAmount, permitSignature, { gasLimit: 150000 })
       setData({ status: 'successful', data: txData })
     } catch (err) {
       setData({ status: 'failed', error: err.message })

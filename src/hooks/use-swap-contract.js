@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Contract, getDefaultProvider, providers } from 'ethers'
 
-import ERC20ABI from '../abis/erc20'
+import swapperABI from '../abis/swapper'
 
-function useTokenContract (wallet) {
+function useSwapContract (wallet) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
@@ -12,7 +12,7 @@ function useTokenContract (wallet) {
       : window.ethereum
         ? new providers.Web3Provider(window.ethereum)
         : getDefaultProvider()
-    const contract = new Contract(process.env.REACT_APP_HEZ_TOKEN_ADDRESS, ERC20ABI, provider)
+    const contract = new Contract(process.env.REACT_APP_SWAP_CONTRACT_ADDRESS, swapperABI, provider)
 
     setContract(contract)
   }, [wallet])
@@ -20,4 +20,4 @@ function useTokenContract (wallet) {
   return contract
 }
 
-export default useTokenContract
+export default useSwapContract
