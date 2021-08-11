@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Contract } from 'ethers'
 
 import swapperABI from '../abis/swapper'
+import { BRIDGE_GAS_LIMIT } from '../constants'
 
 const INITIAL_DATA = { status: 'pending' }
 
@@ -31,7 +32,7 @@ function useSwap () {
         await hezTokenContract.approve(spender, hezAmount)
       }
 
-      const txData = await swapperContract.bridge(hezAmount, [], { gasLimit: 150000 })
+      const txData = await swapperContract.bridge(hezAmount, [], { gasLimit: BRIDGE_GAS_LIMIT })
       setData({ status: 'successful', data: txData })
     } catch (err) {
       setData({ status: 'failed', error: err.message })
