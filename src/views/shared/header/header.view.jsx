@@ -1,8 +1,7 @@
 import useHeaderStyles from './header.styles'
-import { ReactComponent as ArrowLeft } from '../../images/arrow-left.svg'
-import { TO_TOKEN_SYMBOL } from '../../constants'
+import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
 
-function Header ({ isGoBackButtonDisabled, onGoBack }) {
+function Header ({ fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, onGoBack }) {
   const classes = useHeaderStyles()
 
   return (
@@ -16,7 +15,7 @@ function Header ({ isGoBackButtonDisabled, onGoBack }) {
           <ArrowLeft />
         </button>
       )}
-      <p className={classes.title}>HEZ → {TO_TOKEN_SYMBOL}</p>
+      <p className={classes.title}>{fromTokenInfo.symbol} → {toTokenInfo.symbol}</p>
     </div>
   )
 }

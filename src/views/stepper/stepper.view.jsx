@@ -9,6 +9,7 @@ import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
 import TxOverview from '../tx-overview/tx-overview.view'
+import DataLoader from '../data-loader/data-loader'
 
 function Stepper () {
   const classes = useStepperStyles()
@@ -25,10 +26,21 @@ function Stepper () {
     <div className={classes.stepper}>
       {(() => {
         switch (step) {
+          case Step.Loading: {
+            return (
+              <DataLoader
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
+                onFinishLoading={() => switchStep(Step.Login)}
+              />
+            )
+          }
           case Step.Login: {
             return (
               <Login
                 wallet={wallet}
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
                 onLoadWallet={loadWallet}
                 onGoToNextStep={() => switchStep(Step.Swap)}
               />
@@ -53,6 +65,8 @@ function Stepper () {
           case Step.Confirm: {
             return (
               <TxConfirm
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
                 swapData={swapData}
                 onGoBack={() => switchStep(Step.Swap)}
                 onGoToOverviewStep={() => switchStep(Step.Overview)}
@@ -63,9 +77,9 @@ function Stepper () {
             return (
               <TxOverview
                 wallet={wallet}
-                swapData={swapData}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
+                swapData={swapData}
               />
             )
           }

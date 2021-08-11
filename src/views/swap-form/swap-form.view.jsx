@@ -4,7 +4,7 @@ import { formatUnits } from 'ethers/lib/utils'
 
 import useSwapFormStyles from './swap-form.styles'
 import useSwapFormData from '../../hooks/use-swap-form-data'
-import Header from '../header/header.view'
+import Header from '../shared/header/header.view'
 import { ReactComponent as InfoIcon } from '../../images/info-icon.svg'
 
 function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, fromTokenBalance, swapData, onAmountChange, onSubmit }) {
@@ -25,16 +25,19 @@ function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, fromTokenBalance, swapD
   }, [amounts, onAmountChange])
 
   return (
-    <div>
-      <Header />
+    <div className={classes.swapForm}>
+      <Header
+        fromTokenInfo={fromTokenInfo}
+        toTokenInfo={toTokenInfo}
+      />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>
-          You have {fromTokenBalance && fromTokenInfo ? formatUnits(fromTokenBalance, fromTokenInfo.decimals) : '--'} {fromTokenInfo && fromTokenInfo.symbol}
+          You have {fromTokenBalance && formatUnits(fromTokenBalance, fromTokenInfo.decimals)} {fromTokenInfo.symbol}
         </p>
         <button
           className={classes.convertAllButton}
           type='button'
-          disabled={!fromTokenInfo || !fromTokenBalance}
+          disabled={!fromTokenBalance}
           onClick={convertAll}
         >
           Convert All
@@ -49,7 +52,7 @@ function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, fromTokenBalance, swapD
       >
         <div className={classes.fromInputGroup}>
           <p className={classes.fromTokenSymbol}>
-            {fromTokenInfo && fromTokenInfo.symbol}
+            {fromTokenInfo.symbol}
           </p>
           <input
             ref={inputEl}
@@ -60,7 +63,7 @@ function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, fromTokenBalance, swapD
             onChange={event => changeValue(event.target.value)}
           />
           <p className={classes.toValue}>
-            {fromTokenInfo && formatUnits(amounts.to, fromTokenInfo.decimals)} {toTokenInfo && toTokenInfo.symbol}
+            {formatUnits(amounts.to, fromTokenInfo.decimals)} {toTokenInfo.symbol}
           </p>
         </div>
         {error && (
