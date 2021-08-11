@@ -11,8 +11,9 @@ function useWallet () {
       await provider.send('eth_requestAccounts')
 
       const address = await provider.getSigner().getAddress()
+      const network = await provider.getNetwork()
 
-      setWallet({ provider, address })
+      setWallet({ provider, address, chainId: network.chainId })
     } catch (err) {
       setWallet()
       console.error(err)

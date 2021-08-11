@@ -13,9 +13,11 @@ import TxOverview from '../tx-overview/tx-overview.view'
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet } = useWallet()
-  const hezContract = useTokenContract(wallet, process.env.REACT_APP_HEZ_TOKEN_ADDRESS)
-  const hezTokenInfo = useTokenInfo(hezContract)
-  const hezTokenBalance = useTokenBalance(wallet, hezContract)
+  const fromTokenContract = useTokenContract(wallet, process.env.REACT_APP_FROM_TOKEN_ADDRESS)
+  const toTokenContract = useTokenContract(wallet, process.env.REACT_APP_TO_TOKEN_ADDRESS)
+  const fromTokenInfo = useTokenInfo(fromTokenContract)
+  const toTokenInfo = useTokenInfo(toTokenContract)
+  const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
@@ -36,12 +38,13 @@ function Stepper () {
             return (
               <SwapForm
                 wallet={wallet}
-                hezTokenInfo={hezTokenInfo}
-                hezTokenBalance={hezTokenBalance}
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
+                fromTokenBalance={fromTokenBalance}
                 swapData={swapData}
                 onAmountChange={resetSwapData}
                 onSubmit={(fromAmount) => {
-                  swap(wallet, hezContract, fromAmount)
+                  swap(wallet, fromTokenContract, fromAmount)
                   switchStep(Step.Confirm)
                 }}
               />
@@ -59,7 +62,10 @@ function Stepper () {
           case Step.Overview: {
             return (
               <TxOverview
+                wallet={wallet}
                 swapData={swapData}
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
               />
             )
           }
