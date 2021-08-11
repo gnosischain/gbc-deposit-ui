@@ -48,27 +48,28 @@ const useAppStyles = createUseStyles((theme) => ({
     '*': {
       boxSizing: 'border-box'
     },
-    body: {
+    'body, input, button': {
       fontFamily: 'Modern Era',
-      fontSize: theme.spacing(2),
-      margin: 0,
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
+      fontSize: theme.spacing(2.5)
     },
-    '#app-root': {
-      zIndex: 0,
-      position: 'relative',
+    body: {
+      margin: 0,
       display: 'flex',
-      flexDirection: 'column',
+      minHeight: '100vh',
+      color: theme.palette.black,
+      background: theme.palette.secondary
+    },
+    '#root': {
+      flex: 1,
+      display: 'flex',
       alignItems: 'center',
-      flex: 1
+      justifyContent: 'center'
     },
     a: {
       textDecoration: 'none',
       color: 'inherit'
     },
-    p: {
+    'p, h1, h2, h3, h4, h5, h6': {
       margin: 0
     }
   }

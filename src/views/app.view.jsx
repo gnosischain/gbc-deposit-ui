@@ -1,13 +1,10 @@
 import useAppStyles from './app.styles'
+import Stepper from './stepper/stepper.view'
 
 function App () {
   useAppStyles()
 
-  return (
-    <div>
-      <p>App is working</p>
-    </div>
-  )
+  return <Stepper />
 }
 
 export default App
