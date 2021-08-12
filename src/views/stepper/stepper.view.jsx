@@ -4,6 +4,7 @@ import useStep, { Step } from '../../hooks/use-stepper-data'
 import Login from '../login/login.view'
 import SwapForm from '../swap-form/swap-form.view'
 import useTokenContract from '../../hooks/use-token-contract'
+import useSwapContract from '../../hooks/use-swap-contract'
 import useTokenInfo from '../../hooks/use-token-info'
 import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
@@ -15,6 +16,7 @@ function Stepper () {
   const { wallet, loadWallet } = useWallet()
   const fromTokenContract = useTokenContract(wallet, process.env.REACT_APP_FROM_TOKEN_ADDRESS)
   const toTokenContract = useTokenContract(wallet, process.env.REACT_APP_TO_TOKEN_ADDRESS)
+  const swapContract = useSwapContract(wallet)
   const fromTokenInfo = useTokenInfo(fromTokenContract)
   const toTokenInfo = useTokenInfo(toTokenContract)
   const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
@@ -44,7 +46,7 @@ function Stepper () {
                 swapData={swapData}
                 onAmountChange={resetSwapData}
                 onSubmit={(fromAmount) => {
-                  swap(wallet, fromTokenContract, fromAmount)
+                  swap(wallet, fromTokenContract, swapContract, fromAmount)
                   switchStep(Step.Confirm)
                 }}
               />
