@@ -90,6 +90,51 @@ const ERC20ABI = [
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address'
+      }
+    ],
+    name: 'nonces',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'name',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getChainId',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'chainId',
+        type: 'uint256'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
   }
 ]
 
