@@ -1,4 +1,4 @@
-import Header from '../header/header.view'
+import Header from '../shared/header/header.view'
 import useTxOverviewStyles from './tx-overview.styles'
 import { ReactComponent as CheckIcon } from '../../images/check-icon.svg'
 import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
@@ -14,7 +14,10 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
 
   return (
     <div className={classes.txOverview}>
-      <Header />
+      <Header
+        fromTokenInfo={fromTokenInfo}
+        toTokenInfo={toTokenInfo}
+      />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>{fromTokenInfo.symbol} tokens have been converted.</p>
       <div className={classes.buttonGroup}>

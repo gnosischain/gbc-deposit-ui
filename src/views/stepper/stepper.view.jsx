@@ -10,13 +10,16 @@ import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
 import TxOverview from '../tx-overview/tx-overview.view'
+import DataLoader from '../data-loader/data-loader'
+import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet } = useWallet()
-  const fromTokenContract = useTokenContract(wallet, process.env.REACT_APP_FROM_TOKEN_ADDRESS)
-  const toTokenContract = useTokenContract(wallet, process.env.REACT_APP_TO_TOKEN_ADDRESS)
   const swapContract = useSwapContract(wallet)
+  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract)
+  const fromTokenContract = useTokenContract(wallet, fromTokenAddress)
+  const toTokenContract = useTokenContract(wallet, toTokenAddress)
   const fromTokenInfo = useTokenInfo(fromTokenContract)
   const toTokenInfo = useTokenInfo(toTokenContract)
   const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
@@ -27,10 +30,21 @@ function Stepper () {
     <div className={classes.stepper}>
       {(() => {
         switch (step) {
+          case Step.Loading: {
+            return (
+              <DataLoader
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
+                onFinishLoading={() => switchStep(Step.Login)}
+              />
+            )
+          }
           case Step.Login: {
             return (
               <Login
                 wallet={wallet}
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
                 onLoadWallet={loadWallet}
                 onGoToNextStep={() => switchStep(Step.Swap)}
               />
@@ -42,6 +56,7 @@ function Stepper () {
                 wallet={wallet}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
+                swapRatio={swapRatio}
                 fromTokenBalance={fromTokenBalance}
                 swapData={swapData}
                 onAmountChange={resetSwapData}
@@ -55,6 +70,8 @@ function Stepper () {
           case Step.Confirm: {
             return (
               <TxConfirm
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
                 swapData={swapData}
                 onGoBack={() => switchStep(Step.Swap)}
                 onGoToOverviewStep={() => switchStep(Step.Overview)}
@@ -65,9 +82,9 @@ function Stepper () {
             return (
               <TxOverview
                 wallet={wallet}
-                swapData={swapData}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
+                swapData={swapData}
               />
             )
           }

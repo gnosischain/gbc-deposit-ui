@@ -2,6 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useTxConfirmStyles = createUseStyles((theme) => ({
   txConfirm: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'

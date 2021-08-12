@@ -1,6 +1,9 @@
 import { createUseStyles } from 'react-jss'
 
 const useSwapFormStyles = createUseStyles((theme) => ({
+  swapForm: {
+    flex: 1
+  },
   balanceCard: {
     background: theme.palette.grey.light1,
     padding: `${theme.spacing(3)}px ${theme.spacing(5)}px`,

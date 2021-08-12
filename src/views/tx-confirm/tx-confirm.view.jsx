@@ -1,9 +1,9 @@
 import useTxConfirmStyles from './tx-confirm.styles'
-import Header from '../header/header.view'
-import Spinner from '../spinner/spinner.view'
+import Header from '../shared/header/header.view'
+import Spinner from '../shared/spinner/spinner.view'
 import { useEffect } from 'react'
 
-function TxConfirm ({ swapData, onGoBack, onGoToOverviewStep }) {
+function TxConfirm ({ fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToOverviewStep }) {
   const classes = useTxConfirmStyles()
 
   useEffect(() => {
@@ -18,6 +18,8 @@ function TxConfirm ({ swapData, onGoBack, onGoToOverviewStep }) {
   return (
     <div className={classes.txConfirm}>
       <Header
+        fromTokenInfo={fromTokenInfo}
+        toTokenInfo={toTokenInfo}
         isGoBackButtonDisabled={swapData.status === 'loading'}
         onGoBack={onGoBack}
       />

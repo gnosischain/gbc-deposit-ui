@@ -2,6 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useTxOverviewStyles = createUseStyles((theme) => ({
   txOverview: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
