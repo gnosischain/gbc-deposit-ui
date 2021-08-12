@@ -7,14 +7,16 @@ function useTokenContract (wallet, address) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
-    const provider = wallet
-      ? wallet.provider.getSigner()
-      : window.ethereum
-        ? new providers.Web3Provider(window.ethereum)
-        : getDefaultProvider()
-    const contract = new Contract(address, ERC20ABI, provider)
+    if (address) {
+      const provider = wallet
+        ? wallet.provider.getSigner()
+        : window.ethereum
+          ? new providers.Web3Provider(window.ethereum)
+          : getDefaultProvider()
+      const contract = new Contract(address, ERC20ABI, provider)
 
-    setContract(contract)
+      setContract(contract)
+    }
   }, [wallet, address])
 
   return contract

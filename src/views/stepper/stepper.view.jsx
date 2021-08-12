@@ -11,13 +11,15 @@ import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
 import TxOverview from '../tx-overview/tx-overview.view'
 import DataLoader from '../data-loader/data-loader'
+import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet } = useWallet()
-  const fromTokenContract = useTokenContract(wallet, process.env.REACT_APP_FROM_TOKEN_ADDRESS)
-  const toTokenContract = useTokenContract(wallet, process.env.REACT_APP_TO_TOKEN_ADDRESS)
   const swapContract = useSwapContract(wallet)
+  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract)
+  const fromTokenContract = useTokenContract(wallet, fromTokenAddress)
+  const toTokenContract = useTokenContract(wallet, toTokenAddress)
   const fromTokenInfo = useTokenInfo(fromTokenContract)
   const toTokenInfo = useTokenInfo(toTokenContract)
   const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
@@ -54,6 +56,7 @@ function Stepper () {
                 wallet={wallet}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
+                swapRatio={swapRatio}
                 fromTokenBalance={fromTokenBalance}
                 swapData={swapData}
                 onAmountChange={resetSwapData}
