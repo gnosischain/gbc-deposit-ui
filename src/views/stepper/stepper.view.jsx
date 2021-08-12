@@ -43,8 +43,7 @@ function Stepper () {
                 swapData={swapData}
                 onAmountChange={resetSwapData}
                 onSubmit={(fromAmount) => {
-                  const usePermit = process.env.REACT_APP_USE_PERMIT === 'true'
-                  swap(wallet, hezContract, swapContract, fromAmount, usePermit)
+                  swap(wallet, hezContract, swapContract, fromAmount)
                   switchStep(Step.Confirm)
                 }}
               />

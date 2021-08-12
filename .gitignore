@@ -16,7 +16,6 @@
 
 # ides
 .vscode
-.husky
 
 # misc
 .DS_Store

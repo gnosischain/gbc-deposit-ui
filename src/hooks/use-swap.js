@@ -7,7 +7,7 @@ const INITIAL_DATA = { status: 'pending' }
 function useSwap () {
   const [data, setData] = useState(INITIAL_DATA)
 
-  const swap = async (wallet, hezTokenContract, swapContract, hezAmount, usePermit) => {
+  const swap = async (wallet, hezTokenContract, swapContract, hezAmount) => {
     setData({ status: 'loading' })
 
     if (!wallet) {
@@ -21,6 +21,7 @@ function useSwap () {
     }
 
     try {
+      const usePermit = process.env.REACT_APP_USE_PERMIT === 'true'
       const permitSignature = usePermit
         ? await permit(hezTokenContract, wallet, swapContract, hezAmount)
         : []
