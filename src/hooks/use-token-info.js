@@ -5,10 +5,11 @@ function useTokenInfo (contract) {
 
   useEffect(() => {
     const getTokenData = async (contract) => {
+      const address = contract.address
       const symbol = await contract.symbol()
       const decimals = await contract.decimals()
 
-      return { symbol, decimals }
+      return { address, symbol, decimals }
     }
 
     if (contract) {

@@ -29,7 +29,7 @@ function Login ({ wallet, onLoadWallet, onGoToNextStep }) {
         className={classes.metaMaskButton}
         onClick={onLoadWallet}
       >
-        <MetaMaskIcon />
+        <MetaMaskIcon className={classes.metaMaskIcon} />
       </button>
       <p className={classes.metaMaskNameText}>MetaMask</p>
     </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { BRIDGE_GAS_LIMIT } from '../constants'
 import { approve, permit } from '../utils/tokens'
 
 const INITIAL_DATA = { status: 'pending' }
@@ -30,7 +31,7 @@ function useSwap () {
         await approve(hezTokenContract, wallet, swapContract, hezAmount)
       }
 
-      const txData = await swapContract.bridge(hezAmount, permitSignature, { gasLimit: 150000 })
+      const txData = await swapContract.bridge(hezAmount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
       setData({ status: 'successful', data: txData })
     } catch (err) {
       setData({ status: 'failed', error: err.message })

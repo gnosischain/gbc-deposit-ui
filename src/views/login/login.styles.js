@@ -26,14 +26,18 @@ const useLoginStyles = createUseStyles((theme) => ({
     marginTop: theme.spacing(11.75)
   },
   metaMaskButton: {
-    padding: theme.spacing(1.5),
-    borderRadius: theme.spacing(3.75),
+    padding: theme.spacing(2.5),
+    borderRadius: theme.spacing(3.5),
     background: theme.palette.white,
     boxShadow: '0px 3.75px 17px #F7EBD5',
     marginTop: theme.spacing(3),
     border: 'none',
     transition: theme.buttonTransition,
     cursor: 'pointer'
+  },
+  metaMaskIcon: {
+    width: theme.spacing(7),
+    height: theme.spacing(7)
   },
   metaMaskNameText: {
     fontWeight: theme.fontWeights.bold,

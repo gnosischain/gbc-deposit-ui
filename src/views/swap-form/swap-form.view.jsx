@@ -6,18 +6,17 @@ import useSwapFormStyles from './swap-form.styles'
 import useSwapFormData from '../../hooks/use-swap-form-data'
 import Header from '../header/header.view'
 import { ReactComponent as InfoIcon } from '../../images/info-icon.svg'
-import { TO_TOKEN_SYMBOL } from '../../constants'
 
-function SwapForm ({ wallet, hezTokenInfo, hezTokenBalance, swapData, onAmountChange, onSubmit }) {
-  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, hezTokenBalance, hezTokenInfo)
+function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, fromTokenBalance, swapData, onAmountChange, onSubmit }) {
+  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo)
   const classes = useSwapFormStyles({ error })
   const inputEl = useRef()
 
   useEffect(() => {
-    if (hezTokenBalance && inputEl) {
+    if (fromTokenBalance && inputEl) {
       inputEl.current.focus()
     }
-  }, [hezTokenBalance, inputEl])
+  }, [fromTokenBalance, inputEl])
 
   useEffect(() => {
     if (!amounts.from.eq(BigNumber.from(0))) {
@@ -30,12 +29,12 @@ function SwapForm ({ wallet, hezTokenInfo, hezTokenBalance, swapData, onAmountCh
       <Header />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>
-          You have {hezTokenBalance && hezTokenInfo ? formatUnits(hezTokenBalance, hezTokenInfo.decimals) : '--'} {hezTokenInfo && hezTokenInfo.symbol}
+          You have {fromTokenBalance && fromTokenInfo ? formatUnits(fromTokenBalance, fromTokenInfo.decimals) : '--'} {fromTokenInfo && fromTokenInfo.symbol}
         </p>
         <button
           className={classes.convertAllButton}
           type='button'
-          disabled={!hezTokenBalance}
+          disabled={!fromTokenInfo || !fromTokenBalance}
           onClick={convertAll}
         >
           Convert All
@@ -50,18 +49,18 @@ function SwapForm ({ wallet, hezTokenInfo, hezTokenBalance, swapData, onAmountCh
       >
         <div className={classes.fromInputGroup}>
           <p className={classes.fromTokenSymbol}>
-            {hezTokenInfo && hezTokenInfo.symbol}
+            {fromTokenInfo && fromTokenInfo.symbol}
           </p>
           <input
             ref={inputEl}
             className={classes.fromInput}
-            disabled={!hezTokenBalance}
+            disabled={!fromTokenBalance}
             placeholder='0.0'
             value={values.from}
             onChange={event => changeValue(event.target.value)}
           />
           <p className={classes.toValue}>
-            {hezTokenInfo && formatUnits(amounts.to, hezTokenInfo.decimals)} {TO_TOKEN_SYMBOL}
+            {fromTokenInfo && formatUnits(amounts.to, fromTokenInfo.decimals)} {toTokenInfo && toTokenInfo.symbol}
           </p>
         </div>
         {error && (

@@ -3,7 +3,7 @@ import { Contract, getDefaultProvider, providers } from 'ethers'
 
 import ERC20ABI from '../abis/erc20'
 
-function useTokenContract (wallet) {
+function useTokenContract (wallet, address) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
@@ -12,10 +12,10 @@ function useTokenContract (wallet) {
       : window.ethereum
         ? new providers.Web3Provider(window.ethereum)
         : getDefaultProvider()
-    const contract = new Contract(process.env.REACT_APP_HEZ_TOKEN_ADDRESS, ERC20ABI, provider)
+    const contract = new Contract(address, ERC20ABI, provider)
 
     setContract(contract)
-  }, [wallet])
+  }, [wallet, address])
 
   return contract
 }
