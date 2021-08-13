@@ -1,8 +1,9 @@
 import { splitSignature, Interface } from 'ethers/lib/utils'
 import { constants as ethersConstants } from 'ethers'
 
-async function approve (fromTokenContract, wallet, spender, amount) {
+async function approve (fromTokenContract, wallet, spender) {
   const allowance = await fromTokenContract.allowance(wallet.address, spender.address)
+  const amount = ethersConstants.MaxUint256
 
   if (allowance.lt(amount)) {
     await fromTokenContract.approve(spender.address, amount)
@@ -45,8 +46,9 @@ async function createPermitSignature (tokenContractInstance, wallet, spenderAddr
   return splitSignature(rawSignature)
 }
 
-async function permit (fromTokenContract, wallet, spender, amount) {
+async function permit (fromTokenContract, wallet, spender) {
   const nonce = await fromTokenContract.nonces(wallet.address)
+  const amount = ethersConstants.MaxUint256
   const deadline = ethersConstants.MaxUint256
   const { v, r, s } = await createPermitSignature(fromTokenContract, wallet, spender.address, amount, nonce, deadline)
 
