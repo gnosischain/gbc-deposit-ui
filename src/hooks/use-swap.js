@@ -31,7 +31,7 @@ function useSwap () {
         await approve(fromTokenContract, wallet, swapContract)
       }
 
-      const txData = await swapContract.bridge(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
+      const txData = await swapContract.hezToMatic(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
       setData({ status: 'successful', data: txData })
     } catch (err) {
       setData({ status: 'failed', error: err.message })

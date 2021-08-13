@@ -5,9 +5,9 @@ function useSwapContractInfo (swapContract) {
 
   useEffect(() => {
     const getSwapData = async (contract) => {
-      const fromTokenAddress = await contract.tokenA()
-      const toTokenAddress = await contract.tokenB()
-      const swapRatio = await contract.BRIDGE_RATIO()
+      const fromTokenAddress = await contract.hez()
+      const toTokenAddress = await contract.matic()
+      const swapRatio = await contract.SWAP_RATIO()
 
       return { fromTokenAddress, toTokenAddress, swapRatio }
     }
