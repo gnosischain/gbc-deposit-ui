@@ -16,12 +16,14 @@
     "standard": "^16.0.3"
   },
   "scripts": {
+    "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "aws s3 sync build s3://hez-swapper.hermez.io --delete",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
