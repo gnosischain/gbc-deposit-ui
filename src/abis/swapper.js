@@ -1,7 +1,7 @@
 const swapperABI = [
   {
     inputs: [],
-    name: 'tokenA',
+    name: 'hez',
     outputs: [
       {
         internalType: 'contract IERC20',
@@ -14,7 +14,7 @@ const swapperABI = [
   },
   {
     inputs: [],
-    name: 'tokenB',
+    name: 'matic',
     outputs: [
       {
         internalType: 'contract IERC20',
@@ -27,7 +27,7 @@ const swapperABI = [
   },
   {
     inputs: [],
-    name: 'BRIDGE_RATIO',
+    name: 'SWAP_RATIO',
     outputs: [
       {
         internalType: 'uint256',
@@ -42,7 +42,7 @@ const swapperABI = [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'amount',
+        name: 'hezAmount',
         type: 'uint256'
       },
       {
@@ -51,7 +51,7 @@ const swapperABI = [
         type: 'bytes'
       }
     ],
-    name: 'bridge',
+    name: 'hezToMatic',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
