@@ -1,6 +1,7 @@
 const { useState } = require('react')
 
 export const Step = {
+  Loading: 'loading',
   Login: 'login',
   Swap: 'swap',
   Confirm: 'confirm',
@@ -8,7 +9,7 @@ export const Step = {
 }
 
 function useStepperData () {
-  const [step, setStep] = useState(Step.Login)
+  const [step, setStep] = useState(Step.Loading)
 
   const switchStep = (step) => {
     setStep(step)

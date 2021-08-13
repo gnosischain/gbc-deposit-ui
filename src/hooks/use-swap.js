@@ -8,7 +8,7 @@ const INITIAL_DATA = { status: 'pending' }
 function useSwap () {
   const [data, setData] = useState(INITIAL_DATA)
 
-  const swap = async (wallet, hezTokenContract, swapContract, hezAmount) => {
+  const swap = async (wallet, fromTokenContract, swapContract, amount) => {
     setData({ status: 'loading' })
 
     if (!wallet) {
@@ -16,22 +16,22 @@ function useSwap () {
       return
     }
 
-    if (!hezTokenContract) {
-      setData({ status: 'failed', error: 'HEZ token contract doesn\'t exist' })
+    if (!fromTokenContract) {
+      setData({ status: 'failed', error: 'From token contract doesn\'t exist' })
       return
     }
 
     try {
       const usePermit = process.env.REACT_APP_USE_PERMIT === 'true'
       const permitSignature = usePermit
-        ? await permit(hezTokenContract, wallet, swapContract, hezAmount)
+        ? await permit(fromTokenContract, wallet, swapContract)
         : []
 
       if (!usePermit) {
-        await approve(hezTokenContract, wallet, swapContract, hezAmount)
+        await approve(fromTokenContract, wallet, swapContract)
       }
 
-      const txData = await swapContract.bridge(hezAmount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
+      const txData = await swapContract.bridge(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
       setData({ status: 'successful', data: txData })
     } catch (err) {
       setData({ status: 'failed', error: err.message })

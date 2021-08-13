@@ -2,6 +2,7 @@ import { createUseStyles } from 'react-jss'
 
 const useLoginStyles = createUseStyles((theme) => ({
   login: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

@@ -1,7 +1,5 @@
-const TO_TOKEN_SYMBOL = 'TOK'
 const BRIDGE_GAS_LIMIT = 150000
 
 export {
-  TO_TOKEN_SYMBOL,
   BRIDGE_GAS_LIMIT
 }
