@@ -24,11 +24,11 @@ function useSwap () {
     try {
       const usePermit = process.env.REACT_APP_USE_PERMIT === 'true'
       const permitSignature = usePermit
-        ? await permit(fromTokenContract, wallet, swapContract, amount)
+        ? await permit(fromTokenContract, wallet, swapContract)
         : []
 
       if (!usePermit) {
-        await approve(fromTokenContract, wallet, swapContract, amount)
+        await approve(fromTokenContract, wallet, swapContract)
       }
 
       const txData = await swapContract.bridge(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
