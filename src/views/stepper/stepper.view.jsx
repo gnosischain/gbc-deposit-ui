@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { providers } from 'ethers'
+
 import useStepperStyles from './stepper.styles'
 import useWallet from '../../hooks/use-wallet'
 import useStep, { Step } from '../../hooks/use-stepper-data'
@@ -10,21 +13,42 @@ import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
 import TxOverview from '../tx-overview/tx-overview.view'
+import NetworkError from '../network-error/network-error.view'
 import DataLoader from '../data-loader/data-loader'
 import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
+  const [chainId, setChainId] = useState()
+
+  useEffect(() => {
+    async function getChainId () {
+      const provider = new providers.Web3Provider(window.ethereum)
+      const network = await provider.getNetwork()
+      setChainId(network.chainId?.toString())
+    }
+
+    getChainId()
+  }, [])
+
   const { wallet, loadWallet } = useWallet()
   const swapContract = useSwapContract(wallet)
-  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract)
+  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract, chainId)
   const fromTokenContract = useTokenContract(wallet, fromTokenAddress)
   const toTokenContract = useTokenContract(wallet, toTokenAddress)
-  const fromTokenInfo = useTokenInfo(fromTokenContract)
-  const toTokenInfo = useTokenInfo(toTokenContract)
+  const fromTokenInfo = useTokenInfo(fromTokenContract, chainId)
+  const toTokenInfo = useTokenInfo(toTokenContract, chainId)
   const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
+
+  if (chainId !== process.env.REACT_APP_CHAIN_ID) {
+    return (
+      <div className={classes.stepper}>
+        <NetworkError />
+      </div>
+    )
+  }
 
   return (
     <div className={classes.stepper}>
@@ -70,6 +94,7 @@ function Stepper () {
           case Step.Confirm: {
             return (
               <TxConfirm
+                wallet={wallet}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
                 swapData={swapData}
