@@ -7,7 +7,6 @@ const NETWORKS = {
 }
 function NetworkError () {
   const classes = useNetworkErrorStyles()
-  console.log(process.env.REACT_APP_CHAIN_ID)
 
   return (
     <div className={classes.networkError}>
