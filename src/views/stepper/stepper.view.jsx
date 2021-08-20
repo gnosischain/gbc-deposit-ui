@@ -38,7 +38,8 @@ function Stepper () {
   const toTokenContract = useTokenContract(wallet, toTokenAddress)
   const fromTokenInfo = useTokenInfo(fromTokenContract, chainId)
   const toTokenInfo = useTokenInfo(toTokenContract, chainId)
-  const fromTokenBalance = useTokenBalance(wallet, fromTokenContract)
+  const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
+  const toTokenBalanceInSwapContract = useTokenBalance(process.env.REACT_APP_SWAP_CONTRACT_ADDRESS, toTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
@@ -82,6 +83,7 @@ function Stepper () {
                 toTokenInfo={toTokenInfo}
                 swapRatio={swapRatio}
                 fromTokenBalance={fromTokenBalance}
+                toTokenBalanceInSwapContract={toTokenBalanceInSwapContract}
                 swapData={swapData}
                 onAmountChange={resetSwapData}
                 onSubmit={(fromAmount) => {

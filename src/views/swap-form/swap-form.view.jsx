@@ -7,8 +7,18 @@ import useSwapFormData from '../../hooks/use-swap-form-data'
 import Header from '../shared/header/header.view'
 import { ReactComponent as InfoIcon } from '../../images/info-icon.svg'
 
-function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, swapRatio, fromTokenBalance, swapData, onAmountChange, onSubmit }) {
-  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo, swapRatio)
+function SwapForm ({
+  wallet,
+  fromTokenInfo,
+  toTokenInfo,
+  swapRatio,
+  fromTokenBalance,
+  toTokenBalanceInSwapContract,
+  swapData,
+  onAmountChange,
+  onSubmit 
+}) {
+  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo, swapRatio, toTokenBalanceInSwapContract)
   const classes = useSwapFormStyles({ error })
   const inputEl = useRef()
 

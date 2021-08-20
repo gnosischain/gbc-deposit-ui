@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 
-function useTokenBalance (wallet, contract) {
+function useTokenBalance (address, contract) {
   const [balance, setBalance] = useState()
 
   useEffect(() => {
-    if (wallet && contract) {
-      contract.balanceOf(wallet.address).then(setBalance)
+    if (address && contract) {
+      contract.balanceOf(address).then(setBalance)
     } else {
       setBalance()
     }
-  }, [wallet, contract])
+  }, [address, contract])
 
   return balance
 }

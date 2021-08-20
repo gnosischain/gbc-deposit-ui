@@ -9,7 +9,7 @@ const INPUT_REGEX = /^\d*(?:\.\d*)?$/
 const INITIAL_VALUES = { from: '', to: '' }
 const INITIAL_AMOUNTS = { from: BigNumber.from(0), to: BigNumber.from(0) }
 
-function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio) {
+function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenBalanceInSwapContract) {
   const [values, setValues] = useState(INITIAL_VALUES)
   const [error, setError] = useState()
   const [amounts, setAmounts] = useState(INITIAL_AMOUNTS)
@@ -33,6 +33,8 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio) {
 
         if (newFromAmount.gt(maxTokenAmount)) {
           setError('You don\'t have enough funds')
+        } else if (newToAmount.gt(toTokenBalanceInSwapContract)) {
+          setError('Oops, at this moment there are not enough MATIC tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your HEZ tokens. You can also contact us via email at hello@hermez.network')
         } else {
           setError()
         }
@@ -49,7 +51,11 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio) {
         from: formatUnits(maxTokenAmount, tokenInfo.decimals),
         to: formatUnits(newToAmount, tokenInfo.decimals)
       })
-      setError()
+      if (newToAmount.gt(toTokenBalanceInSwapContract)) {
+        setError('Oops, at this moment there are not enough MATIC tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your HEZ tokens. You can also contact us via email at hello@hermez.network')
+      } else {
+        setError()
+      }
     }
   }
 
