@@ -75,6 +75,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
   },
   inputErrorIcon: {
     marginRight: theme.spacing(1),
+    minWidth: theme.spacing(2),
     '& path': {
       fill: theme.palette.red
     }
