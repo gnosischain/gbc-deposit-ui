@@ -3,7 +3,7 @@ import Header from '../shared/header/header.view'
 import Spinner from '../shared/spinner/spinner.view'
 import { useEffect } from 'react'
 
-function TxConfirm ({ fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToOverviewStep }) {
+function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToOverviewStep }) {
   const classes = useTxConfirmStyles()
 
   useEffect(() => {
@@ -18,6 +18,7 @@ function TxConfirm ({ fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToOver
   return (
     <div className={classes.txConfirm}>
       <Header
+        address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
         isGoBackButtonDisabled={swapData.status === 'loading'}

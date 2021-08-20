@@ -5,6 +5,7 @@ const useHeaderStyles = createUseStyles((theme) => ({
     width: '100%',
     position: 'relative',
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: theme.spacing(4)
@@ -12,6 +13,11 @@ const useHeaderStyles = createUseStyles((theme) => ({
   title: {
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.bold
+  },
+  address: {
+    marginTop: theme.spacing(2),
+    fontSize: theme.spacing(2.5),
+    color: theme.palette.grey.dark
   },
   goBackButton: {
     position: 'absolute',

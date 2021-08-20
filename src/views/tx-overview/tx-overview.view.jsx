@@ -15,11 +15,12 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
   return (
     <div className={classes.txOverview}>
       <Header
+        address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
       />
       <CheckIcon className={classes.checkIcon} />
-      <p className={classes.title}>{fromTokenInfo.symbol} tokens have been converted.</p>
+      <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been initiated.</p>
       <div className={classes.buttonGroup}>
         <a
           className={classes.button}
@@ -27,7 +28,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
           target='_blank'
           rel='noopener noreferrer'
         >
-          View in Etherscan
+          Check the status here
           <LinkIcon className={classes.buttonIcon} />
         </a>
         <button

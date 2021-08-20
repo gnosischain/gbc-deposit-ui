@@ -27,6 +27,7 @@ function SwapForm ({ wallet, fromTokenInfo, toTokenInfo, swapRatio, fromTokenBal
   return (
     <div className={classes.swapForm}>
       <Header
+        address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
       />
