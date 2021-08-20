@@ -43,8 +43,6 @@ function Stepper () {
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
-  console.log(Number(toTokenBalanceInSwapContract))
-
   if (chainId !== process.env.REACT_APP_CHAIN_ID) {
     return (
       <div className={classes.stepper}>
