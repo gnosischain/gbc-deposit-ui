@@ -83,7 +83,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
   submitButton: {
     fontSize: theme.spacing(2),
     fontWeight: theme.fontWeights.bold,
-    margin: `${theme.spacing(12)}px auto 0 auto`,
+    margin: `${theme.spacing(12)}px auto ${theme.spacing(4)}px`,
     padding: `${theme.spacing(3)}px 0`,
     background: theme.palette.primary,
     color: theme.palette.white,
