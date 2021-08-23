@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { BigNumber } from 'ethers'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 
-const INPUT_REGEX = /^\d*(?:\.\d*)?$/
 // ethers BigNumber doesn't support decimals, so we need to workaround it
 // using 35 as the SWAP_FACTOR instead of 3.5 and later divide the result by 10
 // in the multiplyAmountBySwapFactor function
@@ -23,6 +22,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
   const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div(1000)
 
   const changeValue = (newFromValue) => {
+    const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${tokenInfo.decimals}})?$`)
     if (INPUT_REGEX.test(newFromValue)) {
       try {
         const newFromAmount = parseUnits(newFromValue.length > 0 ? newFromValue : '0', tokenInfo.decimals)
