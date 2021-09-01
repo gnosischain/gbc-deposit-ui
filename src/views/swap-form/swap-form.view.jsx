@@ -77,10 +77,10 @@ function SwapForm ({
             {formatUnits(amounts.to, fromTokenInfo.decimals)} {toTokenInfo.symbol}
           </p>
         </div>
-        {error && (
+        {(error || swapData.status === 'failed') && (
           <div className={classes.inputErrorContainer}>
             <InfoIcon className={classes.inputErrorIcon} />
-            <p>{error}</p>
+            <p>{error || swapData.error}</p>
           </div>
         )}
         <button
@@ -90,9 +90,6 @@ function SwapForm ({
         >
           Convert
         </button>
-        {swapData.status === 'failed' && (
-          <p className={classes.swapError}>{swapData.error}</p>
-        )}
       </form>
     </div>
   )
