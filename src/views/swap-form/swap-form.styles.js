@@ -50,7 +50,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     width: '100%',
     textAlign: 'center',
     marginTop: theme.spacing(2),
-    caretColor: theme.palette.orange,
+    caretColor: theme.palette.purple,
     padding: `0 ${theme.spacing(5)}px`,
     '&:disabled': {
       background: theme.palette.white
