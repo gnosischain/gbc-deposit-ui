@@ -2,8 +2,8 @@ const theme = {
   palette: {
     white: '#ffffff',
     black: '#2b2b2b',
-    primary: '#e75a2b',
-    secondary: '#faf4ea',
+    primary: '#d44d20',
+    secondary: '#f6f7fa',
     grey: {
       light1: '#f3f3f8',
       light2: '#e1e1f1',
@@ -11,6 +11,7 @@ const theme = {
       dark: '#888baa'
     },
     orange: '#ffa600',
+    purple: '#8248e5',
     red: '#ff4b40'
   },
   hoverTransition: 'all 100ms',
