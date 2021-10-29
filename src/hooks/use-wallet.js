@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import Web3Modal from 'web3modal';
+import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
 import { providers, utils } from 'ethers';
 
 import coinbaseLogo from '../images/coinbase.png';
 
-const web3Modal = new Web3Modal({
+const web3Modal = new SafeAppWeb3Modal({
   cacheProvider: false,
   providerOptions: {
     walletconnect: {
