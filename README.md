@@ -1,19 +1,19 @@
-# HEZ to MATIC tool
+# POA to STAKE tool
 
-Simple tool to convert your HEZ tokens to MATIC after the Polygon - Hermez merge.
+Simple tool to convert your POA tokens to STAKE after the xDai Chain - Poa Network merge.
 
 ## Getting Started
 
 Clone the repo:
 
 ```sh
-git clone git@github.com:hermeznetwork/hez-to-matic.git
+git clone git@github.com:xdaichain/poa-to-stake.git
 ```
 
 Move into the project directory:
 
 ```sh
-cd hez-to-matic
+cd poa-to-stake
 ```
 
 Install project dependencies:
@@ -35,7 +35,3 @@ The page will reload if you make edits. You will also see any lint errors in the
 ```sh
 npm start
 ```
-
-## License
-
-`hez-to-matic` is part of the Polygon Hermez project copyright 2021 published with AGPL-3 license. Please check the LICENSE file for more details.
