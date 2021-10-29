@@ -23,14 +23,12 @@ function Login ({ wallet, fromTokenInfo, toTokenInfo, onLoadWallet, onGoToNextSt
         <ToTokenIcon width="60" height="60" />
       </div>
       <h1 className={classes.title}>Convert {fromTokenInfo.symbol} tokens to {toTokenInfo.symbol}</h1>
-      <p className={classes.connectText}>Connect with</p>
       <button
         className={classes.metaMaskButton}
         onClick={onLoadWallet}
       >
-        <MetaMaskIcon className={classes.metaMaskIcon} />
+        Connect wallet
       </button>
-      <p className={classes.metaMaskNameText}>MetaMask</p>
     </div>
   )
 }

@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-import { providers } from 'ethers'
-
 import useStepperStyles from './stepper.styles'
 import useWallet from '../../hooks/use-wallet'
 import useStep, { Step } from '../../hooks/use-stepper-data'
@@ -19,31 +16,19 @@ import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
-  const [chainId, setChainId] = useState()
-
-  useEffect(() => {
-    async function getChainId () {
-      const provider = new providers.Web3Provider(window.ethereum)
-      const network = await provider.getNetwork()
-      setChainId(network.chainId?.toString())
-    }
-
-    getChainId()
-  }, [])
-
   const { wallet, loadWallet } = useWallet()
   const swapContract = useSwapContract(wallet)
-  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract, chainId)
-  const fromTokenContract = useTokenContract(wallet, fromTokenAddress)
-  const toTokenContract = useTokenContract(wallet, toTokenAddress)
-  const fromTokenInfo = useTokenInfo(fromTokenContract, chainId)
-  const toTokenInfo = useTokenInfo(toTokenContract, chainId)
+  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract)
+  const fromTokenContract = useTokenContract(fromTokenAddress)
+  const toTokenContract = useTokenContract(toTokenAddress)
+  const fromTokenInfo = useTokenInfo(fromTokenContract)
+  const toTokenInfo = useTokenInfo(toTokenContract)
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
   const toTokenBalanceInSwapContract = useTokenBalance(process.env.REACT_APP_SWAP_CONTRACT_ADDRESS, toTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
-  if (chainId !== process.env.REACT_APP_CHAIN_ID) {
+  if (wallet && wallet.chainId !== Number(process.env.REACT_APP_CHAIN_ID)) {
     return (
       <div className={classes.stepper}>
         <NetworkError />

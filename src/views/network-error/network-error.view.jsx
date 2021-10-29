@@ -3,7 +3,8 @@ import { ReactComponent as SwitchNetwork } from '../../images/switch-network.svg
 
 const NETWORKS = {
   '1': 'Ethereum Mainnet',
-  '4': 'Rinkeby'
+  '4': 'Rinkeby',
+  '100': 'xDai Chain'
 }
 function NetworkError () {
   const classes = useNetworkErrorStyles()
