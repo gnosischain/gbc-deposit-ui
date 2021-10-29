@@ -16,7 +16,7 @@ import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
-  const { wallet, loadWallet } = useWallet()
+  const { wallet, loadWallet, isMetamask, switchChainInMetaMask } = useWallet()
   const swapContract = useSwapContract(wallet)
   const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(swapContract)
   const fromTokenContract = useTokenContract(fromTokenAddress)
@@ -31,7 +31,7 @@ function Stepper () {
   if (wallet && wallet.chainId !== Number(process.env.REACT_APP_CHAIN_ID)) {
     return (
       <div className={classes.stepper}>
-        <NetworkError />
+        <NetworkError {...{ isMetamask, switchChainInMetaMask }} />
       </div>
     )
   }

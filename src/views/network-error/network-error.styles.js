@@ -15,10 +15,34 @@ const useNetworkErrorStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2.5)
   },
   description: {
-    marginTop: theme.spacing(0.5),
     fontWeight: theme.fontWeights.medium,
     fontSize: theme.spacing(2),
     textAlign: 'center'
+  },
+  descriptionContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: theme.spacing(0.5),
+  },
+  networkName: {
+    fontWeight: theme.fontWeights.bold,
+    fontSize: theme.spacing(2),
+    marginLeft: '4px',
+  },
+  switchNetworkButton: {
+    fontWeight: theme.fontWeights.medium,
+    fontSize: theme.spacing(2),
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '3px 7px',
+    position: 'relative',
+    cursor: 'pointer',
+    backgroundColor: '#f3e2fd',
+    borderRadius: '4px',
+    marginLeft: '7px',
+    hover: {
+      backgroundColor: '#f2dbff',
+    }
   }
 }))
 
