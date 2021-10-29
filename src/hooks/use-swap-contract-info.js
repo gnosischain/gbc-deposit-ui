@@ -6,13 +6,13 @@ function useSwapContractInfo (swapContract, chainId) {
   useEffect(() => {
     if (chainId === process.env.REACT_APP_CHAIN_ID) {
       const getSwapData = async (contract) => {
-        const fromTokenAddress = await contract.hez()
-        const toTokenAddress = await contract.matic()
+        const fromTokenAddress = await contract.poa()
+        const toTokenAddress = await contract.stake()
         const swapRatio = await contract.SWAP_RATIO()
-  
+
         return { fromTokenAddress, toTokenAddress, swapRatio }
       }
-  
+
       if (swapContract) {
         getSwapData(swapContract).then(setContractInfo)
       }
