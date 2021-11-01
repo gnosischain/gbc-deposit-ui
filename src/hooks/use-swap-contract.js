@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Contract } from 'ethers'
-
-import getProvider from '../utils/provider';
+import { Contract, providers } from 'ethers'
 
 import swapperABI from '../abis/swapper'
 
-function useSwapContract () {
+const contactAddress = process.env.REACT_APP_SWAP_CONTRACT_ADDRESS;
+
+function useSwapContract (provider) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
-    const provider = getProvider();
-    const contract = new Contract(process.env.REACT_APP_SWAP_CONTRACT_ADDRESS, swapperABI, provider)
-    setContract(contract)
-  }, [])
+    if (provider) {
+      const isSigner = !(provider instanceof providers.StaticJsonRpcProvider);
+      const contract = new Contract(contactAddress, swapperABI, isSigner ? provider.getSigner(0) : provider)
+      setContract(contract)
+    }
+  }, [provider])
 
   return contract
 }

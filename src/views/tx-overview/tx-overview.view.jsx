@@ -5,12 +5,15 @@ import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
 import { ReactComponent as MetaMaskLogo } from '../../images/metamask-logo.svg'
 import useWatchAsset from '../../hooks/use-watch-asset'
 
+const explorerUrl = {
+  1: 'https://etherscan.io/tx/',
+  4: 'https://rinkeby.etherscan.io/tx/',
+  100: 'https://blockscout.com/xdai/mainnet/tx/'
+}
+
 function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
   const classes = useTxOverviewStyles()
   const watchAsset = useWatchAsset()
-  const etherscanUrl = wallet.chainId === 1
-    ? `https://etherscan.io/tx/${swapData.data.hash}`
-    : `https://rinkeby.etherscan.io/tx/${swapData.data.hash}`
 
   return (
     <div className={classes.txOverview}>
@@ -24,7 +27,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
       <div className={classes.buttonGroup}>
         <a
           className={classes.button}
-          href={etherscanUrl}
+          href={`${explorerUrl[wallet.chainId]}${swapData.data.hash}`}
           target='_blank'
           rel='noopener noreferrer'
         >
