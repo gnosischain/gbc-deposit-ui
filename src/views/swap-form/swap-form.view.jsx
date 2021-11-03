@@ -16,7 +16,8 @@ function SwapForm ({
   toTokenBalanceInSwapContract,
   swapData,
   onAmountChange,
-  onSubmit
+  onSubmit,
+  onDisconnectWallet
 }) {
   const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo, swapRatio, toTokenBalanceInSwapContract)
   const classes = useSwapFormStyles({ error })
@@ -40,6 +41,7 @@ function SwapForm ({
         address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
+        onDisconnectWallet={onDisconnectWallet}
       />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>

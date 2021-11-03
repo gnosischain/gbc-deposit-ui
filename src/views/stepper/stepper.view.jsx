@@ -16,7 +16,7 @@ import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
 function Stepper () {
   const classes = useStepperStyles()
-  const { wallet, loadWallet, isMetamask, switchChainInMetaMask } = useWallet()
+  const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
   const swapContract = useSwapContract(wallet?.provider)
   const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo()
   const fromTokenContract = useTokenContract(fromTokenAddress, wallet?.provider)
@@ -75,6 +75,7 @@ function Stepper () {
                   swap(wallet, fromTokenContract, swapContract, fromAmount)
                   switchStep(Step.Confirm)
                 }}
+                onDisconnectWallet={disconnectWallet}
               />
             )
           }
@@ -98,6 +99,7 @@ function Stepper () {
                 toTokenInfo={toTokenInfo}
                 swapData={swapData}
                 onGoBack={() => switchStep(Step.Swap)}
+                onDisconnectWallet={disconnectWallet}
               />
             )
           }

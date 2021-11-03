@@ -11,7 +11,7 @@ const explorerUrl = {
   100: 'https://blockscout.com/xdai/mainnet/tx/'
 }
 
-function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack }) {
+function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onDisconnectWallet }) {
   const classes = useTxOverviewStyles()
   const watchAsset = useWatchAsset()
 
@@ -22,6 +22,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack })
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
         onGoBack={onGoBack}
+        onDisconnectWallet={onDisconnectWallet}
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been initiated.</p>

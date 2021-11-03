@@ -1,7 +1,7 @@
 import useHeaderStyles from './header.styles'
 import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
 
-function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, onGoBack }) {
+function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, onGoBack, onDisconnectWallet }) {
   const classes = useHeaderStyles()
 
   function getPartiallyHiddenEthereumAddress (ethereumAddress) {
@@ -10,7 +10,7 @@ function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, 
       ethereumAddress.length - 4,
       ethereumAddress.length
     )
-  
+
     return `${firstAddressSlice} *** ${secondAddressSlice}`
   }
 
@@ -27,6 +27,9 @@ function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, 
       )}
       <p className={classes.title}>{fromTokenInfo.symbol} → {toTokenInfo.symbol}</p>
       <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
+      {onDisconnectWallet && (
+        <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>
+      )}
     </div>
   )
 }

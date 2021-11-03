@@ -31,6 +31,14 @@ const useHeaderStyles = createUseStyles((theme) => ({
     '&:disabled': {
       cursor: 'default'
     }
+  },
+  disconnectButton: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    fontSize: theme.spacing(2),
+    marginTop: theme.spacing(1.5)
   }
 }))
 

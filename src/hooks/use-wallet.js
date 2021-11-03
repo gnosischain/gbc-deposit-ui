@@ -7,7 +7,7 @@ import { providers, utils } from 'ethers';
 import coinbaseLogo from '../images/coinbase.png';
 
 const web3Modal = new SafeAppWeb3Modal({
-  cacheProvider: false,
+  cacheProvider: true,
   providerOptions: {
     walletconnect: {
       package: WalletConnectProvider,
@@ -92,7 +92,7 @@ function useWallet() {
       await provider.currentProvider.close();
     }
     await web3Modal.clearCachedProvider();
-    setWallet();
+    window.location.reload();
   }, [wallet]);
 
   const loadWallet = useCallback(async () => {
@@ -116,10 +116,31 @@ function useWallet() {
     await connect();
   }, [closeConnection]);
 
+  const disconnectWallet = useCallback(async () => {
+    await web3Modal.clearCachedProvider();
+    window.location.reload();
+  }, []);
+
+  useEffect(() => {
+    async function connect() {
+      const cachedProvider = localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER');
+      if (cachedProvider) {
+        try {
+          await loadWallet();
+        } catch (error) {
+          console.log(error);
+          await disconnectWallet();
+        }
+      }
+    }
+    connect();
+  }, []);
+
   return ({
     wallet,
     isMetamask,
     loadWallet,
+    disconnectWallet,
     switchChainInMetaMask,
   });
 };
