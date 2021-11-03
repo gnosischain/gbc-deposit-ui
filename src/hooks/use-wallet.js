@@ -12,7 +12,7 @@ const web3Modal = new SafeAppWeb3Modal({
     walletconnect: {
       package: WalletConnectProvider,
       options: {
-        chainId: 100,
+        network: 'xdai',
         rpc: {
           100: 'https://dai.poa.network'
         }
