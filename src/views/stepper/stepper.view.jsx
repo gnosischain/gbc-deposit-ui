@@ -111,7 +111,7 @@ function Stepper () {
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
                 swapData={swapData}
-                onGoBack={() => switchStep(Step.Swap)}
+                onGoBack={() => window.location.reload()}
                 onDisconnectWallet={disconnectWallet}
                 isMetamask={isMetamask}
               />
