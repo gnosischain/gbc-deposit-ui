@@ -25,7 +25,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
         onDisconnectWallet={onDisconnectWallet}
       />
       <CheckIcon className={classes.checkIcon} />
-      <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been initiated.</p>
+      <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been completed.</p>
       <div className={classes.buttonGroup}>
         <a
           className={classes.howToUseLink}
@@ -41,7 +41,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
           target='_blank'
           rel='noopener noreferrer'
         >
-          Check transaction status here
+          Check transaction details here
           <LinkIcon className={classes.buttonIcon} />
         </a>
         <button

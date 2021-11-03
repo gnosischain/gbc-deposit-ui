@@ -31,8 +31,10 @@ function useSwap () {
         await approve(fromTokenContract, wallet, swapContract)
       }
 
-      const txData = await swapContract.poaToStake(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
-      setData({ status: 'successful', data: txData })
+      const tx = await swapContract.poaToStake(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
+      setData({ status: 'pending', data: tx })
+      await tx.wait()
+      setData({ status: 'successful', data: tx })
     } catch (err) {
       setData({ status: 'failed', error: err.message })
       console.log(err)

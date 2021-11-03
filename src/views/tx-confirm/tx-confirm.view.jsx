@@ -3,17 +3,17 @@ import Header from '../shared/header/header.view'
 import Spinner from '../shared/spinner/spinner.view'
 import { useEffect } from 'react'
 
-function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToOverviewStep }) {
+function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToPendingStep }) {
   const classes = useTxConfirmStyles()
 
   useEffect(() => {
     if (swapData.status === 'failed') {
       onGoBack()
     }
-    if (swapData.status === 'successful') {
-      onGoToOverviewStep()
+    if (swapData.status === 'pending') {
+      onGoToPendingStep()
     }
-  }, [swapData, onGoBack, onGoToOverviewStep])
+  }, [swapData, onGoBack, onGoToPendingStep])
 
   return (
     <div className={classes.txConfirm}>

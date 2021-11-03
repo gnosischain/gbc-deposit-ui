@@ -5,6 +5,7 @@ export const Step = {
   Login: 'login',
   Swap: 'swap',
   Confirm: 'confirm',
+  Pending: 'pending',
   Overview: 'overview'
 }
 

@@ -9,6 +9,7 @@ import useTokenInfo from '../../hooks/use-token-info'
 import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
+import TxPending from '../tx-pending/tx-pending.view'
 import TxOverview from '../tx-overview/tx-overview.view'
 import NetworkError from '../network-error/network-error.view'
 import DataLoader from '../data-loader/data-loader'
@@ -82,6 +83,18 @@ function Stepper () {
           case Step.Confirm: {
             return (
               <TxConfirm
+                wallet={wallet}
+                fromTokenInfo={fromTokenInfo}
+                toTokenInfo={toTokenInfo}
+                swapData={swapData}
+                onGoBack={() => switchStep(Step.Swap)}
+                onGoToPendingStep={() => switchStep(Step.Pending)}
+              />
+            )
+          }
+          case Step.Pending: {
+            return (
+              <TxPending
                 wallet={wallet}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}

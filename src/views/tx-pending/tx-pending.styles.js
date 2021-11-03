@@ -9,12 +9,12 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   },
   checkIcon: {
     marginLeft: theme.spacing(3),
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(16)
   },
   title: {
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(8)
   },
   buttonGroup: {
     marginTop: theme.spacing(4),
@@ -44,7 +44,10 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2.5),
     textDecoration: 'underline',
     padding: theme.spacing(1)
-  }
+  },
+  spinnerWrapper: {
+    marginTop: theme.spacing(20.5)
+  },
 }))
 
 export default useTxOverviewStyles
