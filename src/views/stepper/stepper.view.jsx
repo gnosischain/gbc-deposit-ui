@@ -113,6 +113,7 @@ function Stepper () {
                 swapData={swapData}
                 onGoBack={() => switchStep(Step.Swap)}
                 onDisconnectWallet={disconnectWallet}
+                isMetamask={isMetamask}
               />
             )
           }

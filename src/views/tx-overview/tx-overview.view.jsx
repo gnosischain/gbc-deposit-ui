@@ -11,7 +11,7 @@ const explorerUrl = {
   100: 'https://blockscout.com/xdai/mainnet/tx/'
 }
 
-function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onDisconnectWallet }) {
+function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onDisconnectWallet, isMetamask }) {
   const classes = useTxOverviewStyles()
   const watchAsset = useWatchAsset()
 
@@ -44,13 +44,15 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
           Check transaction details here
           <LinkIcon className={classes.buttonIcon} />
         </a>
-        <button
-          className={classes.button}
-          onClick={() => watchAsset(wallet, toTokenInfo)}
-        >
-          Add {toTokenInfo.symbol} token to MetaMask
-          <MetaMaskLogo className={classes.buttonIcon} />
-        </button>
+        {isMetamask && (
+          <button
+            className={classes.button}
+            onClick={() => watchAsset(wallet, toTokenInfo)}
+          >
+            Add {toTokenInfo.symbol} token to MetaMask
+            <MetaMaskLogo className={classes.buttonIcon} />
+          </button>
+        )}
       </div>
     </div>
   )

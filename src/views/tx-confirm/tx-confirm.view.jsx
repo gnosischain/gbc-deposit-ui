@@ -26,7 +26,7 @@ function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, on
         <Spinner className={classes.title} />
       </div>
       <p className={classes.title}>
-        Confirm the transaction in MetaMask
+        Confirm the transaction in your wallet
       </p>
     </div>
   )
