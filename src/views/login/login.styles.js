@@ -6,7 +6,9 @@ const useLoginStyles = createUseStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: theme.spacing(15.5)
+    paddingTop: theme.spacing(15.5),
+    paddingBottom: theme.spacing(4),
+    justifyContent: 'space-between'
   },
   tokenLogos: {
     display: 'flex',
@@ -31,7 +33,7 @@ const useLoginStyles = createUseStyles((theme) => ({
     borderRadius: theme.spacing(3.5),
     background: theme.palette.white,
     boxShadow: '0px 3.75px 17px #F7EBD5',
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(-5),
     border: 'none',
     transition: theme.buttonTransition,
     cursor: 'pointer'
@@ -43,6 +45,11 @@ const useLoginStyles = createUseStyles((theme) => ({
   metaMaskNameText: {
     fontWeight: theme.fontWeights.bold,
     marginTop: theme.spacing(2)
+  },
+  learnMoreLink: {
+    color: '#000',
+    fontSize: '14px',
+    textDecoration: 'underline'
   }
 }))
 

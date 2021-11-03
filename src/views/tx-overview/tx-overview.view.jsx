@@ -26,12 +26,20 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo }) {
       <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been initiated.</p>
       <div className={classes.buttonGroup}>
         <a
+          className={classes.howToUseLink}
+          href="https://www.staketoken.net/"
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          Learn how to use STAKE
+        </a>
+        <a
           className={classes.button}
           href={`${explorerUrl[wallet.chainId]}${swapData.data.hash}`}
           target='_blank'
           rel='noopener noreferrer'
         >
-          Check the status here
+          Check transaction status here
           <LinkIcon className={classes.buttonIcon} />
         </a>
         <button

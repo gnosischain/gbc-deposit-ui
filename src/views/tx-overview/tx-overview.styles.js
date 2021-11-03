@@ -17,7 +17,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     marginTop: theme.spacing(4)
   },
   buttonGroup: {
-    marginTop: theme.spacing(11),
+    marginTop: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -38,6 +38,12 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   },
   buttonIcon: {
     marginLeft: theme.spacing(1)
+  },
+  howToUseLink: {
+    color: '#000',
+    fontSize: theme.spacing(2.5),
+    textDecoration: 'underline',
+    padding: theme.spacing(1)
   }
 }))
 
