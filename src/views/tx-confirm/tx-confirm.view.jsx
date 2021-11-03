@@ -21,8 +21,6 @@ function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, on
         address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
-        isGoBackButtonDisabled={swapData.status === 'loading'}
-        onGoBack={onGoBack}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />
