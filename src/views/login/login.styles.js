@@ -19,21 +19,21 @@ const useLoginStyles = createUseStyles((theme) => ({
     margin: `0 ${theme.spacing(2)}px`
   },
   title: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(8),
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.bold
   },
-  connectText: {
-    fontWeight: theme.fontWeights.medium,
-    color: theme.palette.grey.main,
-    marginTop: theme.spacing(11.75)
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   metaMaskButton: {
     padding: theme.spacing(2.5),
     borderRadius: theme.spacing(3.5),
     background: theme.palette.white,
-    boxShadow: '0px 3.75px 17px #F7EBD5',
-    marginTop: theme.spacing(-5),
+    boxShadow: '0px 3.75px 17px #d9d1ed',
+    marginTop: theme.spacing(8),
     border: 'none',
     transition: theme.buttonTransition,
     cursor: 'pointer'

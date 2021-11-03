@@ -16,20 +16,20 @@ function Login ({ wallet, fromTokenInfo, toTokenInfo, onLoadWallet, onGoToNextSt
 
   return (
     <div className={classes.login}>
-      <div>
+      <div className={classes.column}>
         <div className={classes.tokenLogos}>
           <PoaIcon width="60" height="60" />
           <SwapArrow className={classes.swapArrow} />
           <ToTokenIcon width="60" height="60" />
         </div>
         <h1 className={classes.title}>Convert {fromTokenInfo.symbol} tokens to {toTokenInfo.symbol}</h1>
+        <button
+          className={classes.metaMaskButton}
+          onClick={onLoadWallet}
+        >
+          Connect wallet
+        </button>
       </div>
-      <button
-        className={classes.metaMaskButton}
-        onClick={onLoadWallet}
-      >
-        Connect wallet
-      </button>
       <a
         className={classes.learnMoreLink}
         href="https://poanetwork.page.link/swap"
