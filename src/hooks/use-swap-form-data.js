@@ -19,7 +19,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
     setError()
   }, [wallet])
 
-  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div(1000000)
+  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div('100000000000')
 
   const changeValue = (newFromValue) => {
     const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${tokenInfo.decimals}})?$`)
