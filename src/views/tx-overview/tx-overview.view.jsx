@@ -29,7 +29,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
       <div className={classes.buttonGroup}>
         <a
           className={classes.howToUseLink}
-          href="https://www.staketoken.net/"
+          href="https://poanetwork.page.link/learnmore"
           target='_blank'
           rel='noopener noreferrer'
         >
