@@ -8,7 +8,7 @@ const useTxConfirmStyles = createUseStyles((theme) => ({
     alignItems: 'center'
   },
   spinnerWrapper: {
-    marginTop: theme.spacing(20.5)
+    marginTop: theme.spacing(14.5)
   },
   title: {
     fontSize: theme.spacing(3),

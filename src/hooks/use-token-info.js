@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import useTokenContract from './use-token-contract'
-import useProvider from './use-provider'
 
-function useTokenInfo (address) {
-  const provider = useProvider()
+function useTokenInfo (address, provider) {
   const contract = useTokenContract(address, provider)
   const [tokenInfo, setTokenInfo] = useState()
 
@@ -17,7 +15,7 @@ function useTokenInfo (address) {
     }
 
     if (contract) {
-      getTokenData(contract).then(setTokenInfo)
+      getTokenData(contract).then(setTokenInfo).catch(() => setTokenInfo())
     }
   }, [contract])
 

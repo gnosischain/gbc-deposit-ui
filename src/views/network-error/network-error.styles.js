@@ -22,7 +22,7 @@ const useNetworkErrorStyles = createUseStyles((theme) => ({
   descriptionContainer: {
     display: 'flex',
     alignItems: 'center',
-    marginTop: theme.spacing(0.5),
+    marginTop: theme.spacing(2),
   },
   networkName: {
     fontWeight: theme.fontWeights.bold,
@@ -39,7 +39,7 @@ const useNetworkErrorStyles = createUseStyles((theme) => ({
     cursor: 'pointer',
     backgroundColor: '#f3e2fd',
     borderRadius: '4px',
-    marginLeft: '7px',
+    margin: '0 7px',
     hover: {
       backgroundColor: '#f2dbff',
     }

@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Contract, providers } from 'ethers'
+import { Contract } from 'ethers'
 
 import ERC20ABI from '../abis/erc20'
 
-function useTokenContract (address, provider) {
+function useTokenContract (address, wallet) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
-    if (address && provider) {
-      const isSigner = !(provider instanceof providers.StaticJsonRpcProvider);
-      const contract = new Contract(address, ERC20ABI, isSigner ? provider.getSigner(0) : provider)
+    if (address && wallet?.provider) {
+      const contract = new Contract(address, ERC20ABI, wallet.provider.getSigner(0))
       setContract(contract)
     }
-  }, [address, provider])
+  }, [address, wallet])
 
   return contract
 }

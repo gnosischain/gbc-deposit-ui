@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 
 import useSwapContract from './use-swap-contract'
-import useProvider from './use-provider'
 
-function useSwapContractInfo () {
-  const provider = useProvider()
-  const swapContract = useSwapContract(provider)
+function useSwapContractInfo (wallet) {
+  const swapContract = useSwapContract(wallet)
   const [contractInfo, setContractInfo] = useState({})
 
   useEffect(() => {

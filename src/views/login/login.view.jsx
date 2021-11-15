@@ -5,7 +5,7 @@ import { ReactComponent as PoaIcon } from '../../images/poa-icon.svg'
 import { ReactComponent as SwapArrow } from '../../images/swap-arrow.svg'
 import { ReactComponent as ToTokenIcon } from '../../images/to-token-icon.svg'
 
-function Login ({ wallet, fromTokenInfo, toTokenInfo, onLoadWallet, onGoToNextStep }) {
+function Login ({ wallet, onLoadWallet, onGoToNextStep }) {
   const classes = useLoginStyles()
 
   useEffect(() => {
@@ -22,7 +22,7 @@ function Login ({ wallet, fromTokenInfo, toTokenInfo, onLoadWallet, onGoToNextSt
           <SwapArrow className={classes.swapArrow} />
           <ToTokenIcon width="60" height="60" />
         </div>
-        <h1 className={classes.title}>Convert {fromTokenInfo.symbol} tokens to {toTokenInfo.symbol}</h1>
+        <h1 className={classes.title}>Convert POA tokens to STAKE</h1>
         <button
           className={classes.metaMaskButton}
           onClick={onLoadWallet}

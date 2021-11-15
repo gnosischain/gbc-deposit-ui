@@ -4,20 +4,40 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
 import { providers, utils } from 'ethers';
 
+import networks from '../networks';
+
 import coinbaseLogo from '../images/coinbase.png';
+import walletConnectLogo from '../images/walletconnect.svg';
+
+const walletConnectOptions = () => {
+  const options = {};
+  Object.keys(networks).forEach(chainId => {
+    options[`custom-walletconnect-${chainId}`] = {
+      display: {
+        logo: walletConnectLogo,
+        name: `WalletConnect (${networks[chainId].networkName})`,
+        description: 'Scan with WalletConnect to connect',
+      },
+      package: WalletConnectProvider,
+      options: {
+        chainId: Number(chainId),
+        rpc: {
+          [chainId]: networks[chainId].rpcUrl
+        },
+      },
+      connector: async (ProviderPackage, options) => {
+        const provider = new ProviderPackage(options);
+        await provider.enable();
+        return provider;
+      }
+    }
+  });
+  return options;
+}
 
 const web3Modal = new SafeAppWeb3Modal({
   cacheProvider: true,
   providerOptions: {
-    walletconnect: {
-      package: WalletConnectProvider,
-      options: {
-        network: 'xdai',
-        rpc: {
-          100: 'https://dai.poa.network'
-        }
-      },
-    },
     'custom-walletlink': {
       display: {
         logo: coinbaseLogo,
@@ -30,7 +50,8 @@ const web3Modal = new SafeAppWeb3Modal({
         await provider.enable();
         return provider;
       },
-    }
+    },
+    ...walletConnectOptions(),
   },
 });
 
@@ -55,6 +76,7 @@ async function switchChainInMetaMask(chainId) {
     // This error code indicates that the chain has not been added to MetaMask.
     if (switchError.code === 4902) {
       try {
+        if (chainId !== '100') throw Error();
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [
@@ -101,7 +123,7 @@ function useWallet() {
       const library = new providers.Web3Provider(provider);
       const network = await library.getNetwork();
       const address = await library.getSigner().getAddress();
-      const chainId = network.chainId;
+      const chainId = String(network.chainId);
       setIsMetamask(library?.connection?.url === 'metamask');
       setWallet({ provider: library, address, chainId });
     }
@@ -110,7 +132,7 @@ function useWallet() {
       provider.on('disconnect', closeConnection);
       provider.on('accountsChanged', accounts => accounts.length ? connect() : window.location.reload());
       // provider.on('networkChanged', connect);
-      provider.on('chainChanged', connect);
+      provider.on('chainChanged', () => window.location.reload());
     }
     provider.autoRefreshOnNetworkChange = false;
     await connect();

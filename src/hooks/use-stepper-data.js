@@ -10,7 +10,7 @@ export const Step = {
 }
 
 function useStepperData () {
-  const [step, setStep] = useState(Step.Loading)
+  const [step, setStep] = useState(Step.Login)
 
   const switchStep = (step) => {
     setStep(step)
