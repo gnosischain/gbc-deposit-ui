@@ -9,7 +9,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   },
   checkIcon: {
     marginLeft: theme.spacing(3),
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(4)
   },
   title: {
     fontSize: theme.spacing(3),

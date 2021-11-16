@@ -1,7 +1,12 @@
 import useHeaderStyles from './header.styles'
 import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
 
-function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, onGoBack, onDisconnectWallet }) {
+import Select from '../network-select/network-select.view'
+
+function Header ({
+  address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled,
+  onGoBack, onDisconnectWallet, isMetamask, switchChainInMetaMask, chainId
+}) {
   const classes = useHeaderStyles()
 
   function getPartiallyHiddenEthereumAddress (ethereumAddress) {
@@ -27,6 +32,11 @@ function Header ({ address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled, 
       )}
       <p className={classes.title}>{fromTokenInfo.symbol} → {toTokenInfo.symbol}</p>
       <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
+      <Select
+        chainId={chainId}
+        isMetamask={isMetamask}
+        switchChainInMetaMask={switchChainInMetaMask}
+      />
       {onDisconnectWallet && (
         <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>
       )}

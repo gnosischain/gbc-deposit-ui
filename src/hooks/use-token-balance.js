@@ -5,7 +5,7 @@ function useTokenBalance (address, contract) {
 
   useEffect(() => {
     if (address && contract) {
-      contract.balanceOf(address).then(setBalance)
+      contract.balanceOf(address).then(setBalance).catch(() => setBalance())
     } else {
       setBalance()
     }

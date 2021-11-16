@@ -24,6 +24,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
         toTokenInfo={toTokenInfo}
         onGoBack={onGoBack}
         onDisconnectWallet={onDisconnectWallet}
+        chainId={wallet.chainId}
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been completed.</p>
@@ -31,29 +32,44 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
         <p className={classes.noteTitle}>
           <WarningIcon width="18px" /> Note
         </p>
-        <p>
-          If you want to send STAKE tokens on xDai chain to a centralized exchange, please use{' '}
-          <a
-            className={classes.noteLink}
-            href="https://ascendex.com/"
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            AscendEx
-          </a>.
-          Be sure to connect to the xDai chain when sending STAKE to AscendEx.<br/>
-          If you want to transfer STAKE to other exchanges on Ethereum,
-          be sure to use{' '}
-          <a
-            className={classes.noteLink}
-            href="https://omni.xdaichain.com/"
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Omnibridge
-          </a>
-          {' '}to transfer STAKE to Ethereum chain first.
-        </p>
+        {wallet.chainId === '1' ? (
+          <p>
+            If you want to use STAKE tokens on Ethereum, please refer to{' '}
+            <a
+              className={classes.noteLink}
+              href="https://www.xdaichain.com/for-stakers/stake-token/get-stake"
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              this
+            </a>
+            {' '}list of exchanges.
+          </p>
+        ) : (
+          <p>
+            If you want to send STAKE tokens on xDai chain to a centralized exchange, please use{' '}
+            <a
+              className={classes.noteLink}
+              href="https://ascendex.com/"
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              AscendEx
+            </a>.
+            Be sure to connect to the xDai chain when sending STAKE to AscendEx.<br/>
+            If you want to transfer STAKE to other exchanges on Ethereum,
+            be sure to use{' '}
+            <a
+              className={classes.noteLink}
+              href="https://omni.xdaichain.com/"
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Omnibridge
+            </a>
+            {' '}to transfer STAKE to Ethereum chain first.
+          </p>
+        )}
       </div>
       <div className={classes.buttonGroup}>
         <a

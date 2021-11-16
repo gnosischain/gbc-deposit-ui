@@ -21,6 +21,7 @@ function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, on
         address={wallet.address}
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
+        chainId={wallet.chainId}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />

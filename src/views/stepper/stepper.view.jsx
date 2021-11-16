@@ -15,21 +15,23 @@ import NetworkError from '../network-error/network-error.view'
 import DataLoader from '../data-loader/data-loader'
 import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 
+import networks from '../../networks'
+
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
-  const swapContract = useSwapContract(wallet?.provider)
-  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo()
-  const fromTokenContract = useTokenContract(fromTokenAddress, wallet?.provider)
-  const toTokenContract = useTokenContract(toTokenAddress, wallet?.provider)
-  const fromTokenInfo = useTokenInfo(fromTokenAddress)
-  const toTokenInfo = useTokenInfo(toTokenAddress)
+  const swapContract = useSwapContract(wallet)
+  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(wallet)
+  const fromTokenContract = useTokenContract(fromTokenAddress, wallet)
+  const toTokenContract = useTokenContract(toTokenAddress, wallet)
+  const fromTokenInfo = useTokenInfo(fromTokenAddress, wallet)
+  const toTokenInfo = useTokenInfo(toTokenAddress, wallet)
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
-  const toTokenBalanceInSwapContract = useTokenBalance(process.env.REACT_APP_SWAP_CONTRACT_ADDRESS, toTokenContract)
+  const toTokenBalanceInSwapContract = useTokenBalance(networks[wallet?.chainId]?.swapContractAddress, toTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
-  if (wallet && wallet.chainId !== Number(process.env.REACT_APP_CHAIN_ID)) {
+  if (wallet && !Object.keys(networks).includes(wallet.chainId)) {
     return (
       <div className={classes.stepper}>
         <NetworkError {...{ isMetamask, switchChainInMetaMask }} />
@@ -46,7 +48,7 @@ function Stepper () {
               <DataLoader
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
-                onFinishLoading={() => switchStep(Step.Login)}
+                onFinishLoading={() => switchStep(Step.Swap)}
               />
             )
           }
@@ -54,10 +56,8 @@ function Stepper () {
             return (
               <Login
                 wallet={wallet}
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
                 onLoadWallet={loadWallet}
-                onGoToNextStep={() => switchStep(Step.Swap)}
+                onGoToNextStep={() => switchStep(Step.Loading)}
               />
             )
           }
@@ -77,6 +77,8 @@ function Stepper () {
                   switchStep(Step.Confirm)
                 }}
                 onDisconnectWallet={disconnectWallet}
+                isMetamask={isMetamask}
+                switchChainInMetaMask={switchChainInMetaMask}
               />
             )
           }

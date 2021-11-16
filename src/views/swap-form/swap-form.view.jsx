@@ -17,7 +17,9 @@ function SwapForm ({
   swapData,
   onAmountChange,
   onSubmit,
-  onDisconnectWallet
+  onDisconnectWallet,
+  isMetamask,
+  switchChainInMetaMask
 }) {
   const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo, swapRatio, toTokenBalanceInSwapContract)
   const classes = useSwapFormStyles({ error })
@@ -42,6 +44,9 @@ function SwapForm ({
         fromTokenInfo={fromTokenInfo}
         toTokenInfo={toTokenInfo}
         onDisconnectWallet={onDisconnectWallet}
+        isMetamask={isMetamask}
+        switchChainInMetaMask={switchChainInMetaMask}
+        chainId={wallet.chainId}
       />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>

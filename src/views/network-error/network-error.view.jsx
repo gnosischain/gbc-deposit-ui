@@ -2,15 +2,16 @@ import useNetworkErrorStyles from './network-error.styles'
 import { ReactComponent as SwitchNetwork } from '../../images/switch-network.svg'
 import { ReactComponent as MetamaskIcon } from '../../images/metamask-fox.svg'
 
+import networks from '../../networks'
+
 const NETWORKS = {
   '1': 'Ethereum Mainnet',
   '4': 'Rinkeby',
   '100': 'xDai Chain'
 }
 
-const XDaiNetworkButton = ({ isMetamask, switchChainInMetaMask }) => {
+const NetworkButton = ({ chainId, isMetamask, switchChainInMetaMask }) => {
   const classes = useNetworkErrorStyles()
-  const chainId = process.env.REACT_APP_CHAIN_ID;
   const name = NETWORKS[chainId];
   if (!isMetamask) {
     return <p className={classes.networkName}>{name}</p>;
@@ -34,7 +35,12 @@ function NetworkError ({ isMetamask, switchChainInMetaMask }) {
         <p className={classes.description}>
           Please, connect to
         </p>
-        <XDaiNetworkButton {...{ isMetamask, switchChainInMetaMask }} />
+        {Object.keys(networks).map((chainId, index, array) =>
+          <>
+            <NetworkButton {...{ chainId, isMetamask, switchChainInMetaMask }} />
+            {(index < array.length - 1) && <p className={classes.description}>or</p>}
+          </>
+        )}
       </div>
     </div>
   )

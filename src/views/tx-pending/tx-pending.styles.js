@@ -9,7 +9,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   },
   checkIcon: {
     marginLeft: theme.spacing(3),
-    marginTop: theme.spacing(16)
+    marginTop: theme.spacing(3)
   },
   title: {
     fontSize: theme.spacing(3),
@@ -46,7 +46,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     padding: theme.spacing(1)
   },
   spinnerWrapper: {
-    marginTop: theme.spacing(20.5)
+    marginTop: theme.spacing(14.5)
   },
 }))
 

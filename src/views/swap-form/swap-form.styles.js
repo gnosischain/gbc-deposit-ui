@@ -10,7 +10,7 @@ const useSwapFormStyles = createUseStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: theme.spacing(11.5),
+    marginTop: theme.spacing(7.5),
     borderRadius: theme.spacing(2)
   },
   balance: {
