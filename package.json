@@ -1,5 +1,5 @@
 {
-  "name": "poa-to-stake",
+  "name": "stake-to-gno",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

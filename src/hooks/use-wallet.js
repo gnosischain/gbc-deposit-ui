@@ -46,7 +46,7 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletLink,
       connector: async (ProviderPackage) => {
-        const provider = new ProviderPackage({ appName: 'Poa to Stake' }).makeWeb3Provider({}, 0);
+        const provider = new ProviderPackage({ appName: 'Stake to Gno' }).makeWeb3Provider({}, 0);
         await provider.enable();
         return provider;
       },

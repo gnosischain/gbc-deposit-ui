@@ -31,7 +31,7 @@ function useSwap () {
         await approve(fromTokenContract, wallet, swapContract)
       }
 
-      const tx = await swapContract.poaToStake(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
+      const tx = await swapContract.stakeToGno(amount, permitSignature, { gasLimit: BRIDGE_GAS_LIMIT })
       setData({ status: 'pending', data: tx })
       await tx.wait()
       setData({ status: 'successful', data: tx })

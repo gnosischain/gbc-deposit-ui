@@ -8,8 +8,8 @@ function useSwapContractInfo (wallet) {
 
   useEffect(() => {
     const getSwapData = async (contract) => {
-      const fromTokenAddress = await contract.poa()
-      const toTokenAddress = await contract.stake()
+      const fromTokenAddress = await contract.stake()
+      const toTokenAddress = await contract.gno()
       const swapRatio = await contract.SWAP_RATIO()
 
       return { fromTokenAddress, toTokenAddress, swapRatio }

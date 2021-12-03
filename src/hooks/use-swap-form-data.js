@@ -19,7 +19,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
     setError()
   }, [wallet])
 
-  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div('100000000000')
+  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div('10000000000')
 
   const changeValue = (newFromValue) => {
     const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${tokenInfo.decimals}})?$`)
@@ -34,7 +34,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
         if (newFromAmount.gt(maxTokenAmount)) {
           setError('You don\'t have enough funds')
         } else if (!toTokenBalanceInSwapContract || newToAmount.gt(toTokenBalanceInSwapContract)) {
-          setError('Oops, at this moment there are not enough STAKE tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your POA tokens. You can also contact us via email at info@poa.network')
+          setError('Oops, at this moment there are not enough GNO tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your STAKE tokens. You can also contact us via email at security@xdaichain.com')
         } else {
           setError()
         }
@@ -52,7 +52,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
         to: formatUnits(newToAmount, tokenInfo.decimals)
       })
       if (newToAmount.gt(toTokenBalanceInSwapContract)) {
-        setError('Oops, at this moment there are not enough STAKE tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your POA tokens. You can also contact us via email at info@poa.network')
+        setError('Oops, at this moment there are not enough GNO tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your STAKE tokens. You can also contact us via email at security@xdaichain.com')
       } else {
         setError()
       }

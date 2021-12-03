@@ -1,19 +1,19 @@
-# POA to STAKE tool
+# STAKE to GNO tool
 
-Simple tool to convert your POA tokens to STAKE after the xDai Chain - Poa Network merge.
+Simple tool to convert your STAKE tokens to GNO after the xDai Chain - Gnosis merge.
 
 ## Getting Started
 
 Clone the repo:
 
 ```sh
-git clone git@github.com:xdaichain/poa-to-stake.git
+git clone git@github.com:xdaichain/stake-to-gno.git
 ```
 
 Move into the project directory:
 
 ```sh
-cd poa-to-stake
+cd stake-to-gno
 ```
 
 Install project dependencies:
