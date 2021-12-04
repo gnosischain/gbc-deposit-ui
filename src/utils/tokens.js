@@ -10,36 +10,33 @@ async function approve (fromTokenContract, wallet, spender) {
   }
 }
 
-async function createPermitSignature (tokenContractInstance, wallet, spenderAddress, value, nonce, deadline) {
-  const chainId = (await tokenContractInstance.getChainId())
-  const name = await tokenContractInstance.name()
-
+async function createPermitSignature (tokenContractInstance, wallet, spenderAddress, nonce, expiry) {
   // The domain
   const domain = {
-    name: name,
+    name: await tokenContractInstance.name(),
     version: '1',
-    chainId: chainId,
+    chainId: wallet.chainId,
     verifyingContract: tokenContractInstance.address
   }
 
   // The named list of all type definitions
   const types = {
     Permit: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' }
-    ]
+			{ name: 'holder', type: 'address' },
+			{ name: 'spender', type: 'address' },
+			{ name: 'nonce', type: 'uint256' },
+			{ name: 'expiry', type: 'uint256' },
+			{ name: 'allowed', type: 'bool' },
+		],
   }
 
   // The data to sign
   const values = {
-    owner: wallet.address,
+    holder: wallet.address,
     spender: spenderAddress,
-    value: value,
     nonce: nonce,
-    deadline: deadline
+    expiry: expiry,
+    allowed: true
   }
 
   const rawSignature = await wallet.provider.getSigner()._signTypedData(domain, types, values)
@@ -47,26 +44,29 @@ async function createPermitSignature (tokenContractInstance, wallet, spenderAddr
 }
 
 async function permit (fromTokenContract, wallet, spender) {
-  const nonce = await fromTokenContract.nonces(wallet.address)
-  const amount = ethersConstants.MaxUint256
-  const deadline = ethersConstants.MaxUint256
-  const { v, r, s } = await createPermitSignature(fromTokenContract, wallet, spender.address, amount, nonce, deadline)
+  try {
+    const nonce = await fromTokenContract.nonces(wallet.address)
+    const expiry = ethersConstants.MaxUint256
+    const { v, r, s } = await createPermitSignature(fromTokenContract, wallet, spender.address, nonce, expiry)
 
-  const permitABI = [
-    'function permit(address,address,uint256,uint256,uint8,bytes32,bytes32)'
-  ]
-  const permitInterface = new Interface(permitABI)
-  const dataPermit = permitInterface.encodeFunctionData('permit', [
-    wallet.address,
-    spender.address,
-    amount,
-    deadline,
-    v,
-    r,
-    s
-  ])
-
-  return dataPermit
+    const permitABI = [
+      'function permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)'
+    ]
+    const permitInterface = new Interface(permitABI)
+    const dataPermit = permitInterface.encodeFunctionData('permit', [
+      wallet.address,
+      spender.address,
+      nonce,
+      expiry,
+      true,
+      v,
+      r,
+      s
+    ])
+    return dataPermit
+  } catch (error) {
+    return []
+  }
 }
 
 export {

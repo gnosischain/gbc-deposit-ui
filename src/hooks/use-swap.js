@@ -27,7 +27,7 @@ function useSwap () {
         ? await permit(fromTokenContract, wallet, swapContract)
         : []
 
-      if (!usePermit) {
+      if (permitSignature.length === 0) {
         await approve(fromTokenContract, wallet, swapContract)
       }
 
