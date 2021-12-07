@@ -37,7 +37,7 @@ function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, on
       <div className={classes.buttonGroup}>
         <a
           className={classes.button}
-          href={`${explorerUrl[wallet.chainId]}${swapData.data.hash}`}
+          href={`${explorerUrl[wallet.chainId]}${swapData?.data?.hash}`}
           target='_blank'
           rel='noopener noreferrer'
         >

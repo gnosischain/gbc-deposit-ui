@@ -36,7 +36,11 @@ function useSwap () {
       await tx.wait()
       setData({ status: 'successful', data: tx })
     } catch (err) {
-      setData({ status: 'failed', error: err.message })
+      let error = 'Transaction failed.'
+      if (err?.code === -32603) {
+        error = 'Transaction was not sent because of the low gas price. Try to increase it.'
+      }
+      setData({ status: 'failed', error })
       console.log(err)
     }
   }
