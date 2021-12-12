@@ -23,7 +23,7 @@ function useSwap () {
 
     try {
       const usePermit = process.env.REACT_APP_USE_PERMIT === 'true'
-      const permitSignature = usePermit
+      const permitSignature = usePermit && wallet.chainId !== '100'
         ? await permit(fromTokenContract, wallet, swapContract)
         : []
 
