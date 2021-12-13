@@ -53,7 +53,7 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
       <div className={classes.buttonGroup}>
         <a
           className={classes.howToUseLink}
-          href="https://gnosis.io/"
+          href="https://gnostake.page.link/learnmore"
           target='_blank'
           rel='noopener noreferrer'
         >
