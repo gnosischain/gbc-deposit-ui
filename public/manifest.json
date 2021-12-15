@@ -1,6 +1,8 @@
 {
   "short_name": "Stake to Gno",
   "name": "Stake to Gno",
+  "description": "The app to convert STAKE tokens to GNO",
+  "iconPath": "logo.svg",
   "icons": [
     {
       "src": "favicon.ico",
