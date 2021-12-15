@@ -146,7 +146,7 @@ function useWallet() {
   useEffect(() => {
     async function connect() {
       const cachedProvider = localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER');
-      if (cachedProvider) {
+      if (cachedProvider || await web3Modal.isSafeApp()) {
         try {
           await loadWallet();
         } catch (error) {
