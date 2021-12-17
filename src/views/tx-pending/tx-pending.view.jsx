@@ -4,11 +4,7 @@ import useTxPendingStyles from './tx-pending.styles'
 import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
 import Spinner from '../shared/spinner/spinner.view'
 
-const explorerUrl = {
-  1: 'https://etherscan.io/tx/',
-  4: 'https://rinkeby.etherscan.io/tx/',
-  100: 'https://blockscout.com/xdai/mainnet/tx/'
-}
+import { NETWORKS } from '../../constants'
 
 function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onGoToOverviewStep }) {
   const classes = useTxPendingStyles()
@@ -37,7 +33,7 @@ function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, on
       <div className={classes.buttonGroup}>
         <a
           className={classes.button}
-          href={`${explorerUrl[wallet.chainId]}${swapData?.data?.hash}`}
+          href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${swapData?.data?.hash}`}
           target='_blank'
           rel='noopener noreferrer'
         >

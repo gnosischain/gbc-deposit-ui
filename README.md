@@ -1,19 +1,19 @@
-# STAKE to GNO tool
+# Gnosis Beacon Chain deposit UI
 
-Simple tool to convert your STAKE tokens to GNO after the xDai Chain - Gnosis merge.
+Simple tool to deposit tokens to the Gnosis Beacon Chain
 
 ## Getting Started
 
 Clone the repo:
 
 ```sh
-git clone git@github.com:xdaichain/stake-to-gno.git
+git clone git@github.com:xdaichain/gbc-deposit-ui.git
 ```
 
 Move into the project directory:
 
 ```sh
-cd stake-to-gno
+cd gbc-deposit-ui
 ```
 
 Install project dependencies:

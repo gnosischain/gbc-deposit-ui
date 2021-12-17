@@ -1,7 +1,7 @@
 {
-  "short_name": "Stake to Gno",
-  "name": "Stake to Gno",
-  "description": "The app to convert STAKE tokens to GNO",
+  "short_name": "Gnosis Beacon Chain Deposit",
+  "name": "Gnosis Beacon Chain Deposit",
+  "description": "The app to deposit tokens to the Gnosis Beacon Chain",
   "iconPath": "logo.svg",
   "icons": [
     {

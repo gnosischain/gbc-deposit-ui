@@ -11,9 +11,7 @@ function SwapForm ({
   wallet,
   fromTokenInfo,
   toTokenInfo,
-  swapRatio,
   fromTokenBalance,
-  toTokenBalanceInSwapContract,
   swapData,
   onAmountChange,
   onSubmit,
@@ -21,7 +19,7 @@ function SwapForm ({
   isMetamask,
   switchChainInMetaMask
 }) {
-  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo, swapRatio, toTokenBalanceInSwapContract)
+  const { values, amounts, error, convertAll, changeValue } = useSwapFormData(wallet, fromTokenBalance, fromTokenInfo)
   const classes = useSwapFormStyles({ error })
   const inputEl = useRef()
 

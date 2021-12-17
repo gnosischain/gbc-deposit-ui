@@ -13,25 +13,21 @@ import TxPending from '../tx-pending/tx-pending.view'
 import TxOverview from '../tx-overview/tx-overview.view'
 import NetworkError from '../network-error/network-error.view'
 import DataLoader from '../data-loader/data-loader'
-import useSwapContractInfo from '../../hooks/use-swap-contract-info'
-
-import networks from '../../networks'
+import LearnMoreLink from '../shared/learnMoreLink/learMoreLink.view'
 
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
   const swapContract = useSwapContract(wallet)
-  const { fromTokenAddress, toTokenAddress, swapRatio } = useSwapContractInfo(wallet)
-  const fromTokenContract = useTokenContract(fromTokenAddress, wallet)
-  const toTokenContract = useTokenContract(toTokenAddress, wallet)
-  const fromTokenInfo = useTokenInfo(fromTokenAddress, wallet)
-  const toTokenInfo = useTokenInfo(toTokenAddress, wallet)
+  const fromTokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
+  const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
+  const fromTokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
+  const toTokenInfo = useTokenInfo(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
-  const toTokenBalanceInSwapContract = useTokenBalance(networks[wallet?.chainId]?.swapContractAddress, toTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
-  if (wallet && !Object.keys(networks).includes(wallet.chainId)) {
+  if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
     return (
       <div className={classes.stepper}>
         <NetworkError {...{ isMetamask, switchChainInMetaMask }} />
@@ -67,9 +63,7 @@ function Stepper () {
                 wallet={wallet}
                 fromTokenInfo={fromTokenInfo}
                 toTokenInfo={toTokenInfo}
-                swapRatio={swapRatio}
                 fromTokenBalance={fromTokenBalance}
-                toTokenBalanceInSwapContract={toTokenBalanceInSwapContract}
                 swapData={swapData}
                 onAmountChange={resetSwapData}
                 onSubmit={(fromAmount) => {
@@ -124,6 +118,7 @@ function Stepper () {
           }
         }
       })()}
+      <LearnMoreLink />
     </div>
   )
 }

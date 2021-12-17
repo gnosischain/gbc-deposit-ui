@@ -32,8 +32,9 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(1),
-    '&:not(:first-child)': {
-      marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
+    '&:first-child': {
+      marginTop: theme.spacing(2.75)
     }
   },
   buttonIcon: {

@@ -8,7 +8,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 const INITIAL_VALUES = { from: '', to: '' }
 const INITIAL_AMOUNTS = { from: BigNumber.from(0), to: BigNumber.from(0) }
 
-function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenBalanceInSwapContract) {
+function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
   const [values, setValues] = useState(INITIAL_VALUES)
   const [error, setError] = useState()
   const [amounts, setAmounts] = useState(INITIAL_AMOUNTS)
@@ -19,7 +19,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
     setError()
   }, [wallet])
 
-  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div('10000000000')
+  const multiplyAmountBySwapFactor = (value) => value.mul(BigNumber.from(process.env.REACT_APP_WRAP_RATIO))
 
   const changeValue = (newFromValue) => {
     const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${tokenInfo.decimals}})?$`)
@@ -30,14 +30,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
 
         setAmounts({ from: newFromAmount, to: newToAmount })
         setValues({ from: newFromValue, to: formatUnits(newToAmount, tokenInfo.decimals) })
-
-        if (newFromAmount.gt(maxTokenAmount)) {
-          setError('You don\'t have enough funds')
-        } else if (!toTokenBalanceInSwapContract || newToAmount.gt(toTokenBalanceInSwapContract)) {
-          setError('Oops, at this moment there are not enough GNO tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your STAKE tokens. You can also contact us via email at security@xdaichain.com')
-        } else {
-          setError()
-        }
+        setError()
       } catch (err) { console.log(err) }
     }
   }
@@ -51,11 +44,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio, toTokenB
         from: formatUnits(maxTokenAmount, tokenInfo.decimals),
         to: formatUnits(newToAmount, tokenInfo.decimals)
       })
-      if (newToAmount.gt(toTokenBalanceInSwapContract)) {
-        setError('Oops, at this moment there are not enough GNO tokens available for your conversion request. For security reasons, pooled tokens are added in batches as they are requested. Please try again in a few hours and you will be able to swap your STAKE tokens. You can also contact us via email at security@xdaichain.com')
-      } else {
-        setError()
-      }
+      setError()
     }
   }
 

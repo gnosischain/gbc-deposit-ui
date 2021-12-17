@@ -4,36 +4,10 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
 import { providers, utils } from 'ethers';
 
-import networks from '../networks';
-
 import coinbaseLogo from '../images/coinbase.png';
 import walletConnectLogo from '../images/walletconnect.svg';
 
-const walletConnectOptions = () => {
-  const options = {};
-  Object.keys(networks).forEach(chainId => {
-    options[`custom-walletconnect-${chainId}`] = {
-      display: {
-        logo: walletConnectLogo,
-        name: `WalletConnect (${networks[chainId].networkName})`,
-        description: 'Scan with WalletConnect to connect',
-      },
-      package: WalletConnectProvider,
-      options: {
-        chainId: Number(chainId),
-        rpc: {
-          [chainId]: networks[chainId].rpcUrl
-        },
-      },
-      connector: async (ProviderPackage, options) => {
-        const provider = new ProviderPackage(options);
-        await provider.enable();
-        return provider;
-      }
-    }
-  });
-  return options;
-}
+import { NETWORKS } from '../constants';
 
 const web3Modal = new SafeAppWeb3Modal({
   cacheProvider: true,
@@ -46,22 +20,35 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletLink,
       connector: async (ProviderPackage) => {
-        const provider = new ProviderPackage({ appName: 'Stake to Gno' }).makeWeb3Provider({}, 0);
+        const provider = new ProviderPackage({ appName: 'Gnosis Beacon Chain Deposit' }).makeWeb3Provider({}, 0);
         await provider.enable();
         return provider;
       },
     },
-    ...walletConnectOptions(),
+    'custom-walletconnect': {
+      display: {
+        logo: walletConnectLogo,
+        name: 'WalletConnect',
+        description: 'Scan with WalletConnect to connect',
+      },
+      package: WalletConnectProvider,
+      options: {
+        chainId: Number(process.env.REACT_APP_NETWORK_ID),
+        rpc: {
+          [process.env.REACT_APP_NETWORK_ID]: process.env.REACT_APP_RPC_URL
+        },
+      },
+      connector: async (ProviderPackage, options) => {
+        const provider = new ProviderPackage(options);
+        await provider.enable();
+        return provider;
+      }
+    }
   },
 });
 
 async function switchChainInMetaMask(chainId) {
-  const name = 'xDai';
-  const symbol = 'XDAI';
-  const chainName = 'xDai Chain';
-  const rpcUrl = 'https://dai.poa.network';
-  const blockExplorerUrl = 'https://blockscout.com/poa/xdai';
-
+  const { name, symbol, chainName, rpcUrl, blockExplorerUrl } = NETWORKS[chainId];
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',

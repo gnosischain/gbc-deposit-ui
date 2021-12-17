@@ -8,7 +8,9 @@ const useStepperStyles = createUseStyles((theme) => ({
     borderRadius: theme.spacing(3.75),
     boxShadow: '0px 0px 4px rgba(200, 200, 221, 0.53)',
     padding: `0 ${theme.spacing(3.5)}px`,
-    display: 'flex'
+    paddingBottom: theme.spacing(3),
+    display: 'flex',
+    flexDirection: 'column'
   }
 }))
 

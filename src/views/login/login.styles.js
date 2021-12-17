@@ -6,7 +6,7 @@ const useLoginStyles = createUseStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: theme.spacing(15.5),
+    paddingTop: theme.spacing(7),
     paddingBottom: theme.spacing(4),
     justifyContent: 'space-between'
   },
@@ -19,7 +19,6 @@ const useLoginStyles = createUseStyles((theme) => ({
     margin: `0 ${theme.spacing(2)}px`
   },
   title: {
-    marginTop: theme.spacing(8),
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.bold
   },
@@ -32,11 +31,14 @@ const useLoginStyles = createUseStyles((theme) => ({
     padding: theme.spacing(2.5),
     borderRadius: theme.spacing(3.5),
     background: theme.palette.white,
-    boxShadow: '0px 3.75px 17px #d9d1ed',
-    marginTop: theme.spacing(8),
+    boxShadow: '0px 3.75px 17px #b3b3b3',
+    marginBottom: theme.spacing(3),
     border: 'none',
     transition: theme.buttonTransition,
     cursor: 'pointer'
+  },
+  connectText: {
+    fontSize: theme.spacing(2),
   },
   metaMaskIcon: {
     width: theme.spacing(7),
@@ -48,7 +50,7 @@ const useLoginStyles = createUseStyles((theme) => ({
   },
   learnMoreLink: {
     color: '#000',
-    fontSize: '14px',
+    fontSize: '16px',
     textDecoration: 'underline'
   }
 }))
