@@ -5,6 +5,7 @@ import Login from '../login/login.view'
 import SwapForm from '../swap-form/swap-form.view'
 import useTokenContract from '../../hooks/use-token-contract'
 import useSwapContract from '../../hooks/use-swap-contract'
+import useSwapContractInfo from '../../hooks/use-swap-contract-info'
 import useTokenInfo from '../../hooks/use-token-info'
 import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
@@ -19,6 +20,7 @@ function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
   const swapContract = useSwapContract(wallet)
+  const { swapRatio } = useSwapContractInfo(wallet)
   const fromTokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
   const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
   const fromTokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
@@ -73,6 +75,7 @@ function Stepper () {
                 onDisconnectWallet={disconnectWallet}
                 isMetamask={isMetamask}
                 switchChainInMetaMask={switchChainInMetaMask}
+                swapRatio={swapRatio}
               />
             )
           }

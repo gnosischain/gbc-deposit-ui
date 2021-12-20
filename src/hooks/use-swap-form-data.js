@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 
 // ethers BigNumber doesn't support decimals, so we need to workaround it
@@ -8,7 +8,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 const INITIAL_VALUES = { from: '', to: '' }
 const INITIAL_AMOUNTS = { from: BigNumber.from(0), to: BigNumber.from(0) }
 
-function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
+function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio) {
   const [values, setValues] = useState(INITIAL_VALUES)
   const [error, setError] = useState()
   const [amounts, setAmounts] = useState(INITIAL_AMOUNTS)
@@ -19,7 +19,7 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo) {
     setError()
   }, [wallet])
 
-  const multiplyAmountBySwapFactor = (value) => value.mul(BigNumber.from(process.env.REACT_APP_WRAP_RATIO))
+  const multiplyAmountBySwapFactor = (value) => value.mul(swapRatio).div(ethers.constants.WeiPerEther)
 
   const changeValue = (newFromValue) => {
     const INPUT_REGEX = new RegExp(`^\\d*(?:\\.\\d{0,${tokenInfo.decimals}})?$`)
