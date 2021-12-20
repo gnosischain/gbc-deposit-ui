@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react'
 import useStepperStyles from './stepper.styles'
 import useWallet from '../../hooks/use-wallet'
 import useStep, { Step } from '../../hooks/use-stepper-data'
@@ -29,6 +30,14 @@ function Stepper () {
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
+  const tabs = ['Deposit', 'Swap']
+  const [activeTab, setActiveTab] = useState(tabs[0])
+
+  const selectTab = useCallback((tab) => {
+    if (activeTab === tab) return;
+    setActiveTab(tab);
+  }, [activeTab]);
+
   if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
     return (
       <div className={classes.stepper}>
@@ -38,90 +47,103 @@ function Stepper () {
   }
 
   return (
-    <div className={classes.stepper}>
-      {(() => {
-        switch (step) {
-          case Step.Loading: {
-            return (
-              <DataLoader
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
-                onFinishLoading={() => switchStep(Step.Swap)}
-              />
-            )
+    <div className={classes.container}>
+      <div className={classes.tabs}>
+        {tabs.map(tab =>
+          <div
+            key={tab}
+            className={activeTab === tab ? classes.tabActive : classes.tab}
+            onClick={() => selectTab(tab)}
+          >
+            <span className={classes.tabName}>{tab}</span>
+          </div>
+        )}
+      </div>
+      <div className={classes.stepper}>
+        {(() => {
+          switch (step) {
+            case Step.Loading: {
+              return (
+                <DataLoader
+                  fromTokenInfo={fromTokenInfo}
+                  toTokenInfo={toTokenInfo}
+                  onFinishLoading={() => switchStep(Step.Swap)}
+                />
+              )
+            }
+            case Step.Login: {
+              return (
+                <Login
+                  wallet={wallet}
+                  onLoadWallet={loadWallet}
+                  onGoToNextStep={() => switchStep(Step.Loading)}
+                />
+              )
+            }
+            case Step.Swap: {
+              return (
+                <SwapForm
+                  wallet={wallet}
+                  fromTokenInfo={fromTokenInfo}
+                  toTokenInfo={toTokenInfo}
+                  fromTokenBalance={fromTokenBalance}
+                  swapData={swapData}
+                  onAmountChange={resetSwapData}
+                  onSubmit={(fromAmount) => {
+                    swap(wallet, fromTokenContract, swapContract, fromAmount)
+                    switchStep(Step.Confirm)
+                  }}
+                  onDisconnectWallet={disconnectWallet}
+                  isMetamask={isMetamask}
+                  switchChainInMetaMask={switchChainInMetaMask}
+                  swapRatio={swapRatio}
+                />
+              )
+            }
+            case Step.Confirm: {
+              return (
+                <TxConfirm
+                  wallet={wallet}
+                  fromTokenInfo={fromTokenInfo}
+                  toTokenInfo={toTokenInfo}
+                  swapData={swapData}
+                  onGoBack={() => switchStep(Step.Swap)}
+                  onGoToPendingStep={() => switchStep(Step.Pending)}
+                />
+              )
+            }
+            case Step.Pending: {
+              return (
+                <TxPending
+                  wallet={wallet}
+                  fromTokenInfo={fromTokenInfo}
+                  toTokenInfo={toTokenInfo}
+                  swapData={swapData}
+                  onGoBack={() => switchStep(Step.Swap)}
+                  onGoToOverviewStep={() => switchStep(Step.Overview)}
+                />
+              )
+            }
+            case Step.Overview: {
+              return (
+                <TxOverview
+                  wallet={wallet}
+                  fromTokenInfo={fromTokenInfo}
+                  toTokenInfo={toTokenInfo}
+                  swapData={swapData}
+                  onGoBack={() => window.location.reload()}
+                  onDisconnectWallet={disconnectWallet}
+                  isMetamask={isMetamask}
+                />
+              )
+            }
+            default: {
+              return <></>
+            }
           }
-          case Step.Login: {
-            return (
-              <Login
-                wallet={wallet}
-                onLoadWallet={loadWallet}
-                onGoToNextStep={() => switchStep(Step.Loading)}
-              />
-            )
-          }
-          case Step.Swap: {
-            return (
-              <SwapForm
-                wallet={wallet}
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
-                fromTokenBalance={fromTokenBalance}
-                swapData={swapData}
-                onAmountChange={resetSwapData}
-                onSubmit={(fromAmount) => {
-                  swap(wallet, fromTokenContract, swapContract, fromAmount)
-                  switchStep(Step.Confirm)
-                }}
-                onDisconnectWallet={disconnectWallet}
-                isMetamask={isMetamask}
-                switchChainInMetaMask={switchChainInMetaMask}
-                swapRatio={swapRatio}
-              />
-            )
-          }
-          case Step.Confirm: {
-            return (
-              <TxConfirm
-                wallet={wallet}
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
-                swapData={swapData}
-                onGoBack={() => switchStep(Step.Swap)}
-                onGoToPendingStep={() => switchStep(Step.Pending)}
-              />
-            )
-          }
-          case Step.Pending: {
-            return (
-              <TxPending
-                wallet={wallet}
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
-                swapData={swapData}
-                onGoBack={() => switchStep(Step.Swap)}
-                onGoToOverviewStep={() => switchStep(Step.Overview)}
-              />
-            )
-          }
-          case Step.Overview: {
-            return (
-              <TxOverview
-                wallet={wallet}
-                fromTokenInfo={fromTokenInfo}
-                toTokenInfo={toTokenInfo}
-                swapData={swapData}
-                onGoBack={() => window.location.reload()}
-                onDisconnectWallet={disconnectWallet}
-                isMetamask={isMetamask}
-              />
-            )
-          }
-          default: {
-            return <></>
-          }
-        }
-      })()}
-      <LearnMoreLink />
+        })()}
+        <LearnMoreLink />
+      </div>
     </div>
   )
 }
