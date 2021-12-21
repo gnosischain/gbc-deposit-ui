@@ -4,6 +4,7 @@ import useWallet from '../../hooks/use-wallet'
 import useStep, { Step } from '../../hooks/use-stepper-data'
 import Login from '../login/login.view'
 import SwapForm from '../swap-form/swap-form.view'
+import Deposit from '../deposit/deposit.view'
 import useTokenContract from '../../hooks/use-token-contract'
 import useSwapContract from '../../hooks/use-swap-contract'
 import useSwapContractInfo from '../../hooks/use-swap-contract-info'
@@ -30,13 +31,17 @@ function Stepper () {
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
 
-  const tabs = ['Deposit', 'Swap']
-  const [activeTab, setActiveTab] = useState(tabs[0])
+  const tabs = [
+    { name: 'Deposit', step: Step.Deposit },
+    { name: 'Swap', step: Step.Swap }
+  ]
+  const [activeTab, setActiveTab] = useState(tabs[0].name)
 
   const selectTab = useCallback((tab) => {
-    if (activeTab === tab) return;
-    setActiveTab(tab);
-  }, [activeTab]);
+    if (activeTab === tab.name) return
+    setActiveTab(tab.name)
+    switchStep(tab.step)
+  }, [activeTab, switchStep])
 
   if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
     return (
@@ -51,11 +56,11 @@ function Stepper () {
       <div className={classes.tabs}>
         {tabs.map(tab =>
           <div
-            key={tab}
-            className={activeTab === tab ? classes.tabActive : classes.tab}
+            key={tab.name}
+            className={activeTab === tab.name ? classes.tabActive : classes.tab}
             onClick={() => selectTab(tab)}
           >
-            <span className={classes.tabName}>{tab}</span>
+            <span className={classes.tabName}>{tab.name}</span>
           </div>
         )}
       </div>
@@ -67,7 +72,7 @@ function Stepper () {
                 <DataLoader
                   fromTokenInfo={fromTokenInfo}
                   toTokenInfo={toTokenInfo}
-                  onFinishLoading={() => switchStep(Step.Swap)}
+                  onFinishLoading={() => switchStep(Step.Deposit)}
                 />
               )
             }
@@ -134,6 +139,14 @@ function Stepper () {
                   onGoBack={() => window.location.reload()}
                   onDisconnectWallet={disconnectWallet}
                   isMetamask={isMetamask}
+                />
+              )
+            }
+            case Step.Deposit: {
+              return (
+                <Deposit
+                  wallet={wallet}
+                  onDisconnectWallet={disconnectWallet}
                 />
               )
             }

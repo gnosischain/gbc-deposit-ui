@@ -6,7 +6,8 @@ export const Step = {
   Swap: 'swap',
   Confirm: 'confirm',
   Pending: 'pending',
-  Overview: 'overview'
+  Overview: 'overview',
+  Deposit: 'deposit'
 }
 
 function useStepperData () {

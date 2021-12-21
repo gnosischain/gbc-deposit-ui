@@ -40,12 +40,8 @@ function SwapForm ({
     <div className={classes.swapForm}>
       <Header
         address={wallet.address}
-        fromTokenInfo={fromTokenInfo}
-        toTokenInfo={toTokenInfo}
+        title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
         onDisconnectWallet={onDisconnectWallet}
-        isMetamask={isMetamask}
-        switchChainInMetaMask={switchChainInMetaMask}
-        chainId={wallet.chainId}
       />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>

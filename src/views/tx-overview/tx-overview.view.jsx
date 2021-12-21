@@ -15,11 +15,9 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
     <div className={classes.txOverview}>
       <Header
         address={wallet.address}
-        fromTokenInfo={fromTokenInfo}
-        toTokenInfo={toTokenInfo}
+        title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
         onGoBack={onGoBack}
         onDisconnectWallet={onDisconnectWallet}
-        chainId={wallet.chainId}
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been completed.</p>

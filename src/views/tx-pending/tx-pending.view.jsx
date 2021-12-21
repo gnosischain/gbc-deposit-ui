@@ -22,9 +22,7 @@ function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, on
     <div className={classes.txOverview}>
       <Header
         address={wallet.address}
-        fromTokenInfo={fromTokenInfo}
-        toTokenInfo={toTokenInfo}
-        chainId={wallet.chainId}
+        title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />

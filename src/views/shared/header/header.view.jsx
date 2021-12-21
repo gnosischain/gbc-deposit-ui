@@ -2,7 +2,7 @@ import useHeaderStyles from './header.styles'
 import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
 
 function Header ({
-  address, fromTokenInfo, toTokenInfo, isGoBackButtonDisabled,
+  address, title, isGoBackButtonDisabled,
   onGoBack, onDisconnectWallet
 }) {
   const classes = useHeaderStyles()
@@ -28,7 +28,7 @@ function Header ({
           <ArrowLeft />
         </button>
       )}
-      <p className={classes.title}>{fromTokenInfo.symbol} → {toTokenInfo.symbol}</p>
+      <p className={classes.title}>{title}</p>
       <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
       {onDisconnectWallet && (
         <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>

@@ -19,9 +19,7 @@ function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, on
     <div className={classes.txConfirm}>
       <Header
         address={wallet.address}
-        fromTokenInfo={fromTokenInfo}
-        toTokenInfo={toTokenInfo}
-        chainId={wallet.chainId}
+        title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />
