@@ -12,11 +12,15 @@ import useTokenInfo from '../../hooks/use-token-info'
 import useTokenBalance from '../../hooks/use-token-balance'
 import TxConfirm from '../tx-confirm/tx-confirm.view'
 import useSwap from '../../hooks/use-swap'
+import useDeposit from '../../hooks/use-deposit'
 import TxPending from '../tx-pending/tx-pending.view'
 import TxOverview from '../tx-overview/tx-overview.view'
 import NetworkError from '../network-error/network-error.view'
 import DataLoader from '../data-loader/data-loader'
 import LearnMoreLink from '../shared/learnMoreLink/learMoreLink.view'
+import DepositTxConfirm from '../deposit-tx-confirm/deposit-tx-confirm.view'
+import DepositTxPending from '../deposit-tx-pending/deposit-tx-pending.view'
+import DepositTxOverview from '../deposit-tx-overview/deposit-tx-overview.view'
 
 function Stepper () {
   const classes = useStepperStyles()
@@ -24,12 +28,13 @@ function Stepper () {
   const swapContract = useSwapContract(wallet)
   const { swapRatio } = useSwapContractInfo(wallet)
   const fromTokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
-  const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
+  // const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
   const fromTokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
   const toTokenInfo = useTokenInfo(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
+  const { deposit, validate, txData: depositTxData } = useDeposit(wallet, toTokenInfo)
 
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
@@ -146,7 +151,44 @@ function Stepper () {
               return (
                 <Deposit
                   wallet={wallet}
+                  tokenInfo={toTokenInfo}
                   onDisconnectWallet={disconnectWallet}
+                  deposit={(data) => {
+                    deposit(data)
+                    switchStep(Step.DepositConfirm)
+                  }}
+                  validate={validate}
+                />
+              )
+            }
+            case Step.DepositConfirm: {
+              return (
+                <DepositTxConfirm
+                  wallet={wallet}
+                  txData={depositTxData}
+                  onGoBack={() => switchStep(Step.Deposit)}
+                  onGoToPendingStep={() => switchStep(Step.DepositPending)}
+                />
+              )
+            }
+            case Step.DepositPending: {
+              return (
+                <DepositTxPending
+                  wallet={wallet}
+                  txData={depositTxData}
+                  onGoBack={() => switchStep(Step.Deposit)}
+                  onGoToOverviewStep={() => switchStep(Step.DepositOverview)}
+                />
+              )
+            }
+            case Step.DepositOverview: {
+              return (
+                <DepositTxOverview
+                  wallet={wallet}
+                  txData={depositTxData}
+                  onGoBack={() => window.location.reload()}
+                  onDisconnectWallet={disconnectWallet}
+                  isMetamask={isMetamask}
                 />
               )
             }

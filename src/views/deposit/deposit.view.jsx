@@ -8,26 +8,42 @@ import useStyles from './deposit.styles';
 const CheckIcon = () =>
   <img style={{ width: 16, height: 16}} src={checkIcon} alt="" />
 
-function Deposit({ wallet, onDisconnectWallet }) {
+function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
   const classes = useStyles();
   const [depositData, setDepositData] = useState(null);
   const [filename, setFilename] = useState(null);
-  const onDrop = useCallback(({ data, filename }) => {
+  const [error, setError] = useState(null);
+  const onDrop = useCallback(async ({ data, filename }) => {
     setFilename(filename);
-    setDepositData(data);
-  }, []);
+    try {
+      await validate(data);
+      setDepositData(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  }, [validate]);
   const onReplace = useCallback(() => {
     setDepositData(null);
     setFilename(null);
+    setError(null);
   }, []);
-  return (
-    <div className={classes.container}>
-      <Header
-        address={wallet.address}
-        title="Gnosis Beacon Chain Deposit"
-        onDisconnectWallet={onDisconnectWallet}
-      />
-      {!!depositData ? (
+
+  let component;
+  if (error) {
+    component = (
+      <div className={classes.dataContainer}>
+        <b>{filename}</b>
+        <button className={classes.replaceButton} onClick={onReplace}>
+          Replace
+        </button>
+        <span className={classes.textItem}>
+          {error}
+        </span>
+      </div>
+    );
+  } else if (!!depositData) {
+    component = (
+      <>
         <div className={classes.dataContainer}>
           <b>{filename}</b>
           <button className={classes.replaceButton} onClick={onReplace}>
@@ -40,12 +56,25 @@ function Deposit({ wallet, onDisconnectWallet }) {
             <CheckIcon /> Validator deposits: {depositData.length}
           </span>
           <span className={classes.textItem}>
-            <CheckIcon /> Total amount required: {depositData.length * 32} mGNO
+            <CheckIcon /> Total amount required: {depositData.length * 32} {tokenInfo.symbol}
           </span>
         </div>
-      ) : (
-        <Dropzone onDrop={onDrop} />
-      )}
+        <button className={classes.depositButton} onClick={() => deposit(depositData)}>
+          Deposit
+        </button>
+      </>
+    );
+  } else {
+    component = <Dropzone onDrop={onDrop} />;
+  }
+  return (
+    <div className={classes.container}>
+      <Header
+        address={wallet.address}
+        title="Gnosis Beacon Chain Deposit"
+        onDisconnectWallet={onDisconnectWallet}
+      />
+      {component}
     </div>
   );
 }

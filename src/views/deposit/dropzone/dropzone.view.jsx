@@ -7,21 +7,9 @@ import useStyles from './dropzone.styles'
 function Dropzone({ onDrop }) {
   const classes = useStyles()
 
-  const checkJsonStructure = (depositDataJson) => {
-    return (
-      depositDataJson.pubkey &&
-      depositDataJson.withdrawal_credentials &&
-      depositDataJson.amount &&
-      depositDataJson.signature &&
-      depositDataJson.deposit_message_root &&
-      depositDataJson.deposit_data_root &&
-      depositDataJson.fork_version
-    );
-  };
-
   const onFileDrop = useCallback((jsonFiles, rejectedFiles) => {
     if (rejectedFiles?.length) {
-      console.log('That is not a valid deposit_data JSON file.');
+      console.log('This is not a valid file. Please try again.');
       return;
     }
 
@@ -31,13 +19,7 @@ function Dropzone({ onDrop }) {
       reader.onload = async event => {
         if (event.target) {
           const fileData = JSON.parse(event.target.result);
-          let isValidStructure = true;
-          fileData.forEach(item => {
-            if (!checkJsonStructure(item)) isValidStructure = false;
-          });
-          if (isValidStructure) {
-            onDrop({ data: fileData, filename: jsonFiles[0].name });
-          }
+          onDrop({ data: fileData, filename: jsonFiles[0].name });
         }
       };
       reader.readAsText(jsonFiles[0]);

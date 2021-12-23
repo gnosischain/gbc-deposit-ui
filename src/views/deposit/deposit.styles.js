@@ -21,6 +21,7 @@ const useStyles = createUseStyles((theme) => ({
     width: '100%',
     minHeight: '200px',
     marginTop: theme.spacing(10),
+    overflowWrap: 'break-word'
   },
   replaceButton: {
     border: 'none',
@@ -31,8 +32,28 @@ const useStyles = createUseStyles((theme) => ({
     cursor: 'pointer'
   },
   textItem: {
-    margin: '5px 0'
-  }
+    margin: '5px 0',
+    width: '100%',
+    textAlign: 'center'
+  },
+  depositButton: {
+    fontSize: theme.spacing(2),
+    fontWeight: theme.fontWeights.bold,
+    margin: `${theme.spacing(12)}px auto ${theme.spacing(4)}px`,
+    padding: `${theme.spacing(3)}px 0`,
+    background: theme.palette.primary,
+    color: theme.palette.white,
+    width: '40%',
+    borderRadius: theme.spacing(12.5),
+    appearance: 'none',
+    border: 'none',
+    transition: theme.buttonTransition,
+    cursor: 'pointer',
+    '&:disabled': {
+      background: theme.palette.grey.dark,
+      cursor: 'default'
+    }
+  },
 }))
 
 export default useStyles
