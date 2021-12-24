@@ -34,7 +34,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     padding: theme.spacing(1),
     marginTop: theme.spacing(2),
     '&:first-child': {
-      marginTop: theme.spacing(2.75)
+      marginTop: theme.spacing(0)
     }
   },
   buttonIcon: {
@@ -51,7 +51,8 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     padding: '10px 20px',
     fontSize: theme.spacing(2),
     lineHeight: '18px',
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(4),
+    borderRadius: 10
   },
   noteTitle: {
     color: '#ffb800',

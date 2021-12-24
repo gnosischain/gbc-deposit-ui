@@ -17,7 +17,7 @@ function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet, isMetamask 
         onDisconnectWallet={onDisconnectWallet}
       />
       <CheckIcon className={classes.checkIcon} />
-      <p className={classes.title}>Deposits have been made.</p>
+      <p className={classes.title}>Deposits have been made!</p>
       <div className={classes.buttonGroup}>
         <a
           className={classes.button}
@@ -27,6 +27,17 @@ function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet, isMetamask 
         >
           Check transaction details here
           <LinkIcon className={classes.buttonIcon} />
+        </a>
+      </div>
+      <div className={classes.note}>
+        <b>Note!</b> The validators will be live in 1.5 - 2 hours.{' '}
+        <a
+          className={classes.noteLink}
+          href="https://docs.gnosischain.com/validator-info/validator-deposits"
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          Learn more
         </a>
       </div>
     </div>

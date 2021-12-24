@@ -17,7 +17,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     marginTop: theme.spacing(8)
   },
   buttonGroup: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -31,10 +31,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    padding: theme.spacing(1),
-    '&:not(:first-child)': {
-      marginTop: theme.spacing(2.75)
-    }
+    padding: theme.spacing(1)
   },
   buttonIcon: {
     marginLeft: theme.spacing(1)

@@ -34,7 +34,7 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
     padding: theme.spacing(1),
     marginTop: theme.spacing(2),
     '&:first-child': {
-      marginTop: theme.spacing(2.75)
+      marginTop: theme.spacing(0)
     }
   },
   buttonIcon: {
