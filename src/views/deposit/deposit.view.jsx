@@ -13,7 +13,9 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
   const [depositData, setDepositData] = useState(null);
   const [filename, setFilename] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const onDrop = useCallback(async ({ data, filename }) => {
+    setLoading(true);
     setFilename(filename);
     try {
       await validate(data);
@@ -21,6 +23,7 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
     } catch (error) {
       setError(error.message);
     }
+    setLoading(false);
   }, [validate]);
   const onReplace = useCallback(() => {
     setDepositData(null);
@@ -36,9 +39,22 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
         <button className={classes.replaceButton} onClick={onReplace}>
           Replace
         </button>
-        <span className={classes.textItem}>
-          {error}
-        </span>
+        <div className={classes.textItemsContainer}>
+          <span className={classes.textItem}>
+            {error}
+          </span>
+        </div>
+      </div>
+    );
+  } else if (loading) {
+    component = (
+      <div className={classes.dataContainer}>
+        <b>deposit_data.json</b>
+        <div className={classes.textItemsContainer}>
+          <span className={classes.textItem}>
+            Validating...
+          </span>
+        </div>
       </div>
     );
   } else if (!!depositData) {
@@ -49,15 +65,17 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
           <button className={classes.replaceButton} onClick={onReplace}>
             Replace
           </button>
-          <span className={classes.textItem}>
-            <CheckIcon /> Accepted
-          </span>
-          <span className={classes.textItem}>
-            <CheckIcon /> Validator deposits: {depositData.length}
-          </span>
-          <span className={classes.textItem}>
-            <CheckIcon /> Total amount required: {depositData.length * 32} {tokenInfo.symbol}
-          </span>
+          <div className={classes.textItemsContainer}>
+            <span className={classes.textItem}>
+              <CheckIcon /> Accepted
+            </span>
+            <span className={classes.textItem}>
+              <CheckIcon /> Validator deposits: {depositData.length}
+            </span>
+            <span className={classes.textItem}>
+              <CheckIcon /> Total amount required: {depositData.length * 32} {tokenInfo.symbol}
+            </span>
+          </div>
         </div>
         <button className={classes.depositButton} onClick={() => deposit(depositData)}>
           Deposit

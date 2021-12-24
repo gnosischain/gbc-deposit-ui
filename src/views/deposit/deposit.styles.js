@@ -19,7 +19,7 @@ const useStyles = createUseStyles((theme) => ({
     backgroundColor: theme.palette.secondary,
     outline: 'none',
     width: '100%',
-    minHeight: '200px',
+    minHeight: '100px',
     marginTop: theme.spacing(10),
     overflowWrap: 'break-word'
   },
@@ -28,8 +28,15 @@ const useStyles = createUseStyles((theme) => ({
     background: 'transparent',
     textDecoration: 'underline',
     color: theme.palette.black,
-    margin: '15px 0 30px',
+    margin: '15px 0 0',
     cursor: 'pointer'
+  },
+  textItemsContainer: {
+    marginTop: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   textItem: {
     margin: '5px 0',
