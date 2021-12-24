@@ -58,17 +58,19 @@ function Stepper () {
 
   return (
     <div className={classes.container}>
-      <div className={classes.tabs}>
-        {tabs.map(tab =>
-          <div
-            key={tab.name}
-            className={activeTab === tab.name ? classes.tabActive : classes.tab}
-            onClick={() => selectTab(tab)}
-          >
-            <span className={classes.tabName}>{tab.name}</span>
-          </div>
-        )}
-      </div>
+      {[Step.Swap, Step.Deposit].includes(step) && (
+        <div className={classes.tabs}>
+          {tabs.map(tab =>
+            <div
+              key={tab.name}
+              className={activeTab === tab.name ? classes.tabActive : classes.tab}
+              onClick={() => selectTab(tab)}
+            >
+              <span className={classes.tabName}>{tab.name}</span>
+            </div>
+          )}
+        </div>
+      )}
       <div className={classes.stepper}>
         {(() => {
           switch (step) {

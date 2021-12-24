@@ -13,21 +13,26 @@ const useStepperStyles = createUseStyles((theme) => ({
     flexDirection: 'column'
   },
   container: {
-    display: 'flex',
-    flexDirection: 'column'
+    position: 'relative'
   },
   tabs: {
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'absolute',
+    top: '-40px',
+    left: '50%',
+    transform: 'translateX(-50%)'
   },
   tab: {
     minWidth: '130px',
-    padding: '10px 20px',
+    height: '40px',
+    padding: '0 20px',
     background: theme.palette.secondary,
     borderTopLeftRadius: '10px',
     borderTopRightRadius: '10px',
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
     boxShadow: '0px 0px 4px rgba(200, 200, 221, 0.53)',
     marginRight: '1px',
     cursor: 'pointer'
