@@ -60,9 +60,9 @@ function useDeposit(wallet, tokenInfo) {
 
     if (tokenBalance.lt(totalDepositAmountBN)) {
       throw Error(`
-        Token balance is not enough to cover all deposits, have${' '}
-        ${Number(formatUnits(tokenBalance.toString(), tokenInfo.decimals))} ${tokenInfo.symbol},${' '}
-        required ${Number(formatUnits(totalDepositAmountBN.toString(), tokenInfo.decimals))}  ${tokenInfo.symbol}
+        Unsufficient balance. You have ${Number(formatUnits(tokenBalance.toString(), tokenInfo.decimals))} ${tokenInfo.symbol},${' '}
+        but required ${Number(formatUnits(totalDepositAmountBN.toString(), tokenInfo.decimals))}  ${tokenInfo.symbol}.${' '}
+        Select the swap tab to swap your GNO to ${tokenInfo.symbol} for deposits.
       `)
     }
 
