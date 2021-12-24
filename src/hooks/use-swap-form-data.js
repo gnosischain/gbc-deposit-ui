@@ -30,7 +30,11 @@ function useSwapFormData (wallet, maxTokenAmount, tokenInfo, swapRatio) {
 
         setAmounts({ from: newFromAmount, to: newToAmount })
         setValues({ from: newFromValue, to: formatUnits(newToAmount, tokenInfo.decimals) })
-        setError()
+        if (newFromAmount.gt(maxTokenAmount)) {
+          setError('You don\'t have enough funds')
+        } else {
+          setError()
+        }
       } catch (err) { console.log(err) }
     }
   }
