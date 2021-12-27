@@ -22,6 +22,11 @@ const useStyles = createUseStyles((theme) => ({
     width: '60px',
     height: '60px',
     margin: '20px 0'
+  },
+  infoIcon: {
+    width: 24,
+    height: 24,
+    marginBottom: -6
   }
 }))
 
