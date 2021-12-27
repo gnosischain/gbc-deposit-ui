@@ -13,6 +13,11 @@ const checkboxLabels = [
   'I understand that this transaction is not reversable'
 ]
 
+const titles = {
+  risks: 'Understanding the risks',
+  phishing: `Make sure you aren't being phished`
+}
+
 function DepositRisksInfo ({ wallet, deposit, onClose }) {
   const classes = useStyles()
   const [step, setStep] = useState('risks')
@@ -72,7 +77,7 @@ function DepositRisksInfo ({ wallet, deposit, onClose }) {
   return (
     <div className={classes.page}>
       <Header
-        title="Understanding the risks"
+        title={titles[step]}
         onClose={onClose}
       />
       {component}
