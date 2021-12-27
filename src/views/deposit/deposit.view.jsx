@@ -3,10 +3,14 @@ import { useState, useCallback } from 'react';
 import Dropzone from './dropzone/dropzone.view';
 import Header from '../shared/header/header.view'
 import checkIcon from '../../images/check-icon-small.svg';
+import replaceIcon from '../../images/replace-icon.svg';
 import useStyles from './deposit.styles';
 
 const CheckIcon = () =>
   <img style={{ width: 16, height: 16}} src={checkIcon} alt="" />
+
+const ReplaceIcon = () =>
+  <img style={{ width: 16, height: 16, margin: '0 8px -1px 0' }} src={replaceIcon} alt="" />
 
 function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
   const classes = useStyles();
@@ -37,7 +41,7 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, deposit, validate }) {
       <div className={classes.dataContainer}>
         <b>{filename}</b>
         <button className={classes.replaceButton} onClick={onReplace}>
-          Replace
+          <ReplaceIcon />Replace
         </button>
         <div className={classes.textItemsContainer}>
           <span className={classes.textItem}>
