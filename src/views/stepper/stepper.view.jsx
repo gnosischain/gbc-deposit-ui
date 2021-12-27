@@ -21,6 +21,7 @@ import LearnMoreLink from '../shared/learnMoreLink/learMoreLink.view'
 import DepositTxConfirm from '../deposit-tx-confirm/deposit-tx-confirm.view'
 import DepositTxPending from '../deposit-tx-pending/deposit-tx-pending.view'
 import DepositTxOverview from '../deposit-tx-overview/deposit-tx-overview.view'
+import DepositRisksInfo from '../deposit-risks-info/deposit-risks-info.view'
 
 function Stepper () {
   const classes = useStepperStyles()
@@ -34,7 +35,9 @@ function Stepper () {
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
-  const { deposit, validate, txData: depositTxData } = useDeposit(wallet, toTokenInfo)
+  const {
+    deposit, validate, txData: depositTxData, depositData, setDepositData
+  } = useDeposit(wallet, toTokenInfo)
 
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
@@ -155,11 +158,21 @@ function Stepper () {
                   wallet={wallet}
                   tokenInfo={toTokenInfo}
                   onDisconnectWallet={disconnectWallet}
-                  deposit={(data) => {
-                    deposit(data)
+                  onGoNext={() => switchStep(Step.DepositRisksInfo)}
+                  depositData={depositData}
+                  setDepositData={setDepositData}
+                />
+              )
+            }
+            case Step.DepositRisksInfo: {
+              return (
+                <DepositRisksInfo
+                  deposit={() => {
+                    deposit()
                     switchStep(Step.DepositConfirm)
                   }}
-                  validate={validate}
+                  wallet={wallet}
+                  onClose={() => switchStep(Step.Deposit)}
                 />
               )
             }

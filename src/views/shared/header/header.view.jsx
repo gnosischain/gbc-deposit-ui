@@ -1,9 +1,10 @@
 import useHeaderStyles from './header.styles'
 import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
+import { ReactComponent as CrossIcon } from '../../../images/cross-icon.svg'
 
 function Header ({
   address, title, isGoBackButtonDisabled,
-  onGoBack, onDisconnectWallet
+  onGoBack, onDisconnectWallet, onClose
 }) {
   const classes = useHeaderStyles()
 
@@ -28,8 +29,18 @@ function Header ({
           <ArrowLeft />
         </button>
       )}
+      {onClose && (
+        <button
+          className={classes.closeButton}
+          onClick={onClose}
+        >
+          <CrossIcon className={classes.closeIcon} />
+        </button>
+      )}
       <p className={classes.title}>{title}</p>
-      <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
+      {address && (
+        <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
+      )}
       {onDisconnectWallet && (
         <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>
       )}

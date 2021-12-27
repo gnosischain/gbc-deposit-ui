@@ -12,6 +12,8 @@ const INITIAL_DATA = { status: 'pending' }
 
 function useDeposit(wallet, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
+  const [deposits, setDeposits] = useState(null)
+  const [filename, setFilename] = useState(null)
 
   const validate = useCallback(async (deposits) => {
     const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider)
@@ -81,7 +83,16 @@ function useDeposit(wallet, tokenInfo) {
       }
     }
   }, [wallet, tokenInfo]);
-  const deposit = useCallback(async (deposits) => {
+
+  const setDepositData = useCallback(async (data, filename) => {
+    setFilename(filename)
+    if (data) {
+      await validate(data)
+    }
+    setDeposits(data)
+  }, [validate])
+
+  const deposit = useCallback(async () => {
     try {
       setTxData({ status: 'loading' })
       const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider.getSigner(0))
@@ -108,9 +119,9 @@ function useDeposit(wallet, tokenInfo) {
       setTxData({ status: 'failed', error })
       console.log(err)
     }
-  }, [wallet, tokenInfo])
+  }, [wallet, tokenInfo, deposits])
 
-  return { deposit, validate, txData }
+  return { deposit, validate, txData, depositData: { deposits, filename }, setDepositData }
 }
 
 async function getPastLogs(contract, event, { fromBlock, toBlock }) {

@@ -27,10 +27,20 @@ const useHeaderStyles = createUseStyles((theme) => ({
     cursor: 'pointer',
     padding: theme.spacing(1),
     left: -(theme.spacing(1)),
-    top: -(theme.spacing(1)),
+    top: -(theme.spacing(0.5)),
     '&:disabled': {
       cursor: 'default'
-    }
+    },
+  },
+  closeButton: {
+    position: 'absolute',
+    background: 'transparent',
+    appearance: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: theme.spacing(1),
+    right: -(theme.spacing(1)),
+    top: -(theme.spacing(0.5)),
   },
   disconnectButton: {
     background: 'transparent',
@@ -39,6 +49,9 @@ const useHeaderStyles = createUseStyles((theme) => ({
     textDecoration: 'underline',
     fontSize: theme.spacing(2),
     marginTop: theme.spacing(1.5)
+  },
+  closeIcon: {
+    width: 16
   }
 }))
 
