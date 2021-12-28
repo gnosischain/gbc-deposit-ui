@@ -10,7 +10,9 @@ const useStepperStyles = createUseStyles((theme) => ({
     padding: `0 ${theme.spacing(3.5)}px`,
     paddingBottom: theme.spacing(3),
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 2,
+    position: 'relative'
   },
   container: {
     position: 'relative'
@@ -21,7 +23,8 @@ const useStepperStyles = createUseStyles((theme) => ({
     position: 'absolute',
     top: '-40px',
     left: '50%',
-    transform: 'translateX(-50%)'
+    transform: 'translateX(-50%)',
+    zIndex: 1
   },
   tab: {
     minWidth: '130px',
@@ -35,7 +38,11 @@ const useStepperStyles = createUseStyles((theme) => ({
     alignItems: 'center',
     boxShadow: '0px 0px 4px rgba(200, 200, 221, 0.53)',
     marginRight: '1px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    border: 0,
+    '&:disabled': {
+      cursor: 'default'
+    }
   },
   tabActive: {
     composes: '$tab',

@@ -47,9 +47,10 @@ function Stepper () {
 
   const selectTab = useCallback((tab) => {
     if (activeTab === tab.name) return
+    setDepositData(null, null)
     setActiveTab(tab.name)
     switchStep(tab.step)
-  }, [activeTab, switchStep])
+  }, [activeTab, switchStep, setDepositData])
 
   if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
     return (
@@ -61,16 +62,17 @@ function Stepper () {
 
   return (
     <div className={classes.container}>
-      {[Step.Swap, Step.Deposit].includes(step) && (
+      {![Step.Login, Step.Loading].includes(step) && (
         <div className={classes.tabs}>
           {tabs.map(tab =>
-            <div
+            <button
               key={tab.name}
               className={activeTab === tab.name ? classes.tabActive : classes.tab}
               onClick={() => selectTab(tab)}
+              disabled={![Step.Swap, Step.Deposit, Step.Overview, Step.DepositOverview].includes(step)}
             >
               <span className={classes.tabName}>{tab.name}</span>
-            </div>
+            </button>
           )}
         </div>
       )}
