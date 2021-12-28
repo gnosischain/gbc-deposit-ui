@@ -46,7 +46,7 @@ function useDeposit(wallet, tokenInfo) {
 
     const wc = deposits[0].withdrawal_credentials
     if (!deposits.every(d => d.withdrawal_credentials === wc)) {
-      throw Error('Withdrawal credentials do not match.')
+      throw Error('Batch deposits for validators with BLS signature scheme are not supported at the moment. Please use deposit script described in the docs.')
     }
 
     if (!deposits.every(d => d.amount === 32000000000)) {
