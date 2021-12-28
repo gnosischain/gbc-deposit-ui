@@ -20,8 +20,7 @@ function Dropzone({ onDrop }) {
       const reader = new FileReader();
       reader.onload = async event => {
         if (event.target) {
-          const fileData = JSON.parse(event.target.result);
-          onDrop({ data: fileData, filename: jsonFiles[0].name });
+          onDrop({ fileData: event.target.result, filename: jsonFiles[0].name });
         }
       };
       reader.readAsText(jsonFiles[0]);

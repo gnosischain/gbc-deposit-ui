@@ -16,9 +16,6 @@ function useDeposit(wallet, tokenInfo) {
   const [filename, setFilename] = useState(null)
 
   const validate = useCallback(async (deposits) => {
-    const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider)
-    const depositContract = new Contract(depositAddress, depositABI, wallet.provider)
-
     const checkJsonStructure = (depositDataJson) => {
       return (
         depositDataJson.pubkey &&
@@ -30,6 +27,10 @@ function useDeposit(wallet, tokenInfo) {
         depositDataJson.fork_version
       );
     };
+
+    if (!deposits.every) {
+      throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
+    }
 
     if (!deposits.every(d => checkJsonStructure(d))) {
       throw Error('This is not a valid file. Please try again.')
@@ -56,6 +57,9 @@ function useDeposit(wallet, tokenInfo) {
     if (pubKeys.some((pubkey, index) => pubKeys.indexOf(pubkey) !== index)) {
       throw Error('Duplicated public keys.')
     }
+
+    const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider)
+    const depositContract = new Contract(depositAddress, depositABI, wallet.provider)
 
     const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(deposits.length))
     const tokenBalance = await token.balanceOf(wallet.address)
@@ -84,9 +88,15 @@ function useDeposit(wallet, tokenInfo) {
     }
   }, [wallet, tokenInfo]);
 
-  const setDepositData = useCallback(async (data, filename) => {
+  const setDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)
-    if (data) {
+    let data = null
+    if (fileData) {
+      try {
+        data = JSON.parse(fileData)
+      } catch (error) {
+        throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
+      }
       await validate(data)
     }
     setDeposits(data)

@@ -36,7 +36,7 @@ function Stepper () {
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
   const {
-    deposit, validate, txData: depositTxData, depositData, setDepositData
+    deposit, txData: depositTxData, depositData, setDepositData
   } = useDeposit(wallet, toTokenInfo)
 
   const tabs = [

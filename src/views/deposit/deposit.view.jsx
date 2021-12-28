@@ -16,10 +16,10 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, depositData, setDeposi
   const classes = useStyles();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const onDrop = useCallback(async ({ data, filename }) => {
+  const onDrop = useCallback(async ({ fileData, filename }) => {
     setLoading(true);
     try {
-      await setDepositData(data, filename);
+      await setDepositData(fileData, filename);
     } catch (error) {
       setError(error.message);
     }
