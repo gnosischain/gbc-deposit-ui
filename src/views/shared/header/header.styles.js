@@ -19,6 +19,11 @@ const useHeaderStyles = createUseStyles((theme) => ({
     fontSize: theme.spacing(2.5),
     color: theme.palette.grey.dark
   },
+  balance: {
+    marginTop: theme.spacing(1),
+    fontSize: theme.spacing(2),
+    color: theme.palette.black
+  },
   goBackButton: {
     position: 'absolute',
     background: 'transparent',

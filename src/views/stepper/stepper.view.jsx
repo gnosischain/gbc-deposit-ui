@@ -29,9 +29,10 @@ function Stepper () {
   const swapContract = useSwapContract(wallet)
   const { swapRatio } = useSwapContractInfo(wallet)
   const fromTokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
-  // const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
+  const toTokenContract = useTokenContract(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
   const fromTokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
   const toTokenInfo = useTokenInfo(process.env.REACT_APP_WRAPPED_TOKEN_CONTRACT_ADDRESS, wallet)
+  const toTokenBalance = useTokenBalance(wallet?.address, toTokenContract)
   const fromTokenBalance = useTokenBalance(wallet?.address, fromTokenContract)
   const { step, switchStep } = useStep()
   const { swap, data: swapData, resetData: resetSwapData } = useSwap()
@@ -104,6 +105,7 @@ function Stepper () {
                   fromTokenInfo={fromTokenInfo}
                   toTokenInfo={toTokenInfo}
                   fromTokenBalance={fromTokenBalance}
+                  toTokenBalance={toTokenBalance}
                   swapData={swapData}
                   onAmountChange={resetSwapData}
                   onSubmit={(fromAmount) => {
@@ -123,6 +125,7 @@ function Stepper () {
                   wallet={wallet}
                   fromTokenInfo={fromTokenInfo}
                   toTokenInfo={toTokenInfo}
+                  toTokenBalance={toTokenBalance}
                   swapData={swapData}
                   onGoBack={() => switchStep(Step.Swap)}
                   onGoToPendingStep={() => switchStep(Step.Pending)}
@@ -135,6 +138,7 @@ function Stepper () {
                   wallet={wallet}
                   fromTokenInfo={fromTokenInfo}
                   toTokenInfo={toTokenInfo}
+                  toTokenBalance={toTokenBalance}
                   swapData={swapData}
                   onGoBack={() => switchStep(Step.Swap)}
                   onGoToOverviewStep={() => switchStep(Step.Overview)}
@@ -147,6 +151,7 @@ function Stepper () {
                   wallet={wallet}
                   fromTokenInfo={fromTokenInfo}
                   toTokenInfo={toTokenInfo}
+                  toTokenBalance={toTokenBalance}
                   swapData={swapData}
                   onGoBack={() => window.location.reload()}
                   onDisconnectWallet={disconnectWallet}
@@ -159,6 +164,7 @@ function Stepper () {
                 <Deposit
                   wallet={wallet}
                   tokenInfo={toTokenInfo}
+                  balance={toTokenBalance}
                   onDisconnectWallet={disconnectWallet}
                   onGoNext={() => switchStep(Step.DepositRisksInfo)}
                   depositData={depositData}
@@ -182,6 +188,8 @@ function Stepper () {
               return (
                 <DepositTxConfirm
                   wallet={wallet}
+                  tokenInfo={toTokenInfo}
+                  balance={toTokenBalance}
                   txData={depositTxData}
                   onGoBack={() => switchStep(Step.Deposit)}
                   onGoToPendingStep={() => switchStep(Step.DepositPending)}
@@ -192,6 +200,8 @@ function Stepper () {
               return (
                 <DepositTxPending
                   wallet={wallet}
+                  tokenInfo={toTokenInfo}
+                  balance={toTokenBalance}
                   txData={depositTxData}
                   onGoBack={() => switchStep(Step.Deposit)}
                   onGoToOverviewStep={() => switchStep(Step.DepositOverview)}
@@ -202,6 +212,8 @@ function Stepper () {
               return (
                 <DepositTxOverview
                   wallet={wallet}
+                  tokenInfo={toTokenInfo}
+                  balance={toTokenBalance}
                   txData={depositTxData}
                   onGoBack={() => window.location.reload()}
                   onDisconnectWallet={disconnectWallet}

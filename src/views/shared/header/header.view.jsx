@@ -1,10 +1,13 @@
+import { formatUnits } from 'ethers/lib/utils'
+
 import useHeaderStyles from './header.styles'
 import { ReactComponent as ArrowLeft } from '../../../images/arrow-left.svg'
 import { ReactComponent as CrossIcon } from '../../../images/cross-icon.svg'
 
 function Header ({
   address, title, isGoBackButtonDisabled,
-  onGoBack, onDisconnectWallet, onClose
+  onGoBack, onDisconnectWallet, onClose,
+  tokenInfo, balance
 }) {
   const classes = useHeaderStyles()
 
@@ -40,6 +43,9 @@ function Header ({
       <p className={classes.title}>{title}</p>
       {address && (
         <p className={classes.address}>{getPartiallyHiddenEthereumAddress(address)}</p>
+      )}
+      {balance && (
+        <p className={classes.balance}>Balance: {Number(formatUnits(balance, tokenInfo.decimals))} {tokenInfo.symbol}</p>
       )}
       {onDisconnectWallet && (
         <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>

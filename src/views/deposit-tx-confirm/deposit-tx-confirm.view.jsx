@@ -3,7 +3,7 @@ import Header from '../shared/header/header.view'
 import Spinner from '../shared/spinner/spinner.view'
 import { useEffect } from 'react'
 
-function TxConfirm ({ wallet, txData, onGoBack, onGoToPendingStep }) {
+function TxConfirm ({ wallet, txData, onGoBack, onGoToPendingStep, tokenInfo, balance }) {
   const classes = useTxConfirmStyles()
 
   useEffect(() => {
@@ -20,6 +20,8 @@ function TxConfirm ({ wallet, txData, onGoBack, onGoToPendingStep }) {
       <Header
         address={wallet.address}
         title="Gnosis Beacon Chain Deposit"
+        tokenInfo={tokenInfo}
+        balance={balance}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />

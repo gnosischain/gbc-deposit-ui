@@ -3,7 +3,7 @@ import Header from '../shared/header/header.view'
 import Spinner from '../shared/spinner/spinner.view'
 import { useEffect } from 'react'
 
-function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToPendingStep }) {
+function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, onGoToPendingStep, toTokenBalance }) {
   const classes = useTxConfirmStyles()
 
   useEffect(() => {
@@ -20,6 +20,8 @@ function TxConfirm ({ wallet, fromTokenInfo, toTokenInfo, swapData, onGoBack, on
       <Header
         address={wallet.address}
         title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
+        tokenInfo={toTokenInfo}
+        balance={toTokenBalance}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />

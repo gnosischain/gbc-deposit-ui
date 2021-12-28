@@ -12,6 +12,7 @@ function SwapForm ({
   fromTokenInfo,
   toTokenInfo,
   fromTokenBalance,
+  toTokenBalance,
   swapData,
   onAmountChange,
   onSubmit,
@@ -42,6 +43,8 @@ function SwapForm ({
         address={wallet.address}
         title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
         onDisconnectWallet={onDisconnectWallet}
+        tokenInfo={toTokenInfo}
+        balance={toTokenBalance}
       />
       <div className={classes.balanceCard}>
         <p className={classes.balance}>

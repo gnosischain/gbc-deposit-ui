@@ -7,7 +7,7 @@ import useWatchAsset from '../../hooks/use-watch-asset'
 
 import { NETWORKS } from '../../constants'
 
-function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onDisconnectWallet, isMetamask }) {
+function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onDisconnectWallet, isMetamask, toTokenBalance }) {
   const classes = useTxOverviewStyles()
   const watchAsset = useWatchAsset()
 
@@ -18,6 +18,8 @@ function TxOverview ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, o
         title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
         onGoBack={onGoBack}
         onDisconnectWallet={onDisconnectWallet}
+        tokenInfo={toTokenInfo}
+        balance={toTokenBalance}
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>{fromTokenInfo.symbol} token conversion to {toTokenInfo.symbol} has been completed.</p>

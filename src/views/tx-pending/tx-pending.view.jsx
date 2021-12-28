@@ -6,7 +6,7 @@ import Spinner from '../shared/spinner/spinner.view'
 
 import { NETWORKS } from '../../constants'
 
-function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onGoToOverviewStep }) {
+function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, onGoToOverviewStep, toTokenBalance }) {
   const classes = useTxPendingStyles()
 
   useEffect(() => {
@@ -23,6 +23,8 @@ function TxPending ({ wallet, swapData, fromTokenInfo, toTokenInfo, onGoBack, on
       <Header
         address={wallet.address}
         title={`${fromTokenInfo.symbol} → ${toTokenInfo.symbol}`}
+        tokenInfo={toTokenInfo}
+        balance={toTokenBalance}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />
