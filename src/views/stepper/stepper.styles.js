@@ -15,13 +15,14 @@ const useStepperStyles = createUseStyles((theme) => ({
     position: 'relative'
   },
   container: {
-    position: 'relative'
+    position: 'relative',
+    padding: '80px 0 40px'
   },
   tabs: {
     display: 'flex',
     justifyContent: 'center',
     position: 'absolute',
-    top: '-40px',
+    top: 40,
     left: '50%',
     transform: 'translateX(-50%)',
     zIndex: 1
