@@ -5,8 +5,6 @@ import Checkbox from '../shared/checkbox/checkbox.view'
 
 import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
 
-import { NETWORKS } from '../../constants'
-
 const checkboxLabels = [
   'I understand that I will not be able to withdraw my funds if I lose my mnemonic phrase',
   'I understand the slashing risks',
@@ -54,16 +52,15 @@ function DepositRisksInfo ({ wallet, deposit, onClose }) {
           <p className={classes.text}>
             You are responsible for the transaction.<br />
             Fraudulent websites might try to lure you into sending funds to them,{' '}
-            instead of the official deposit contract. Make sure that the address{' '}
-            you are sending the transaction to is the correct address.
+            instead of the official deposit contract. Make sure that you are sending the transaction with correct data.
           </p>
           <a
             className={classes.contractAddressLink}
-            href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/address/${process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS}`}
+            href="https://docs.gnosischain.com/validator-info/validator-deposits/safety-instructions-for-the-deposit-via-deposit-app"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Check deposit contract address
+            Check instructions
             <LinkIcon className={classes.linkIcon} />
           </a>
         </div>
