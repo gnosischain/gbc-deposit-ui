@@ -1,36 +1,37 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react'
 
-import Dropzone from './dropzone/dropzone.view';
+import Dropzone from './dropzone/dropzone.view'
 import Header from '../shared/header/header.view'
-import checkIcon from '../../images/check-icon-small.svg';
-import replaceIcon from '../../images/replace-icon.svg';
-import useStyles from './deposit.styles';
+import checkIcon from '../../images/check-icon-small.svg'
+import replaceIcon from '../../images/replace-icon.svg'
+import useStyles from './deposit.styles'
+import DappnodeHeader from '../shared/dappnodeHeader/dappnodeHeader.view'
 
 const CheckIcon = () =>
-  <img style={{ width: 16, height: 16}} src={checkIcon} alt="" />
+  <img style={{ width: 16, height: 16 }} src={checkIcon} alt='' />
 
 const ReplaceIcon = () =>
-  <img style={{ width: 16, height: 16, margin: '0 8px -1px 0' }} src={replaceIcon} alt="" />
+  <img style={{ width: 16, height: 16, margin: '0 8px -1px 0' }} src={replaceIcon} alt='' />
 
-function Deposit({ wallet, onDisconnectWallet, tokenInfo, balance, depositData, setDepositData, onGoNext }) {
-  const classes = useStyles();
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData, setDepositData, onGoNext, dappNode, dappnodeWhitelist }) {
+  const classes = useStyles()
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
   const onDrop = useCallback(async ({ fileData, filename }) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await setDepositData(fileData, filename);
+      await setDepositData(fileData, filename)
     } catch (error) {
-      setError(error.message);
+      setError(error.message)
     }
-    setLoading(false);
-  }, [setDepositData]);
+    setLoading(false)
+  }, [setDepositData])
   const onReplace = useCallback(() => {
-    setDepositData(null, null);
-    setError(null);
-  }, [setDepositData]);
+    setDepositData(null, null)
+    setError(null)
+  }, [setDepositData])
 
-  let component;
+  let component
   if (error) {
     component = (
       <div className={classes.dataContainer}>
@@ -80,22 +81,33 @@ function Deposit({ wallet, onDisconnectWallet, tokenInfo, balance, depositData, 
           Deposit
         </button>
       </>
-    );
+    )
+  } else if(dappNode && !dappnodeWhitelist.isWhitelisted) {
+    component = (
+      <div className={classes.dataContainer}><p>Please, select a whitelisted address</p></div>
+    )
   } else {
-    component = <Dropzone onDrop={onDrop} />;
+    component = <Dropzone
+      onDrop={onDrop}
+      dappNode={dappNode} />
   }
   return (
     <div className={classes.container}>
-      <Header
+      {!dappNode ? <Header
         address={wallet.address}
-        title="Gnosis Beacon Chain Deposit"
+        title='Gnosis Beacon Chain Deposit'
         onDisconnectWallet={onDisconnectWallet}
         tokenInfo={tokenInfo}
-        balance={balance}
-      />
+        balance={balance} /> 
+        : 
+        <DappnodeHeader 
+        address={wallet.address}
+        title='DAppNode incentive program' 
+        onDisconnectWallet={onDisconnectWallet} 
+        dappnodeWhitelist={dappnodeWhitelist} />}
       {component}
     </div>
-  );
+  )
 }
 
-export default Deposit;
+export default Deposit

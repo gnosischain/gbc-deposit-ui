@@ -7,6 +7,7 @@ export const Step = {
   Confirm: 'confirm',
   Pending: 'pending',
   Overview: 'overview',
+  DappNodeDeposit: 'dappnode_deposit',
   Deposit: 'deposit',
   DepositConfirm: 'deposit_confirm',
   DepositPending: 'deposit_pending',
