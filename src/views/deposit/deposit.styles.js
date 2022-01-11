@@ -61,6 +61,15 @@ const useStyles = createUseStyles((theme) => ({
       cursor: 'default'
     }
   },
+  dappnodeWhitelist: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '40px',
+    width: '100%',
+    minHeight: '200px',
+  }
 }))
 
 export default useStyles
