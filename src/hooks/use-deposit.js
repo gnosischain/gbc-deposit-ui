@@ -13,6 +13,7 @@ const INITIAL_DATA = { status: 'pending' }
 function useDeposit(wallet, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
+  const [hasDuplicates, setHasDuplicates] = useState(false)
   const [filename, setFilename] = useState(null)
 
   const validate = useCallback(async (deposits) => {
@@ -32,7 +33,7 @@ function useDeposit(wallet, tokenInfo) {
       throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
     }
 
-    if (!deposits.every(d => checkJsonStructure(d))) {
+    if (deposits.length === 0 || !deposits.every(d => checkJsonStructure(d))) {
       throw Error('This is not a valid file. Please try again.')
     }
 
@@ -40,28 +41,46 @@ function useDeposit(wallet, tokenInfo) {
       throw Error(`This JSON file isn't for the right network. Upload a file generated for you current network: Gnosis Chain`)
     }
 
-    if (deposits.length > 128) {
+    const depositContract = new Contract(depositAddress, depositABI, wallet.provider)
+
+    console.log('Fetching existing deposits')
+    const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
+    const toBlock = await wallet.provider.getBlockNumber()
+    const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
+    console.log(`Found ${events.length} existing deposits`)
+    const pks = events.map(e => e.args.pubkey)
+    const newDeposits = []
+    for (const deposit of deposits) {
+      if (!pks.some(pk => pk === '0x' + deposit.pubkey)) {
+        newDeposits.push(deposit)
+      }
+    }
+    const hasDuplicates = newDeposits.length !== deposits.length
+
+    if (newDeposits.length === 0) {
+      throw Error('Deposits have already been made to all validators in this file.')
+    }
+
+    if (newDeposits.length > 128) {
       throw Error('Number of validators exceeds 128. Please upload a file with 128 or fewer validators.')
     }
 
-    const wc = deposits[0].withdrawal_credentials
-    if (!deposits.every(d => d.withdrawal_credentials === wc)) {
+    const wc = newDeposits[0].withdrawal_credentials
+    if (!newDeposits.every(d => d.withdrawal_credentials === wc)) {
       throw Error('Batch deposits for validators with BLS signature scheme are not supported at the moment. Please use deposit script described in the docs.')
     }
 
-    if (!deposits.every(d => d.amount === 32000000000)) {
+    if (!newDeposits.every(d => d.amount === 32000000000)) {
       throw Error('Amount should be exactly 32 tokens for batch deposits.')
     }
 
-    const pubKeys = deposits.map(d => d.pubkey)
+    const pubKeys = newDeposits.map(d => d.pubkey)
     if (pubKeys.some((pubkey, index) => pubKeys.indexOf(pubkey) !== index)) {
       throw Error('Duplicated public keys.')
     }
 
     const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider)
-    const depositContract = new Contract(depositAddress, depositABI, wallet.provider)
-
-    const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(deposits.length))
+    const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(newDeposits.length))
     const tokenBalance = await token.balanceOf(wallet.address)
 
     if (tokenBalance.lt(totalDepositAmountBN)) {
@@ -72,34 +91,25 @@ function useDeposit(wallet, tokenInfo) {
       `)
     }
 
-    console.log('Fetching existing deposits')
-    const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
-    const toBlock = await wallet.provider.getBlockNumber()
-    const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
-    console.log(`Found ${events.length} existing deposits`)
-    const pks = events.map(e => e.args.pubkey)
-    for (const deposit of deposits) {
-      if (pks.some(pk => pk === '0x' + deposit.pubkey)) {
-        throw Error(`
-          Deposits have already been made to some validators in this file.${' '}
-          Max deposit is 32 ${tokenInfo.symbol} per validator. Please recreate and upload a new file.
-        `)
-      }
-    }
+    return { deposits: newDeposits, hasDuplicates }
   }, [wallet, tokenInfo]);
 
   const setDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)
-    let data = null
     if (fileData) {
+      let data
       try {
         data = JSON.parse(fileData)
       } catch (error) {
         throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
       }
-      await validate(data)
+      const { deposits, hasDuplicates } = await validate(data)
+      setDeposits(deposits)
+      setHasDuplicates(hasDuplicates)
+    } else {
+      setDeposits(null)
+      setHasDuplicates(false)
     }
-    setDeposits(data)
   }, [validate])
 
   const deposit = useCallback(async () => {
@@ -131,7 +141,7 @@ function useDeposit(wallet, tokenInfo) {
     }
   }, [wallet, tokenInfo, deposits])
 
-  return { deposit, validate, txData, depositData: { deposits, filename }, setDepositData }
+  return { deposit, txData, depositData: { deposits, filename, hasDuplicates }, setDepositData }
 }
 
 async function getPastLogs(contract, event, { fromBlock, toBlock }) {

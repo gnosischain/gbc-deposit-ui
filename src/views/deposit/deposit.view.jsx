@@ -76,6 +76,12 @@ function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData,
               <CheckIcon /> Total amount required: {depositData.deposits.length * 32} {tokenInfo.symbol}
             </span>
           </div>
+          {depositData.hasDuplicates && (
+            <div className={classes.note}>
+              Deposits have already been made to some validators in this file.{' '}
+              Continue on to make deposits to the rest of them.
+            </div>
+          )}
         </div>
         <button className={classes.depositButton} onClick={() => onGoNext()}>
           Deposit
@@ -98,12 +104,12 @@ function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData,
         title='Gnosis Beacon Chain Deposit'
         onDisconnectWallet={onDisconnectWallet}
         tokenInfo={tokenInfo}
-        balance={balance} /> 
-        : 
-        <DappnodeHeader 
+        balance={balance} />
+        :
+        <DappnodeHeader
         address={wallet.address}
-        title='DAppNode incentive program' 
-        onDisconnectWallet={onDisconnectWallet} 
+        title='DAppNode incentive program'
+        onDisconnectWallet={onDisconnectWallet}
         dappnodeWhitelist={dappnodeWhitelist} />}
       {component}
     </div>

@@ -69,6 +69,15 @@ const useStyles = createUseStyles((theme) => ({
     padding: '40px',
     width: '100%',
     minHeight: '200px',
+  },
+  note: {
+    backgroundColor: '#fff3d6',
+    padding: '10px 20px',
+    fontSize: theme.spacing(2),
+    lineHeight: '18px',
+    marginTop: theme.spacing(4),
+    borderRadius: 10,
+    textAlign: 'center'
   }
 }))
 
