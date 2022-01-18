@@ -5,7 +5,7 @@ import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
 
 import { NETWORKS } from '../../constants'
 
-function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet, tokenInfo, balance }) {
+function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet }) {
   const classes = useTxOverviewStyles()
 
   return (
@@ -15,8 +15,6 @@ function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet, tokenInfo, 
         title="Gnosis Beacon Chain Deposit"
         onGoBack={onGoBack}
         onDisconnectWallet={onDisconnectWallet}
-        tokenInfo={tokenInfo}
-        balance={balance}
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>Deposits have been made!</p>

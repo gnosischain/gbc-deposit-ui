@@ -5,8 +5,7 @@ import { formatUnits } from 'ethers/lib/utils'
 import erc677ABI from '../abis/erc677'
 import depositABI from '../abis/deposit'
 
-const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
-const depositAmountBN = BigNumber.from(32).mul(BigNumber.from(ethers.constants.WeiPerEther))
+const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.WeiPerEther))
 
 const INITIAL_DATA = { status: 'pending' }
 
@@ -41,7 +40,7 @@ function useDeposit(wallet, tokenInfo) {
       throw Error(`This JSON file isn't for the right network. Upload a file generated for you current network: Gnosis Chain`)
     }
 
-    const depositContract = new Contract(depositAddress, depositABI, wallet.provider)
+    const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, wallet.provider)
 
     console.log('Fetching existing deposits')
     const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
@@ -86,8 +85,7 @@ function useDeposit(wallet, tokenInfo) {
     if (tokenBalance.lt(totalDepositAmountBN)) {
       throw Error(`
         Unsufficient balance. You have ${Number(formatUnits(tokenBalance.toString(), tokenInfo.decimals))} ${tokenInfo.symbol},${' '}
-        but required ${Number(formatUnits(totalDepositAmountBN.toString(), tokenInfo.decimals))}  ${tokenInfo.symbol}.${' '}
-        Select the swap tab to swap your GNO to ${tokenInfo.symbol} for deposits.
+        but required ${Number(formatUnits(totalDepositAmountBN.toString(), tokenInfo.decimals))}  ${tokenInfo.symbol}.
       `)
     }
 
@@ -126,7 +124,7 @@ function useDeposit(wallet, tokenInfo) {
         data += deposit.signature
         data += deposit.deposit_data_root
       })
-      const tx = await token.transferAndCall(depositAddress, totalDepositAmountBN, data)
+      const tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, totalDepositAmountBN, data)
       setTxData({ status: 'pending', data: tx })
       await tx.wait()
       setTxData({ status: 'successful', data: tx })

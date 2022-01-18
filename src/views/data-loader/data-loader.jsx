@@ -3,14 +3,14 @@ import { useEffect } from 'react'
 import Spinner from '../shared/spinner/spinner.view'
 import useDataLoaderStyles from './data-loader.styles'
 
-function DataLoader ({ fromTokenInfo, toTokenInfo, onFinishLoading }) {
+function DataLoader ({ tokenInfo, onFinishLoading }) {
   const classes = useDataLoaderStyles()
 
   useEffect(() => {
-    if (fromTokenInfo && toTokenInfo) {
+    if (tokenInfo) {
       onFinishLoading()
     }
-  }, [fromTokenInfo, toTokenInfo, onFinishLoading])
+  }, [tokenInfo, onFinishLoading])
 
   return (
     <div className={classes.dataLoader}>

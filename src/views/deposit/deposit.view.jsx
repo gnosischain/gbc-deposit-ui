@@ -73,7 +73,7 @@ function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData,
               <CheckIcon /> Validator deposits: {depositData.deposits.length}
             </span>
             <span className={classes.textItem}>
-              <CheckIcon /> Total amount required: {depositData.deposits.length * 32} {tokenInfo.symbol}
+              <CheckIcon /> Total amount required: {depositData.deposits.length} {tokenInfo.symbol}
             </span>
           </div>
           {depositData.hasDuplicates && (

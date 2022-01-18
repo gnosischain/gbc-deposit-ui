@@ -6,7 +6,7 @@ import Spinner from '../shared/spinner/spinner.view'
 
 import { NETWORKS } from '../../constants'
 
-function TxPending ({ wallet, txData, onGoBack, onGoToOverviewStep, tokenInfo, balance }) {
+function TxPending ({ wallet, txData, onGoBack, onGoToOverviewStep }) {
   const classes = useTxPendingStyles()
 
   useEffect(() => {
@@ -23,8 +23,6 @@ function TxPending ({ wallet, txData, onGoBack, onGoToOverviewStep, tokenInfo, b
       <Header
         address={wallet.address}
         title="Gnosis Beacon Chain Deposit"
-        tokenInfo={tokenInfo}
-        balance={balance}
       />
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />

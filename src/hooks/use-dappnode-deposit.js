@@ -8,7 +8,7 @@ const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
 const INITIAL_DATA = { status: 'pending' }
 
-function useDappNodeDeposit(wallet, tokenInfo) {
+function useDappNodeDeposit(wallet) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [filename, setFilename] = useState(null)
@@ -68,7 +68,7 @@ function useDappNodeDeposit(wallet, tokenInfo) {
       if (pks.some(pk => pk === '0x' + deposit.pubkey)) {
         throw Error(`
           Deposits have already been made to some validators in this file.${' '}
-          Max deposit is 32 ${tokenInfo.symbol} per validator. Please recreate and upload a new file.
+          Max deposit is 32 mGNO per validator. Please recreate and upload a new file.
         `)
       }
     }
@@ -87,7 +87,7 @@ function useDappNodeDeposit(wallet, tokenInfo) {
     if (isClaimed) throw Error('Address has already been claimed')
     if (endTime === 0) throw Error('Address is not whitelisted')
     if (endTime < Math.floor(Date.now()/1000)) throw Error('Address has expired')
-  }, [wallet, tokenInfo])
+  }, [wallet])
 
   const setDappNodeDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)

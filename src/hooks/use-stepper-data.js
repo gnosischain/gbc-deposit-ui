@@ -3,10 +3,6 @@ const { useState } = require('react')
 export const Step = {
   Loading: 'loading',
   Login: 'login',
-  Swap: 'swap',
-  Confirm: 'confirm',
-  Pending: 'pending',
-  Overview: 'overview',
   DappNodeDeposit: 'dappnode_deposit',
   Deposit: 'deposit',
   DepositConfirm: 'deposit_confirm',
