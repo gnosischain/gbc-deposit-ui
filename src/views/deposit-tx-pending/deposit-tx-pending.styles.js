@@ -14,7 +14,8 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   title: {
     fontSize: theme.spacing(3),
     fontWeight: theme.fontWeights.bold,
-    marginTop: theme.spacing(8)
+    marginTop: theme.spacing(8),
+    textAlign: 'center'
   },
   buttonGroup: {
     marginTop: theme.spacing(2),

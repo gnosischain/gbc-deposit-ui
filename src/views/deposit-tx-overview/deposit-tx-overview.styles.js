@@ -61,6 +61,13 @@ const useTxOverviewStyles = createUseStyles((theme) => ({
   },
   noteLink: {
     color: '#7280f7'
+  },
+  txsContainer: {
+    border: `1px solid ${theme.palette.grey.dark}`,
+    borderRadius: 10,
+    maxHeight: '200px',
+    overflow: 'scroll',
+    padding: '10px'
   }
 }))
 

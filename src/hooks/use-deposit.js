@@ -13,6 +13,7 @@ function useDeposit(wallet, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [hasDuplicates, setHasDuplicates] = useState(false)
+  const [isBatch, setIsBatch] = useState(false)
   const [filename, setFilename] = useState(null)
 
   const validate = useCallback(async (deposits) => {
@@ -60,17 +61,15 @@ function useDeposit(wallet, tokenInfo) {
       throw Error('Deposits have already been made to all validators in this file.')
     }
 
-    if (newDeposits.length > 128) {
-      throw Error('Number of validators exceeds 128. Please upload a file with 128 or fewer validators.')
-    }
-
     const wc = newDeposits[0].withdrawal_credentials
-    if (!newDeposits.every(d => d.withdrawal_credentials === wc)) {
-      throw Error('Batch deposits for validators with BLS signature scheme are not supported at the moment. Please use deposit script described in the docs.')
+    const isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
+
+    if (isBatch && newDeposits.length > 128) {
+      throw Error('Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.')
     }
 
     if (!newDeposits.every(d => d.amount === 32000000000)) {
-      throw Error('Amount should be exactly 32 tokens for batch deposits.')
+      throw Error('Amount should be exactly 32 tokens for deposits.')
     }
 
     const pubKeys = newDeposits.map(d => d.pubkey)
@@ -89,7 +88,7 @@ function useDeposit(wallet, tokenInfo) {
       `)
     }
 
-    return { deposits: newDeposits, hasDuplicates }
+    return { deposits: newDeposits, hasDuplicates, isBatch }
   }, [wallet, tokenInfo]);
 
   const setDepositData = useCallback(async (fileData, filename) => {
@@ -101,45 +100,74 @@ function useDeposit(wallet, tokenInfo) {
       } catch (error) {
         throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
       }
-      const { deposits, hasDuplicates } = await validate(data)
+      const { deposits, hasDuplicates, isBatch } = await validate(data)
       setDeposits(deposits)
       setHasDuplicates(hasDuplicates)
+      setIsBatch(isBatch)
     } else {
       setDeposits(null)
       setHasDuplicates(false)
+      setIsBatch(false)
     }
   }, [validate])
 
   const deposit = useCallback(async () => {
-    try {
-      setTxData({ status: 'loading' })
-      const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider.getSigner(0))
-      const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(deposits.length))
-
-      console.log(`Sending deposit transaction for ${deposits.length} deposits`)
-      let data = '0x'
-      data += deposits[0].withdrawal_credentials
-      deposits.forEach(deposit => {
-        data += deposit.pubkey
-        data += deposit.signature
-        data += deposit.deposit_data_root
-      })
-      const tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, totalDepositAmountBN, data)
-      setTxData({ status: 'pending', data: tx })
-      await tx.wait()
-      setTxData({ status: 'successful', data: tx })
-      console.log(`\tTx hash: ${tx.hash}`)
-    } catch (err) {
-      let error = 'Transaction failed.'
-      if (err?.code === -32603) {
-        error = 'Transaction was not sent because of the low gas price. Try to increase it.'
+    const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider.getSigner(0))
+    if (isBatch) {
+      try {
+        setTxData({ status: 'loading' })
+        const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(deposits.length))
+        console.log(`Sending deposit transaction for ${deposits.length} deposits`)
+        let data = '0x'
+        data += deposits[0].withdrawal_credentials
+        deposits.forEach(deposit => {
+          data += deposit.pubkey
+          data += deposit.signature
+          data += deposit.deposit_data_root
+        })
+        const tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, totalDepositAmountBN, data)
+        setTxData({ status: 'pending', data: tx })
+        await tx.wait()
+        setTxData({ status: 'successful', data: tx })
+        console.log(`\tTx hash: ${tx.hash}`)
+      } catch (err) {
+        let error = 'Transaction failed.'
+        if (err?.code === -32603) {
+          error = 'Transaction was not sent because of the low gas price. Try to increase it.'
+        }
+        setTxData({ status: 'failed', error })
+        console.log(err)
       }
-      setTxData({ status: 'failed', error })
-      console.log(err)
-    }
-  }, [wallet, tokenInfo, deposits])
+    } else {
+      setTxData({ status: 'loading', isArray: true })
+      let txs = await Promise.all(
+        deposits.map(async deposit => {
+          let data = '0x'
+          data += deposit.withdrawal_credentials
+          data += deposit.pubkey
+          data += deposit.signature
+          data += deposit.deposit_data_root
 
-  return { deposit, txData, depositData: { deposits, filename, hasDuplicates }, setDepositData }
+          let tx = null
+          try {
+            tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, depositAmountBN, data)
+          } catch (error) {
+            console.log(error)
+          }
+          return tx
+        })
+      )
+      txs = txs.filter(tx => !!tx)
+      if (!txs.length) {
+        setTxData({ status: 'failed', isArray: true, error: 'All transactions were rejected' })
+      }
+      setTxData({ status: 'pending', isArray: true, data: txs })
+      await Promise.all(txs.map(tx => tx.wait()))
+      setTxData({ status: 'successful', isArray: true, data: txs })
+    }
+  }, [wallet, tokenInfo, deposits, isBatch])
+
+  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData }
 }
 
 async function getPastLogs(contract, event, { fromBlock, toBlock }) {

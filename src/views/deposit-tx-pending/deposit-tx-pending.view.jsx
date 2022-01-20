@@ -27,18 +27,27 @@ function TxPending ({ wallet, txData, onGoBack, onGoToOverviewStep }) {
       <div className={classes.spinnerWrapper}>
         <Spinner className={classes.title} />
       </div>
-      <p className={classes.title}>Deposit transaction has been initiated.</p>
-      <div className={classes.buttonGroup}>
-        <a
-          className={classes.button}
-          href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${txData?.data?.hash}`}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Check transaction status here
-          <LinkIcon className={classes.buttonIcon} />
-        </a>
-      </div>
+      {txData.isArray ? (
+        <p className={classes.title}>
+          Waiting for {txData?.data.length} transactions to be processed.<br />
+          This may take some time
+        </p>
+      ) : (
+        <>
+          <p className={classes.title}>Deposit transaction has been initiated.</p>
+          <div className={classes.buttonGroup}>
+            <a
+              className={classes.button}
+              href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${txData?.data?.hash}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Check transaction status here
+              <LinkIcon className={classes.buttonIcon} />
+            </a>
+          </div>
+        </>
+      )}
     </div>
   )
 }

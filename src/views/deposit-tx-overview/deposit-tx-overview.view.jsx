@@ -18,17 +18,35 @@ function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet }) {
       />
       <CheckIcon className={classes.checkIcon} />
       <p className={classes.title}>Deposits have been made!</p>
-      <div className={classes.buttonGroup}>
-        <a
-          className={classes.button}
-          href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${txData.data.hash}`}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Check transaction details here
-          <LinkIcon className={classes.buttonIcon} />
-        </a>
-      </div>
+      {txData.isArray ? (
+        <div className={classes.buttonGroup}>
+          <div className={classes.txsContainer}>
+            {txData.data.map((tx, index) => (
+              <a
+                className={classes.button}
+                href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${tx.hash}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {index + 1}. {tx.hash.slice(0, 40)}...
+                <LinkIcon className={classes.buttonIcon} />
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={classes.buttonGroup}>
+          <a
+            className={classes.button}
+            href={`${NETWORKS[wallet.chainId].blockExplorerUrl}/tx/${txData.data.hash}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            Check transaction details here
+            <LinkIcon className={classes.buttonIcon} />
+          </a>
+        </div>
+      )}
       <div className={classes.note}>
         <b>Note!</b> The validators will be live in 1.5 - 2 hours.{' '}
         <a

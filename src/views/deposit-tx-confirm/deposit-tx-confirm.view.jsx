@@ -25,7 +25,7 @@ function TxConfirm ({ wallet, txData, onGoBack, onGoToPendingStep }) {
         <Spinner className={classes.title} />
       </div>
       <p className={classes.title}>
-        Confirm the transaction in your wallet
+        Confirm the transaction{txData.isArray ? 's' : ''} in your wallet
       </p>
     </div>
   )

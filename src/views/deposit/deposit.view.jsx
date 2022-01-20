@@ -82,6 +82,11 @@ function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData,
               Continue on to make deposits to the rest of them.
             </div>
           )}
+          {(!dappNode && !depositData.isBatch) && (
+            <div className={classes.note}>
+              Since the withdrawal credentials are different, you will need to confirm {depositData.deposits.length} transactions
+            </div>
+          )}
         </div>
         <button className={classes.depositButton} onClick={() => onGoNext()}>
           Deposit
