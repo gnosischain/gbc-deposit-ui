@@ -57,6 +57,11 @@ const useDappnodeHeaderStyles = createUseStyles((theme) => ({
   },
   closeIcon: {
     width: 16
+  },
+  infoIcon: {
+    width: 28,
+    height: 28,
+    marginBottom: -7
   }
 }))
 
