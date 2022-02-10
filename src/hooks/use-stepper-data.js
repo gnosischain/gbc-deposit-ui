@@ -8,6 +8,7 @@ export const Step = {
   DepositConfirm: 'deposit_confirm',
   DepositPending: 'deposit_pending',
   DepositOverview: 'deposit_overview',
+  ValidatorStatus: 'validator_status',
 }
 
 function useStepperData () {

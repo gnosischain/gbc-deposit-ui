@@ -16,6 +16,7 @@ import DepositTxConfirm from '../deposit-tx-confirm/deposit-tx-confirm.view'
 import DepositTxPending from '../deposit-tx-pending/deposit-tx-pending.view'
 import DepositTxOverview from '../deposit-tx-overview/deposit-tx-overview.view'
 import DepositRisksInfo from '../deposit-risks-info/deposit-risks-info.view'
+import ValidatorStatus from '../validator-status/validator-status.view'
 import useDappnodeWhitelist from '../../hooks/use-dappnode-whitelist'
 import useDappnodeContract from '../../hooks/use-dappnode-contract'
 
@@ -37,7 +38,8 @@ function Stepper () {
 
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
-    { name: 'DAppNode', step: Step.DappNodeDeposit }
+    { name: 'DAppNode', step: Step.DappNodeDeposit },
+    { name: 'Validator Status', step: Step.ValidatorStatus }
   ]
   const [activeTab, setActiveTab] = useState(tabs[0].name)
 
@@ -65,7 +67,7 @@ function Stepper () {
               key={tab.name}
               className={activeTab === tab.name ? classes.tabActive : classes.tab}
               onClick={() => selectTab(tab)}
-              disabled={![Step.Deposit, Step.DappNodeDeposit, Step.DepositOverview].includes(step)}
+              disabled={![Step.Deposit, Step.DappNodeDeposit, Step.DepositOverview, Step.ValidatorStatus].includes(step)}
             >
               <span className={classes.tabName}>{tab.name}</span>
             </button>
@@ -166,6 +168,21 @@ function Stepper () {
                   onGoBack={() => window.location.reload()}
                   onDisconnectWallet={disconnectWallet}
                   isMetamask={isMetamask}
+                />
+              )
+            }
+            case Step.ValidatorStatus: {
+              return (
+                <ValidatorStatus
+                  wallet={wallet}
+                  tokenInfo={tokenInfo}
+                  balance={tokenBalance}
+                  onDisconnectWallet={disconnectWallet}
+                  onGoNext={() => switchStep(Step.DepositRisksInfo)}
+                  depositData={depositData}
+                  setDepositData={setDepositData}
+                  dappNode={false}
+                  dappnodeWhitelist={dappnodeWhitelist}
                 />
               )
             }

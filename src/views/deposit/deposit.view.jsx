@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 
-import Dropzone from './dropzone/dropzone.view'
+import Dropzone from '../shared/dropzone/dropzone.view'
 import Header from '../shared/header/header.view'
 import checkIcon from '../../images/check-icon-small.svg'
 import replaceIcon from '../../images/replace-icon.svg'
