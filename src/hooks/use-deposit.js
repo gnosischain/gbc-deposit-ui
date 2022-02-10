@@ -41,11 +41,12 @@ function useDeposit(wallet, tokenInfo) {
       throw Error(`This JSON file isn't for the right network. Upload a file generated for you current network: Gnosis Chain`)
     }
 
-    const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, wallet.provider)
+    const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)
+    const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, provider)
 
     console.log('Fetching existing deposits')
     const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
-    const toBlock = await wallet.provider.getBlockNumber()
+    const toBlock = await provider.getBlockNumber()
     const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
     console.log(`Found ${events.length} existing deposits`)
     const pks = events.map(e => e.args.pubkey)
@@ -77,7 +78,7 @@ function useDeposit(wallet, tokenInfo) {
       throw Error('Duplicated public keys.')
     }
 
-    const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider)
+    const token = new Contract(tokenInfo.address, erc677ABI, provider)
     const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(newDeposits.length))
     const tokenBalance = await token.balanceOf(wallet.address)
 
