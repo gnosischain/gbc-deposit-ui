@@ -21,7 +21,10 @@ function Dropzone({ onDrop, dappNode, isMultiple }) {
           const reader = new FileReader();
           reader.onload = async event => {
             if (event.target) {
-              resolve(event.target.result);
+              resolve({
+                name: file.name,
+                data: event.target.result,
+              });
             }
           };
           reader.readAsText(file);

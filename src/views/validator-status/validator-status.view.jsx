@@ -30,26 +30,48 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [statuses, setStatuses] = useState(null)
-  const onDrop = useCallback(async data => {
+  const onDrop = useCallback(async files => {
     setLoading(true)
-    let pubkeys
+    let pubkeys = []
     try {
-      pubkeys = [...new Set(data.map(d => JSON.parse(d)).flat(1).map(d => d.pubkey))]
+      files.forEach(file => {
+        const newPubkeys = JSON.parse(file.data).map(d => ({ pubkey: d.pubkey, fileName: file.name }))
+        pubkeys = pubkeys.concat(newPubkeys)
+      })
     } catch (error) {
       setError('Oops, something went wrong while parsing your json files. Please check the files and try again.')
       setLoading(false)
       return
     }
-    const statuses = await getStatuses(pubkeys)
+    let statuses = await getStatuses(pubkeys.map(item => item.pubkey))
+    statuses = statuses.map(status => {
+      const index = pubkeys.findIndex(item => `0x${item.pubkey}` === status.pubkey)
+      return {
+        ...status,
+        fileName: pubkeys[index].fileName
+      }
+    })
     const activeOnline = statuses.filter(item => item.status === 'active_online')
     const activeOffline = statuses.filter(item => item.status === 'active_offline')
     const slashed = statuses.filter(item => item.status === 'slashed')
     setStatuses({ activeOnline, activeOffline, slashed })
     setLoading(false)
   }, [])
+
   const onReplace = useCallback(() => {
     setStatuses(null)
     setError(null)
+  }, [])
+
+  const downloadCSV = useCallback((data, status) => {
+    const rows = data.map(item => [item.pubkey, item.status, item.fileName])
+    let csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n')
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', `${status}-${+new Date()}.csv`)
+    document.body.appendChild(link)
+    link.click()
   }, [])
 
   let component
@@ -87,15 +109,15 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
             <ReplaceIcon />Replace
           </button>
           <div className={classes.textItemsContainer}>
-            <div className={classes.textItem}>
+            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.activeOnline, 'active_online')}>
               <div className={classes.dotGreen} />
               <span><b>{statuses.activeOnline.length}</b> Active Online</span>
             </div>
-            <div className={classes.textItem}>
+            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.activeOffline, 'active_offline')}>
               <div className={classes.dotOrange} />
               <span><b>{statuses.activeOffline.length}</b> Active Offline</span>
             </div>
-            <div className={classes.textItem}>
+            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.slashed, 'slashed')}>
               <div className={classes.dotRed} />
               <span><b>{statuses.slashed.length}</b> Slashed</span>
             </div>

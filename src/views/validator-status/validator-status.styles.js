@@ -134,6 +134,12 @@ const useStyles = createUseStyles((theme) => ({
     alignItems: 'center',
     flex: 7,
   },
+  statusItem: {
+    margin: '0 10px',
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
+  },
 }))
 
 export default useStyles
