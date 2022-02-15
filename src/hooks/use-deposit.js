@@ -44,11 +44,16 @@ function useDeposit(wallet, tokenInfo) {
     const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)
     const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, provider)
 
-    console.log('Fetching existing deposits')
-    const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
-    const toBlock = await provider.getBlockNumber()
-    const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
-    console.log(`Found ${events.length} existing deposits`)
+    let events = []
+    try {
+      console.log('Fetching existing deposits')
+      const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
+      const toBlock = await provider.getBlockNumber()
+      events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
+      console.log(`Found ${events.length} existing deposits`)
+    } catch (error) {
+      throw Error('Failed to fetch existing deposits. Please try again')
+    }
     const pks = events.map(e => e.args.pubkey)
     const newDeposits = []
     for (const deposit of deposits) {
