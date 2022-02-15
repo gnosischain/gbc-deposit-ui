@@ -86,17 +86,21 @@ const useStyles = createUseStyles((theme) => ({
     borderRadius: 5,
     marginRight: 7
   },
-  dotGreen: {
+  'dot-green': {
     composes: '$dot',
     background: theme.palette.green
   },
-  dotOrange: {
+  'dot-orange': {
     composes: '$dot',
     background: theme.palette.orange
   },
-  dotRed: {
+  'dot-red': {
     composes: '$dot',
     background: theme.palette.red
+  },
+  'dot-blue': {
+    composes: '$dot',
+    background: theme.palette.blue
   },
   txsContainer: {
     border: `1px solid ${theme.palette.grey.dark}`,
@@ -127,18 +131,37 @@ const useStyles = createUseStyles((theme) => ({
     width: '100%'
   },
   listItemIndex: {
-    flex: 3
+    flex: 5
   },
   status: {
     display: 'flex',
     alignItems: 'center',
-    flex: 7,
+    flex: 20,
   },
   statusItem: {
-    margin: '0 10px',
+    margin: '5px 10px',
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer'
+  },
+  statusesContainer: {
+    marginTop: '30px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
+  },
+  listItemsContainer: {
+    width: '100%',
+    paddingBottom: '10px',
+    borderBottom: `1px solid ${theme.palette.grey.dark}`,
+    marginBottom: '25px',
+    '&:last-child': {
+      paddingBottom: 0,
+      borderBottom: 0,
+      marginBottom: 0,
+    }
   },
 }))
 

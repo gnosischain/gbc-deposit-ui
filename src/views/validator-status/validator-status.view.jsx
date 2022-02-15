@@ -51,10 +51,73 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
         fileName: pubkeys[index].fileName
       }
     })
-    const activeOnline = statuses.filter(item => item.status === 'active_online')
-    const activeOffline = statuses.filter(item => item.status === 'active_offline')
-    const slashed = statuses.filter(item => item.status === 'slashed')
-    setStatuses({ activeOnline, activeOffline, slashed })
+    const depositedInvalidStatuses = statuses.filter(item => ['deposited', 'deposited_invalid'].includes(item.status))
+    const depositedValidStatuses = statuses.filter(item => ['deposited_valid'].includes(item.status))
+    const pendingStatuses = statuses.filter(item => ['pending'].includes(item.status))
+    const activeOnlineStatuses = statuses.filter(item => ['active_online'].includes(item.status))
+    const activeOfflineStatuses = statuses.filter(item => ['active_offline'].includes(item.status))
+    const slashingStatuses = statuses.filter(item => ['slashing_online', 'slashing_offline'].includes(item.status))
+    const slashedStatuses = statuses.filter(item => ['slashed'].includes(item.status))
+    const exitingStatuses = statuses.filter(item => ['exiting_online', 'exiting_offline'].includes(item.status))
+    const exitedStatuses = statuses.filter(item => ['exited'].includes(item.status))
+
+    const statusesMap = {
+      depositedInvalid: {
+        display: 'Deposited Invalid',
+        name: 'deposited_invalid',
+        color: 'orange',
+        data: depositedInvalidStatuses,
+      },
+      depositedValid: {
+        display: 'Deposited Valid',
+        name: 'deposited_valid',
+        color: 'blue',
+        data: depositedValidStatuses,
+      },
+      pending: {
+        display: 'Pending',
+        name: 'pending',
+        color: 'blue',
+        data: pendingStatuses,
+      },
+      activeOnline: {
+        display: 'Active Online',
+        name: 'active_online',
+        color: 'green',
+        data: activeOnlineStatuses,
+      },
+      activeOffline: {
+        display: 'Active Offline',
+        name: 'active_offline',
+        color: 'orange',
+        data: activeOfflineStatuses,
+      },
+      slashing: {
+        display: 'Slashing',
+        name: 'slashing',
+        color: 'red',
+        data: slashingStatuses,
+      },
+      slashed: {
+        display: 'Slashed',
+        name: 'slashed',
+        color: 'red',
+        data: slashedStatuses,
+      },
+      exiting: {
+        display: 'Exiting',
+        name: 'exiting',
+        color: 'orange',
+        data: exitingStatuses,
+      },
+      exited: {
+        display: 'Exited',
+        name: 'exited',
+        color: 'orange',
+        data: exitedStatuses,
+      },
+    }
+    setStatuses(statusesMap)
     setLoading(false)
   }, [])
 
@@ -63,13 +126,13 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
     setError(null)
   }, [])
 
-  const downloadCSV = useCallback((data, status) => {
-    const rows = data.map(item => [item.pubkey, item.status, item.fileName])
+  const downloadCSV = useCallback((status) => {
+    const rows = status.data.map(item => [item.pubkey, item.status, item.fileName])
     let csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n')
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `${status}-${+new Date()}.csv`)
+    link.setAttribute('download', `${status.name}-${+new Date()}.csv`)
     document.body.appendChild(link)
     link.click()
   }, [])
@@ -108,44 +171,40 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
           <button className={classes.replaceButton} onClick={onReplace}>
             <ReplaceIcon />Replace
           </button>
-          <div className={classes.textItemsContainer}>
-            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.activeOnline, 'active_online')}>
-              <div className={classes.dotGreen} />
-              <span><b>{statuses.activeOnline.length}</b> Active Online</span>
-            </div>
-            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.activeOffline, 'active_offline')}>
-              <div className={classes.dotOrange} />
-              <span><b>{statuses.activeOffline.length}</b> Active Offline</span>
-            </div>
-            <div className={classes.statusItem} onClick={() => downloadCSV(statuses.slashed, 'slashed')}>
-              <div className={classes.dotRed} />
-              <span><b>{statuses.slashed.length}</b> Slashed</span>
-            </div>
+          <div className={classes.statusesContainer}>
+            {Object.values(statuses).map(status =>
+              status.data.length > 0 ? (
+                <div className={classes.statusItem} onClick={() => downloadCSV(status)}>
+                  <div className={classes[`dot-${status.color}`]} />
+                  <span><b>{status.data.length}</b> {status.display}</span>
+                </div>
+              ) : null
+            )}
           </div>
           <div className={classes.txsContainer}>
-            {statuses.activeOffline.concat(statuses.slashed).map((validator, index) => (
-              <div className={classes.listItem}>
-                <span className={classes.listItemIndex}>{index + 1}.</span>{' '}
-                <a
-                  className={classes.button}
-                  href={`https://beacon.gnosischain.com/validator/${validator.pubkey}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  {validator.pubkey.slice(0, 36)}...
-                </a>
-                {validator.status === 'active_offline' &&
-                  <div className={classes.status}>
-                    <div className={classes.dotOrange} /> offline
-                  </div>
-                }
-                {validator.status === 'slashed' &&
-                  <div className={classes.status}>
-                    <div className={classes.dotRed} /> slashed
-                  </div>
-                }
-              </div>
-            ))}
+            {Object.values(statuses).filter(status => status.name !== 'active_online').map(status => {
+              if (!status.data.length) return null
+              return (
+                <div className={classes.listItemsContainer}>
+                  {status.data.map((validator, index) => (
+                    <div className={classes.listItem}>
+                      <span className={classes.listItemIndex}>{index + 1}.</span>{' '}
+                      <a
+                        className={classes.button}
+                        href={`https://beacon.gnosischain.com/validator/${validator.pubkey}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        {validator.pubkey.slice(0, 26)}...
+                      </a>
+                      <div className={classes.status}>
+                        <div className={classes[`dot-${status.color}`]} /> {status.display}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
           </div>
         </div>
       </>
