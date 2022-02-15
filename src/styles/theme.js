@@ -10,9 +10,11 @@ const theme = {
       main: '#7a7c89',
       dark: '#888baa'
     },
+    green: '#5dd638',
     orange: '#ffa600',
     purple: '#8248e5',
-    red: '#ff4b40'
+    red: '#ff4b40',
+    blue: '#386dd6'
   },
   hoverTransition: 'all 100ms',
   fontWeights: {

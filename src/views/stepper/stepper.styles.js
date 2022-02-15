@@ -48,6 +48,9 @@ const useStepperStyles = createUseStyles((theme) => ({
   tabActive: {
     composes: '$tab',
     background: theme.palette.white
+  },
+  tabName: {
+    whiteSpace: 'nowrap'
   }
 }))
 
