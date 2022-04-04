@@ -62,7 +62,7 @@ function useDappNodeDeposit(wallet) {
     console.log('Fetching existing deposits')
     const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
     const toBlock = await provider.getBlockNumber()
-    const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
+    const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     console.log(`Found ${events.length} existing deposits`)
     const pks = events.map(e => e.args.pubkey)
     for (const deposit of deposits) {
@@ -136,8 +136,11 @@ function useDappNodeDeposit(wallet) {
   return { dappNodeDeposit, validate, txData, dappNodeDepositData: { deposits, filename }, setDappNodeDepositData }
 }
 
-async function getPastLogs(contract, event, { fromBlock, toBlock }) {
+async function getPastLogs(contract, event, { fromBlock, toBlock }, isFirstCall = false) {
   try {
+    if (isFirstCall) {
+      throw Error('query returned more than')
+    }
     return contract.queryFilter(event, fromBlock, toBlock)
   } catch (e) {
     if (e.message.includes('query returned more than') || e.message.toLowerCase().includes('timeout')) {

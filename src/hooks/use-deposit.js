@@ -49,7 +49,7 @@ function useDeposit(wallet, tokenInfo) {
       console.log('Fetching existing deposits')
       const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
       const toBlock = await provider.getBlockNumber()
-      events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock })
+      events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
       console.log(`Found ${events.length} existing deposits`)
     } catch (error) {
       throw Error('Failed to fetch existing deposits. Please try again')
@@ -176,8 +176,11 @@ function useDeposit(wallet, tokenInfo) {
   return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData }
 }
 
-async function getPastLogs(contract, event, { fromBlock, toBlock }) {
+async function getPastLogs(contract, event, { fromBlock, toBlock }, isFirstCall = false) {
   try {
+    if (isFirstCall) {
+      throw Error('query returned more than')
+    }
     return contract.queryFilter(event, fromBlock, toBlock)
   } catch (e) {
     if (e.message.includes('query returned more than') || e.message.toLowerCase().includes('timeout')) {
