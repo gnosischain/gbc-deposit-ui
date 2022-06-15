@@ -3,6 +3,7 @@ import { Contract, ethers } from 'ethers'
 
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
+import existingDeposits from '../existing_deposits.json'
 
 const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
@@ -63,8 +64,9 @@ function useDappNodeDeposit(wallet) {
     const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
     const toBlock = await provider.getBlockNumber()
     const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
-    console.log(`Found ${events.length} existing deposits`)
-    const pks = events.map(e => e.args.pubkey)
+    let pks = events.map(e => e.args.pubkey)
+    pks = pks.concat(existingDeposits)
+    console.log(`Found ${pks.length} existing deposits`)
     for (const deposit of deposits) {
       if (pks.some(pk => pk === '0x' + deposit.pubkey)) {
         throw Error(`

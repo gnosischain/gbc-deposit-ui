@@ -4,6 +4,7 @@ import { formatUnits } from 'ethers/lib/utils'
 
 import erc677ABI from '../abis/erc677'
 import depositABI from '../abis/deposit'
+import existingDeposits from '../existing_deposits.json'
 
 const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.WeiPerEther))
 
@@ -50,11 +51,12 @@ function useDeposit(wallet, tokenInfo) {
       const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
       const toBlock = await provider.getBlockNumber()
       events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
-      console.log(`Found ${events.length} existing deposits`)
     } catch (error) {
       throw Error('Failed to fetch existing deposits. Please try again')
     }
-    const pks = events.map(e => e.args.pubkey)
+    let pks = events.map(e => e.args.pubkey)
+    pks = pks.concat(existingDeposits)
+    console.log(`Found ${pks.length} existing deposits`)
     const newDeposits = []
     for (const deposit of deposits) {
       if (!pks.some(pk => pk === '0x' + deposit.pubkey)) {
