@@ -5,7 +5,7 @@ const NETWORKS = {
     name: 'Gnosis Chain',
     symbol: 'XDAI',
     chainName: 'Gnosis Chain',
-    rpcUrl: 'https://dai.poa.network',
+    rpcUrl: 'https://rpc.gnosischain.com',
     blockExplorerUrl: 'https://blockscout.com/xdai/mainnet',
   },
   77: {
