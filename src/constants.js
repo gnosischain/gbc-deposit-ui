@@ -8,12 +8,12 @@ const NETWORKS = {
     rpcUrl: 'https://rpc.gnosischain.com',
     blockExplorerUrl: 'https://blockscout.com/xdai/mainnet',
   },
-  77: {
-    name: 'Sokol',
-    symbol: 'SKL',
-    chainName: 'Sokol Testnet',
-    rpcUrl: 'https://sokol.poa.network',
-    blockExplorerUrl: 'https://blockscout.com/poa/sokol',
+  10200: {
+    name: 'Chiado',
+    symbol: 'CHI',
+    chainName: 'Chiado Testnet',
+    rpcUrl: 'https://rpc.chiadochain.net',
+    blockExplorerUrl: 'https://blockscout.chiadochain.net',
   }
 }
 
