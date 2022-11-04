@@ -38,9 +38,11 @@ function Stepper () {
 
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
-    { name: 'DAppNode', step: Step.DappNodeDeposit },
-    { name: 'Validator Status', step: Step.ValidatorStatus }
   ]
+  if(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS !== "")
+    tabs.push({ name: 'DAppNode', step: Step.DappNodeDeposit })
+  tabs.push({ name: 'Validator Status', step: Step.ValidatorStatus })
+
   const [activeTab, setActiveTab] = useState(tabs[0].name)
 
   const selectTab = useCallback((tab) => {
