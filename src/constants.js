@@ -2,6 +2,7 @@ const BRIDGE_GAS_LIMIT = 300000
 
 const NETWORKS = {
   100: {
+    forkVersion: "00000064",
     name: 'Gnosis Chain',
     symbol: 'XDAI',
     chainName: 'Gnosis Chain',
@@ -9,6 +10,7 @@ const NETWORKS = {
     blockExplorerUrl: 'https://blockscout.com/xdai/mainnet',
   },
   10200: {
+    forkVersion: "0000006f",
     name: 'Chiado',
     symbol: 'CHI',
     chainName: 'Chiado Testnet',
