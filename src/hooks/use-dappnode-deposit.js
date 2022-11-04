@@ -5,6 +5,7 @@ import { Buffer } from 'buffer';
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
 import existingDeposits from '../existing_deposits.json'
+import { NETWORKS } from '../constants';
 
 const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
