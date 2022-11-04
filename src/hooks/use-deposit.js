@@ -1,14 +1,24 @@
 import { useCallback, useState } from 'react'
 import { Contract, BigNumber, ethers } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils'
+import { Buffer } from 'buffer';
 
 import erc677ABI from '../abis/erc677'
 import depositABI from '../abis/deposit'
 import existingDeposits from '../existing_deposits.json'
+import { NETWORKS } from '../constants';
 
 const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.WeiPerEther))
 
 const INITIAL_DATA = { status: 'pending' }
+
+function toHex(n) { // 4byte
+  const buff = Buffer.alloc(4)
+  buff.writeInt32BE(n)
+  return buff.toString('hex')
+}
+const chainId = toHex(process.env.REACT_APP_NETWORK_ID)
+const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
 
 function useDeposit(wallet, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
@@ -38,8 +48,8 @@ function useDeposit(wallet, tokenInfo) {
       throw Error('This is not a valid file. Please try again.')
     }
 
-    if (!deposits.every(d => d.fork_version === '00000064')) {
-      throw Error(`This JSON file isn't for the right network. Upload a file generated for you current network: Gnosis Chain`)
+    if (!deposits.every(d => d.fork_version === chainId)) {
+      throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
     const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)

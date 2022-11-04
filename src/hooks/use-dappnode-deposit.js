@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Contract, ethers } from 'ethers'
+import { Buffer } from 'buffer';
 
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
@@ -8,6 +9,13 @@ import existingDeposits from '../existing_deposits.json'
 const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
 const INITIAL_DATA = { status: 'pending' }
+
+function toHex(n) { // 4byte
+  const buff = Buffer.alloc(4);
+  buff.writeInt32BE(n);
+  return buff.toString('hex');
+}
+const chainId = toHex(process.env.REACT_APP_NETWORK_ID);
 
 function useDappNodeDeposit(wallet) {
   const [txData, setTxData] = useState(INITIAL_DATA)
@@ -35,8 +43,8 @@ function useDappNodeDeposit(wallet) {
       throw Error('This is not a valid file. Please try again.')
     }
 
-    if (!deposits.every(d => d.fork_version === '00000064')) {
-      throw Error(`This JSON file isn't for the right network. Upload a file generated for you current network: Gnosis Chain`)
+    if (!deposits.every(d => d.fork_version === chainId)) {
+      throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
     if (deposits.length !== 4) {
