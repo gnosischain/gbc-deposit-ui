@@ -16,6 +16,7 @@ function toHex(n) { // 4byte
   return buff.toString('hex');
 }
 const chainId = toHex(process.env.REACT_APP_NETWORK_ID);
+const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
 
 function useDappNodeDeposit(wallet) {
   const [txData, setTxData] = useState(INITIAL_DATA)
