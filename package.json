@@ -32,7 +32,7 @@
     "lint:fix": "standard --fix",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "start": "react-scripts --openssl-legacy-provider start"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
