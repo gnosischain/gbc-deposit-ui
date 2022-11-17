@@ -177,7 +177,6 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
       </div>
     );
   } else if (emptyStatus) {
-    console.log(emptyStatus)
     component = (
       <div className={classes.dataContainer}>
         <b>Validator status not found</b>
@@ -202,7 +201,6 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
       </div>
     );
   } else if (statuses) {
-    console.log(statuses)
     var filteredStatus = Object.values(statuses).filter(status =>status.data.length > 0);
     var validatorIds = filteredStatus.map(status => status.data.map(val => val.validatorindex));
 
