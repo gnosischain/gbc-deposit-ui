@@ -52,7 +52,7 @@ function Dropzone({ onDrop, dappNode, isMultiple }) {
           <span>
             Upload deposit data file{isMultiple && 's'} <b>deposit_data.json</b>{' '}
             <a
-              href="https://docs.gnosischain.com/validator-info/validator-deposits#2-deposit-mgno"
+              href="https://docs.gnosischain.com/node/validator-deposits"
               target='_blank'
               rel='noopener noreferrer'
               data-tip="How to generate deposit_data.json?"
@@ -66,7 +66,7 @@ function Dropzone({ onDrop, dappNode, isMultiple }) {
           <span>
             Upload deposit data file for <b>4 validators exactly</b>{' '}
             <a
-              href="https://forum.dappnode.io/t/how-to-setup-a-gnosis-beacon-chain-gbc-validator-on-dappnode/1351"
+              href="https://docs.gnosischain.com/install/with-dappnode"
               target='_blank'
               rel='noopener noreferrer'
               data-tip="How to generate deposit_data.json?"

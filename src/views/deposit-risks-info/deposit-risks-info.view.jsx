@@ -56,7 +56,7 @@ function DepositRisksInfo ({ wallet, deposit, onClose }) {
           </p>
           <a
             className={classes.contractAddressLink}
-            href="https://docs.gnosischain.com/validator-info/validator-deposits/safety-instructions-for-the-deposit-via-deposit-app"
+            href="https://docs.gnosischain.com/node/validator-deposits"
             target="_blank"
             rel="noopener noreferrer"
           >
