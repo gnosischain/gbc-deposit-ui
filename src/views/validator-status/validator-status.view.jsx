@@ -164,6 +164,9 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
       </div>
     );
   } else if (statuses) {
+    var filteredStatus = Object.values(statuses).filter(status =>status.data.length > 0);
+    var validatorIds = filteredStatus.map(status => status.data.map(val => val.validatorindex));
+
     component = (
       <>
         <div className={classes.dataContainer}>
@@ -172,7 +175,7 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
             <ReplaceIcon />Replace
           </button>
           <div className={classes.statusesContainer}>
-            {Object.values(statuses).map(status =>
+            {filteredStatus.map(status =>
               status.data.length > 0 ? (
                 <div className={classes.statusItem} onClick={() => downloadCSV(status)}>
                   <div className={classes[`dot-${status.color}`]} />
@@ -182,7 +185,7 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
             )}
           </div>
           <div className={classes.txsContainer}>
-            {Object.values(statuses).filter(status => status.name !== 'active_online').map(status => {
+            {filteredStatus.map(status => {
               if (!status.data.length) return null
               return (
                 <div className={classes.listItemsContainer}>
@@ -206,6 +209,14 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
               )
             })}
           </div>
+          <br></br>
+          <p>
+          <a
+            className={classes.button}
+            href={`https://beacon.gnosischain.com/dashboard?validators=${validatorIds}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >Import all validators into the Beacon Chain Explorer Dashboard</a></p>
         </div>
       </>
     )

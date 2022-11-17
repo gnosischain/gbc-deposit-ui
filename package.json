@@ -1,6 +1,9 @@
 {
   "name": "gbc-deposit-ui",
   "version": "0.1.0",
+  "engines": {
+    "node": "16.14.2"
+  },
   "private": true,
   "dependencies": {
     "@gnosis.pm/safe-apps-web3modal": "^4.0.0",
