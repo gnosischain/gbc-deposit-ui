@@ -1,6 +1,6 @@
 # Gnosis Beacon Chain deposit UI
 
-Simple tool to deposit tokens to the Gnosis Beacon Chain
+Simple tool to [deposit tokens](https://deposit.gnosischain.com) to the Gnosis Beacon Chain
 
 ## Getting Started
 
