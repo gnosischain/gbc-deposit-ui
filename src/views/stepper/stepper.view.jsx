@@ -190,6 +190,7 @@ function Stepper () {
               return (
                 <ValidatorStatus
                   wallet={wallet}
+                  network={network}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}
                   onDisconnectWallet={disconnectWallet}

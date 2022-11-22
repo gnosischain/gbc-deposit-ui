@@ -5,15 +5,12 @@ import Header from '../shared/header/header.view'
 import { ReactComponent as LinkIcon } from '../../images/link-icon.svg'
 import replaceIcon from '../../images/replace-icon.svg'
 import useStyles from './validator-status.styles'
-import { NETWORKS } from '../../constants';
-
-const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
 
 const ReplaceIcon = () =>
   <img style={{ width: 16, height: 16, margin: '0 8px -1px 0' }} src={replaceIcon} alt='' />
 
 
-async function getStatuses(pubkeys) {
+async function getStatuses(network, pubkeys) {
   const chunks = []
   for (let i = 0; i < pubkeys.length; i += 100) {
     chunks.push(pubkeys.slice(i, i + 100))
@@ -28,7 +25,7 @@ async function getStatuses(pubkeys) {
   return statuses
 }
 
-function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
+function ValidatorStatus ({ network, tokenInfo, depositData, onGoNext }) {
   const classes = useStyles()
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -47,7 +44,7 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
         throw new Error('Oops, something went wrong while parsing your json files. Please check the files and try again.')
       }
 
-      let statuses = await getStatuses(pubkeys.map(item => item.pubkey));
+      let statuses = await getStatuses(network, pubkeys.map(item => item.pubkey));
 
       if(statuses.length === 0){
         setEmptyStatus(pubkeys)
@@ -132,7 +129,7 @@ function ValidatorStatus ({ tokenInfo, depositData, onGoNext }) {
     }finally{
       setLoading(false)
     }
-  }, [])
+  }, [network])
 
   const onReplace = useCallback(() => {
     setStatuses(null)

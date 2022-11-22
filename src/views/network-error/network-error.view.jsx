@@ -6,7 +6,7 @@ import { NETWORKS } from '../../constants'
 
 const NetworkButton = ({ isMetamask, switchChainInMetaMask }) => {
   const classes = useNetworkErrorStyles()
-  const chainId = process.env.REACT_APP_NETWORK_ID
+  const chainId = process.env.REACT_APP_NETWORK_IDS.split(",")[0]
   const name = NETWORKS[chainId].chainName;
   if (!isMetamask) {
     return <p className={classes.networkName}>{name}</p>;
