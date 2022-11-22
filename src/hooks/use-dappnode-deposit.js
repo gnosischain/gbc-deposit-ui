@@ -4,15 +4,13 @@ import { Contract, ethers } from 'ethers'
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
 import existingDeposits from '../existing_deposits.json'
-import { NETWORKS } from '../constants';
 
 const INITIAL_DATA = { status: 'pending' }
 
-function useDappNodeDeposit(wallet) {
+function useDappNodeDeposit(wallet, network) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [filename, setFilename] = useState(null)
-  const [network, setNetwork] = useState(null)
 
   const validate = useCallback(async (deposits) => {
     const checkJsonStructure = (depositDataJson) => {
@@ -27,9 +25,6 @@ function useDappNodeDeposit(wallet) {
       );
     };
 
-    setNetwork(NETWORKS[wallet.chainId])
-    const forkVersion = network.forkVersion;
-
     if (!deposits.every) {
       throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
     }
@@ -38,7 +33,7 @@ function useDappNodeDeposit(wallet) {
       throw Error('This is not a valid file. Please try again.')
     }
 
-    if (!deposits.every(d => d.fork_version === forkVersion)) {
+    if (!deposits.every(d => d.fork_version === network.forkVersion)) {
       throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
@@ -93,7 +88,7 @@ function useDappNodeDeposit(wallet) {
     if (isClaimed) throw Error('Address has already been claimed')
     if (endTime === 0) throw Error('Address is not whitelisted')
     if (endTime < Math.floor(Date.now()/1000)) throw Error('Address has expired')
-  }, [wallet])
+  }, [wallet, network])
 
   const setDappNodeDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)
@@ -136,7 +131,7 @@ function useDappNodeDeposit(wallet) {
       setTxData({ status: 'failed', error })
       console.log(err)
     }
-  }, [wallet, deposits])
+  }, [wallet, network, deposits])
 
   return { dappNodeDeposit, validate, txData, dappNodeDepositData: { deposits, filename }, setDappNodeDepositData }
 }

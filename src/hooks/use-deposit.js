@@ -5,19 +5,17 @@ import { formatUnits } from 'ethers/lib/utils'
 import erc677ABI from '../abis/erc677'
 import depositABI from '../abis/deposit'
 import existingDeposits from '../existing_deposits.json'
-import { NETWORKS } from '../constants';
 
 const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.WeiPerEther))
 
 const INITIAL_DATA = { status: 'pending' }
 
-function useDeposit(wallet, tokenInfo) {
+function useDeposit(wallet, network, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [hasDuplicates, setHasDuplicates] = useState(false)
   const [isBatch, setIsBatch] = useState(false)
   const [filename, setFilename] = useState(null)
-  const [network, setNetwork] = useState(null)
 
   const validate = useCallback(async (deposits) => {
     const checkJsonStructure = (depositDataJson) => {
@@ -32,8 +30,7 @@ function useDeposit(wallet, tokenInfo) {
       );
     };
 
-    setNetwork(NETWORKS[wallet.chainId])
-    const forkVersion = network.forkVersion;
+    console.log(network)
 
     if (!deposits.every) {
       throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
@@ -43,7 +40,7 @@ function useDeposit(wallet, tokenInfo) {
       throw Error('This is not a valid file. Please try again.')
     }
 
-    if (!deposits.every(d => d.fork_version === forkVersion)) {
+    if (!deposits.every(d => d.fork_version === network.forkVersion)) {
       throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
@@ -102,7 +99,7 @@ function useDeposit(wallet, tokenInfo) {
     }
 
     return { deposits: newDeposits, hasDuplicates, isBatch }
-  }, [wallet, tokenInfo]);
+  }, [wallet, network, tokenInfo]);
 
   const setDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)
@@ -178,7 +175,7 @@ function useDeposit(wallet, tokenInfo) {
       await Promise.all(txs.map(tx => tx.wait()))
       setTxData({ status: 'successful', isArray: true, data: txs })
     }
-  }, [wallet, tokenInfo, deposits, isBatch])
+  }, [wallet, network, tokenInfo, deposits, isBatch])
 
   return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData }
 }

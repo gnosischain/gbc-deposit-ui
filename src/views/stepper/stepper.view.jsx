@@ -33,14 +33,12 @@ function Stepper () {
   const { step, switchStep } = useStep()
   const {
     deposit, txData: depositTxData, depositData, setDepositData
-  } = useDeposit(wallet, tokenInfo)
+  } = useDeposit(wallet, network, tokenInfo)
   const {
     dappNodeDeposit, txData: dappNodeDepositTxData, dappNodeDepositData, setDappNodeDepositData
-  } = useDappNodeDeposit(wallet)
+  } = useDappNodeDeposit(wallet, network)
 
-  const tabs = [
-    { name: 'Deposit', step: Step.Deposit },
-  ]
+  const tabs = [{ name: 'Deposit', step: Step.Deposit }]
   if(network && network.addresses.dappnodeDeposit)
     tabs.push({ name: 'DAppNode', step: Step.DappNodeDeposit })
   tabs.push({ name: 'Validator Status', step: Step.ValidatorStatus })
@@ -60,10 +58,12 @@ function Stepper () {
     isValidNetwork = supportedNetworks.includes(wallet.chainId)
 
 
-    console.log(supportedNetworks)
-    console.log(wallet.chainId)
-    console.log(isValidNetwork)
+    //console.log(supportedNetworks)
+    //console.log(wallet.chainId)
+    //console.log(isValidNetwork)
   }
+
+
 
   if (wallet && !isValidNetwork) {
     return (
