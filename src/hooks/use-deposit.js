@@ -17,6 +17,7 @@ function useDeposit(wallet, tokenInfo) {
   const [hasDuplicates, setHasDuplicates] = useState(false)
   const [isBatch, setIsBatch] = useState(false)
   const [filename, setFilename] = useState(null)
+  const [network, setNetwork] = useState(null)
 
   const validate = useCallback(async (deposits) => {
     const checkJsonStructure = (depositDataJson) => {
@@ -31,7 +32,7 @@ function useDeposit(wallet, tokenInfo) {
       );
     };
 
-    const network = NETWORKS[wallet.chainId]
+    setNetwork(NETWORKS[wallet.chainId])
     const forkVersion = network.forkVersion;
 
     if (!deposits.every) {
@@ -137,7 +138,7 @@ function useDeposit(wallet, tokenInfo) {
           data += deposit.signature
           data += deposit.deposit_data_root
         })
-        const tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, totalDepositAmountBN, data)
+        const tx = await token.transferAndCall(network.addresses.wrapper, totalDepositAmountBN, data)
         setTxData({ status: 'pending', data: tx })
         await tx.wait()
         setTxData({ status: 'successful', data: tx })
@@ -162,7 +163,7 @@ function useDeposit(wallet, tokenInfo) {
 
           let tx = null
           try {
-            tx = await token.transferAndCall(process.env.REACT_APP_WRAPPER_CONTRACT_ADDRESS, depositAmountBN, data)
+            tx = await token.transferAndCall(network.addresses.wrapper, depositAmountBN, data)
           } catch (error) {
             console.log(error)
           }
