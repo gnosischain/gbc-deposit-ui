@@ -2,16 +2,21 @@ import { useState, useEffect } from 'react'
 import { Contract } from 'ethers'
 
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
+import { NETWORKS } from '../constants';
 
-function useDappnodeContract (address, wallet) {
+function useDappnodeContract (wallet) {
   const [contract, setContract] = useState()
 
   useEffect(() => {
-    if (address && wallet?.provider) {
-      const contract = new Contract(address, dappnodeDepositABI, wallet.provider.getSigner(0))
-      setContract(contract)
+    if (wallet && wallet?.provider) {
+      var address = NETWORKS[wallet.chainId].addresses.dappnodeDeposit
+
+      if(address){
+        const contract = new Contract(address, dappnodeDepositABI, wallet.provider.getSigner(0))
+        setContract(contract)
+      }
     }
-  }, [address, wallet])
+  }, [wallet])
 
   return contract
 }

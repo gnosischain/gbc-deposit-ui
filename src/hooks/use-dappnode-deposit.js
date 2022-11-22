@@ -14,6 +14,7 @@ function useDappNodeDeposit(wallet) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [filename, setFilename] = useState(null)
+  const [network, setNetwork] = useState(null)
 
   const validate = useCallback(async (deposits) => {
     const checkJsonStructure = (depositDataJson) => {
@@ -28,7 +29,7 @@ function useDappNodeDeposit(wallet) {
       );
     };
 
-    const network = NETWORKS[wallet.chainId]
+    setNetwork(NETWORKS[wallet.chainId])
     const forkVersion = network.forkVersion;
 
     if (!deposits.every) {
@@ -65,7 +66,7 @@ function useDappNodeDeposit(wallet) {
     const depositContract = new Contract(depositAddress, depositABI, provider)
 
     console.log('Fetching existing deposits')
-    const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
+    const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0
     const toBlock = await provider.getBlockNumber()
     const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     let pks = events.map(e => e.args.pubkey)
@@ -82,7 +83,7 @@ function useDappNodeDeposit(wallet) {
 
     // DAppNode incentive deposit contract: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/write-proxy
     // Must be called with the same tx data as the deposit contract
-    const dappnodeDepositContract = new Contract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, dappnodeDepositABI, wallet.provider.getSigner(0))
+    const dappnodeDepositContract = new Contract(network.addresses.dappnodeDeposit, dappnodeDepositABI, wallet.provider.getSigner(0))
 
     // Check requirements: address is whitelisted and must not be expired
     // addressToIncentive: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/contracts
@@ -116,7 +117,7 @@ function useDappNodeDeposit(wallet) {
       console.log(`Sending deposit transaction for ${deposits.length} deposits`)
       // DAppNode incentive deposit contract: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/write-proxy
       // Must be called with the same tx data as the deposit contract
-      const dappnodeDepositContract = new Contract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, dappnodeDepositABI, wallet.provider.getSigner(0))
+      const dappnodeDepositContract = new Contract(network.addresses.dappnodeDeposit, dappnodeDepositABI, wallet.provider.getSigner(0))
       let data = '0x'
       data += deposits[0].withdrawal_credentials
       deposits.forEach(deposit => {

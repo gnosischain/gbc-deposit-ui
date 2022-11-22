@@ -52,7 +52,7 @@ function useDeposit(wallet, tokenInfo) {
     let events = []
     try {
       console.log('Fetching existing deposits')
-      const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
+      const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0
       const toBlock = await provider.getBlockNumber()
       events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     } catch (error) {

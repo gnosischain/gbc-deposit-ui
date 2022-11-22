@@ -19,11 +19,12 @@ import DepositRisksInfo from '../deposit-risks-info/deposit-risks-info.view'
 import ValidatorStatus from '../validator-status/validator-status.view'
 import useDappnodeWhitelist from '../../hooks/use-dappnode-whitelist'
 import useDappnodeContract from '../../hooks/use-dappnode-contract'
+import { NETWORKS } from '../../constants';
 
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
-  const dappnodeContract = useDappnodeContract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, wallet)
+  const dappnodeContract = useDappnodeContract(wallet)
   const tokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
   const tokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
   const tokenBalance = useTokenBalance(wallet?.address, tokenContract)
@@ -36,10 +37,12 @@ function Stepper () {
     dappNodeDeposit, txData: dappNodeDepositTxData, dappNodeDepositData, setDappNodeDepositData
   } = useDappNodeDeposit(wallet)
 
+  const network = wallet ? NETWORKS[wallet.chainId] : null;
+
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
   ]
-  if(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS !== "")
+  if(network && network.addresses.dappnodeDeposit)
     tabs.push({ name: 'DAppNode', step: Step.DappNodeDeposit })
   tabs.push({ name: 'Validator Status', step: Step.ValidatorStatus })
 
@@ -52,7 +55,18 @@ function Stepper () {
     switchStep(tab.step)
   }, [activeTab, switchStep, setDepositData])
 
-  if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
+  var isValidNetwork = false
+  if(wallet && wallet.chainId){
+    var supportedNetworks = process.env.REACT_APP_NETWORK_IDS.split(",")
+    isValidNetwork = supportedNetworks.includes(wallet.chainId)
+
+
+    console.log(supportedNetworks)
+    console.log(wallet.chainId)
+    console.log(isValidNetwork)
+  }
+
+  if (wallet && !isValidNetwork) {
     return (
       <div className={classes.stepper}>
         <NetworkError {...{ isMetamask, switchChainInMetaMask }} />
