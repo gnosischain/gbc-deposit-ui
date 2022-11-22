@@ -1,5 +1,3 @@
-const BRIDGE_GAS_LIMIT = 300000
-
 const NETWORKS = {
   100: {
     forkVersion: "00000064",
@@ -38,6 +36,5 @@ const NETWORKS = {
 }
 
 export {
-  BRIDGE_GAS_LIMIT,
   NETWORKS
 }
