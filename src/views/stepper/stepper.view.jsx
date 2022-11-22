@@ -24,9 +24,10 @@ import { NETWORKS } from '../../constants';
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
-  const dappnodeContract = useDappnodeContract(wallet)
-  const tokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
-  const tokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
+  const network = wallet ? NETWORKS[wallet.chainId] : null;
+  const dappnodeContract = useDappnodeContract(network?.addresses.dappnodeDeposit, wallet)
+  const tokenContract = useTokenContract(network?.addresses.token, wallet)
+  const tokenInfo = useTokenInfo(network?.addresses.token, wallet)
   const tokenBalance = useTokenBalance(wallet?.address, tokenContract)
   const dappnodeWhitelist = useDappnodeWhitelist(wallet?.address, dappnodeContract)
   const { step, switchStep } = useStep()
@@ -36,8 +37,6 @@ function Stepper () {
   const {
     dappNodeDeposit, txData: dappNodeDepositTxData, dappNodeDepositData, setDappNodeDepositData
   } = useDappNodeDeposit(wallet)
-
-  const network = wallet ? NETWORKS[wallet.chainId] : null;
 
   const tabs = [
     { name: 'Deposit', step: Step.Deposit },
