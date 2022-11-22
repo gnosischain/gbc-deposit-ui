@@ -112,6 +112,7 @@ function Stepper () {
             case Step.DappNodeDeposit: {
               return (
                 <Deposit
+                  network={network}
                   wallet={wallet}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}
@@ -127,6 +128,7 @@ function Stepper () {
             case Step.Deposit: {
               return (
                 <Deposit
+                  network={network}
                   wallet={wallet}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}

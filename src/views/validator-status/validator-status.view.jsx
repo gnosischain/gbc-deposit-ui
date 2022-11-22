@@ -272,8 +272,9 @@ function ValidatorStatus ({ network, tokenInfo, depositData, onGoNext }) {
   return (
     <div className={classes.container}>
       <Header
-        title='Check GBC validators statuses'
+        title='Check Validators Status'
         tokenInfo={tokenInfo}
+        network={network}
       />
       {component}
     </div>
