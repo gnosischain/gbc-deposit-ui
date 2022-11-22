@@ -10,9 +10,6 @@ const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
 const INITIAL_DATA = { status: 'pending' }
 
-const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
-const forkVersion = network.forkVersion;
-
 function useDappNodeDeposit(wallet) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
@@ -30,6 +27,9 @@ function useDappNodeDeposit(wallet) {
         depositDataJson.fork_version
       );
     };
+
+    const network = NETWORKS[wallet.chainId]
+    const forkVersion = network.forkVersion;
 
     if (!deposits.every) {
       throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
@@ -61,7 +61,7 @@ function useDappNodeDeposit(wallet) {
       throw Error('Duplicated public keys.')
     }
 
-    const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)
+    const provider = new ethers.providers.StaticJsonRpcProvider(network.rpcUrl)
     const depositContract = new Contract(depositAddress, depositABI, provider)
 
     console.log('Fetching existing deposits')

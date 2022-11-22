@@ -11,9 +11,6 @@ const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.We
 
 const INITIAL_DATA = { status: 'pending' }
 
-const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
-const forkVersion = network.forkVersion;
-
 function useDeposit(wallet, tokenInfo) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
@@ -34,6 +31,9 @@ function useDeposit(wallet, tokenInfo) {
       );
     };
 
+    const network = NETWORKS[wallet.chainId]
+    const forkVersion = network.forkVersion;
+
     if (!deposits.every) {
       throw Error('Oops, something went wrong while parsing your json file. Please check the file and try again.')
     }
@@ -46,7 +46,7 @@ function useDeposit(wallet, tokenInfo) {
       throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
-    const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)
+    const provider = new ethers.providers.StaticJsonRpcProvider(network.rpcUrl)
     const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, provider)
 
     let events = []
