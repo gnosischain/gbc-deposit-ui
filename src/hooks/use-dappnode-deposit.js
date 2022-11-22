@@ -6,8 +6,6 @@ import dappnodeDepositABI from '../abis/dappnodeDeposit'
 import existingDeposits from '../existing_deposits.json'
 import { NETWORKS } from '../constants';
 
-const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
-
 const INITIAL_DATA = { status: 'pending' }
 
 function useDappNodeDeposit(wallet) {
@@ -63,7 +61,7 @@ function useDappNodeDeposit(wallet) {
     }
 
     const provider = new ethers.providers.StaticJsonRpcProvider(network.rpcUrl)
-    const depositContract = new Contract(depositAddress, depositABI, provider)
+    const depositContract = new Contract(network.addresses.deposit, depositABI, provider)
 
     console.log('Fetching existing deposits')
     const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0

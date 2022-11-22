@@ -48,7 +48,7 @@ function useDeposit(wallet, tokenInfo) {
     }
 
     const provider = new ethers.providers.StaticJsonRpcProvider(network.rpcUrl)
-    const depositContract = new Contract(process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS, depositABI, provider)
+    const depositContract = new Contract(network.addresses.deposit, depositABI, provider)
 
     let events = []
     try {
