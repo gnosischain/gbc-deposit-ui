@@ -7,7 +7,7 @@ import { ReactComponent as CrossIcon } from '../../../images/cross-icon.svg'
 function Header ({
   address, title, isGoBackButtonDisabled,
   onGoBack, onDisconnectWallet, onClose,
-  tokenInfo, balance
+  tokenInfo, balance, network
 }) {
   const classes = useHeaderStyles()
 
@@ -46,6 +46,9 @@ function Header ({
       )}
       {balance && (
         <p className={classes.balance}>Balance: {Number(formatUnits(balance, tokenInfo.decimals))} {tokenInfo.symbol}</p>
+      )}
+      {network && (
+        <p className={classes.balance}>Network: {network.chainName}</p>
       )}
       {onDisconnectWallet && (
         <button className={classes.disconnectButton} onClick={onDisconnectWallet}>Disconnect</button>

@@ -9,6 +9,8 @@ import walletConnectLogo from '../images/walletconnect.svg';
 
 import { NETWORKS } from '../constants';
 
+const rpc = Object.entries(NETWORKS).map((n) => [n[1].chainId, n[1].rpcUrl])
+
 const web3Modal = new SafeAppWeb3Modal({
   cacheProvider: true,
   providerOptions: {
@@ -33,10 +35,7 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletConnectProvider,
       options: {
-        chainId: Number(process.env.REACT_APP_NETWORK_ID),
-        rpc: {
-          [process.env.REACT_APP_NETWORK_ID]: process.env.REACT_APP_RPC_URL
-        },
+        rpc: rpc,
       },
       connector: async (ProviderPackage, options) => {
         const provider = new ProviderPackage(options);

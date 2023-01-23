@@ -19,27 +19,27 @@ import DepositRisksInfo from '../deposit-risks-info/deposit-risks-info.view'
 import ValidatorStatus from '../validator-status/validator-status.view'
 import useDappnodeWhitelist from '../../hooks/use-dappnode-whitelist'
 import useDappnodeContract from '../../hooks/use-dappnode-contract'
+import { NETWORKS } from '../../constants';
 
 function Stepper () {
   const classes = useStepperStyles()
   const { wallet, loadWallet, disconnectWallet, isMetamask, switchChainInMetaMask } = useWallet()
-  const dappnodeContract = useDappnodeContract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, wallet)
-  const tokenContract = useTokenContract(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
-  const tokenInfo = useTokenInfo(process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS, wallet)
+  const network = wallet ? NETWORKS[wallet.chainId] : null;
+  const dappnodeContract = useDappnodeContract(network?.addresses.dappnodeDeposit, wallet)
+  const tokenContract = useTokenContract(network?.addresses.token, wallet)
+  const tokenInfo = useTokenInfo(network?.addresses.token, wallet)
   const tokenBalance = useTokenBalance(wallet?.address, tokenContract)
   const dappnodeWhitelist = useDappnodeWhitelist(wallet?.address, dappnodeContract)
   const { step, switchStep } = useStep()
   const {
     deposit, txData: depositTxData, depositData, setDepositData
-  } = useDeposit(wallet, tokenInfo)
+  } = useDeposit(wallet, network, tokenInfo)
   const {
     dappNodeDeposit, txData: dappNodeDepositTxData, dappNodeDepositData, setDappNodeDepositData
-  } = useDappNodeDeposit(wallet)
+  } = useDappNodeDeposit(wallet, network)
 
-  const tabs = [
-    { name: 'Deposit', step: Step.Deposit },
-  ]
-  if(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS !== "")
+  const tabs = [{ name: 'Deposit', step: Step.Deposit }]
+  if(network && network.addresses.dappnodeDeposit)
     tabs.push({ name: 'DAppNode', step: Step.DappNodeDeposit })
   tabs.push({ name: 'Validator Status', step: Step.ValidatorStatus })
 
@@ -52,7 +52,20 @@ function Stepper () {
     switchStep(tab.step)
   }, [activeTab, switchStep, setDepositData])
 
-  if (wallet && wallet.chainId !== process.env.REACT_APP_NETWORK_ID) {
+  var isValidNetwork = false
+  if(wallet && wallet.chainId){
+    var supportedNetworks = process.env.REACT_APP_NETWORK_IDS.split(",")
+    isValidNetwork = supportedNetworks.includes(wallet.chainId)
+
+
+    //console.log(supportedNetworks)
+    //console.log(wallet.chainId)
+    //console.log(isValidNetwork)
+  }
+
+
+
+  if (wallet && !isValidNetwork) {
     return (
       <div className={classes.stepper}>
         <NetworkError {...{ isMetamask, switchChainInMetaMask }} />
@@ -99,6 +112,7 @@ function Stepper () {
             case Step.DappNodeDeposit: {
               return (
                 <Deposit
+                  network={network}
                   wallet={wallet}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}
@@ -114,6 +128,7 @@ function Stepper () {
             case Step.Deposit: {
               return (
                 <Deposit
+                  network={network}
                   wallet={wallet}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}
@@ -177,6 +192,7 @@ function Stepper () {
               return (
                 <ValidatorStatus
                   wallet={wallet}
+                  network={network}
                   tokenInfo={tokenInfo}
                   balance={tokenBalance}
                   onDisconnectWallet={disconnectWallet}

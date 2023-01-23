@@ -22,15 +22,11 @@ Install project dependencies:
 npm install
 ```
 
-Sample .env file is located in the root for the supported networks:
-
-- [Gnosis mainnet](./.env.gnosis)
-- [Chiado testnet](./.env.chiado)
-
-Create the required `.env` file from the example provided in the repo, change `NETWORK` with the desired one:
+[Sample .env file](./.env.example) is located in the root for the supported networks.
+Create the required `.env` file:
 
 ```sh
-cp .env.NETWORK .env
+cp .env.example .env
 ```
 
 Run the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.

@@ -13,7 +13,7 @@ const CheckIcon = () =>
 const ReplaceIcon = () =>
   <img style={{ width: 16, height: 16, margin: '0 8px -1px 0' }} src={replaceIcon} alt='' />
 
-function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData, setDepositData, onGoNext, dappNode, dappnodeWhitelist }) {
+function Deposit ({ network, wallet, onDisconnectWallet, tokenInfo, balance, depositData, setDepositData, onGoNext, dappNode, dappnodeWhitelist }) {
   const classes = useStyles()
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -109,7 +109,8 @@ function Deposit ({ wallet, onDisconnectWallet, tokenInfo, balance, depositData,
         title='Gnosis Beacon Chain Deposit'
         onDisconnectWallet={onDisconnectWallet}
         tokenInfo={tokenInfo}
-        balance={balance} />
+        balance={balance}
+        network={network} />
         :
         <DappnodeHeader
         address={wallet.address}

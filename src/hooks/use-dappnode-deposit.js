@@ -4,16 +4,10 @@ import { Contract, ethers } from 'ethers'
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
 import existingDeposits from '../existing_deposits.json'
-import { NETWORKS } from '../constants';
-
-const depositAddress = process.env.REACT_APP_DEPOSIT_CONTRACT_ADDRESS;
 
 const INITIAL_DATA = { status: 'pending' }
 
-const network = NETWORKS[process.env.REACT_APP_NETWORK_ID]
-const forkVersion = network.forkVersion;
-
-function useDappNodeDeposit(wallet) {
+function useDappNodeDeposit(wallet, network) {
   const [txData, setTxData] = useState(INITIAL_DATA)
   const [deposits, setDeposits] = useState(null)
   const [filename, setFilename] = useState(null)
@@ -39,7 +33,7 @@ function useDappNodeDeposit(wallet) {
       throw Error('This is not a valid file. Please try again.')
     }
 
-    if (!deposits.every(d => d.fork_version === forkVersion)) {
+    if (!deposits.every(d => d.fork_version === network.forkVersion)) {
       throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + network.chainName)
     }
 
@@ -61,11 +55,11 @@ function useDappNodeDeposit(wallet) {
       throw Error('Duplicated public keys.')
     }
 
-    const provider = new ethers.providers.StaticJsonRpcProvider(process.env.REACT_APP_RPC_URL)
-    const depositContract = new Contract(depositAddress, depositABI, provider)
+    const provider = new ethers.providers.StaticJsonRpcProvider(network.rpcUrl)
+    const depositContract = new Contract(network.addresses.deposit, depositABI, provider)
 
     console.log('Fetching existing deposits')
-    const fromBlock = parseInt(process.env.REACT_APP_DEPOSIT_START_BLOCK_NUMBER, 10) || 0
+    const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0
     const toBlock = await provider.getBlockNumber()
     const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     let pks = events.map(e => e.args.pubkey)
@@ -82,7 +76,7 @@ function useDappNodeDeposit(wallet) {
 
     // DAppNode incentive deposit contract: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/write-proxy
     // Must be called with the same tx data as the deposit contract
-    const dappnodeDepositContract = new Contract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, dappnodeDepositABI, wallet.provider.getSigner(0))
+    const dappnodeDepositContract = new Contract(network.addresses.dappnodeDeposit, dappnodeDepositABI, wallet.provider.getSigner(0))
 
     // Check requirements: address is whitelisted and must not be expired
     // addressToIncentive: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/contracts
@@ -94,7 +88,7 @@ function useDappNodeDeposit(wallet) {
     if (isClaimed) throw Error('Address has already been claimed')
     if (endTime === 0) throw Error('Address is not whitelisted')
     if (endTime < Math.floor(Date.now()/1000)) throw Error('Address has expired')
-  }, [wallet])
+  }, [wallet, network])
 
   const setDappNodeDepositData = useCallback(async (fileData, filename) => {
     setFilename(filename)
@@ -116,7 +110,7 @@ function useDappNodeDeposit(wallet) {
       console.log(`Sending deposit transaction for ${deposits.length} deposits`)
       // DAppNode incentive deposit contract: https://blockscout.com/xdai/mainnet/address/0x6C68322cf55f5f025F2aebd93a28761182d077c3/write-proxy
       // Must be called with the same tx data as the deposit contract
-      const dappnodeDepositContract = new Contract(process.env.REACT_APP_DAPPNODE_DEPOSIT_CONTRACT_ADDRESS, dappnodeDepositABI, wallet.provider.getSigner(0))
+      const dappnodeDepositContract = new Contract(network.addresses.dappnodeDeposit, dappnodeDepositABI, wallet.provider.getSigner(0))
       let data = '0x'
       data += deposits[0].withdrawal_credentials
       deposits.forEach(deposit => {
@@ -137,7 +131,7 @@ function useDappNodeDeposit(wallet) {
       setTxData({ status: 'failed', error })
       console.log(err)
     }
-  }, [wallet, deposits])
+  }, [wallet, network, deposits])
 
   return { dappNodeDeposit, validate, txData, dappNodeDepositData: { deposits, filename }, setDappNodeDepositData }
 }

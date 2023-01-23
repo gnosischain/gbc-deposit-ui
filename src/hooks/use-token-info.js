@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 
 import useTokenContract from './use-token-contract'
 
-function useTokenInfo (address, provider) {
-  const contract = useTokenContract(address, provider)
+function useTokenInfo (address, wallet) {
+  const contract = useTokenContract(address, wallet)
   const [tokenInfo, setTokenInfo] = useState()
 
   useEffect(() => {
