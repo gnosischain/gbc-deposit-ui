@@ -12,8 +12,9 @@ const ReplaceIcon = () =>
 
 async function getStatuses(network, pubkeys) {
   const chunks = []
-  for (let i = 0; i < pubkeys.length; i += 100) {
-    chunks.push(pubkeys.slice(i, i + 100))
+  const chunkSize = 64
+  for (let i = 0; i < pubkeys.length; i += chunkSize) {
+    chunks.push(pubkeys.slice(i, i + chunkSize))
   }
   const data = await Promise.all(chunks.map(chunk => fetch(
     `${network.beaconExplorerUrl}/api/v1/validator/${chunk.join(',')}`
@@ -43,7 +44,7 @@ function ValidatorStatus ({ network, tokenInfo, depositData, onGoNext }) {
       } catch (error) {
         throw new Error('Oops, something went wrong while parsing your json files. Please check the files and try again.')
       }
-
+      
       let statuses = await getStatuses(network, pubkeys.map(item => item.pubkey));
 
       if(statuses.length === 0){
