@@ -127,6 +127,8 @@ function useDeposit(wallet, network, tokenInfo) {
 
   const deposit = useCallback(async () => {
     const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider.getSigner(0))
+    // if wrapper address is not null => use it for call (mainnet), otherwise use deposit address (chiado)
+    const callDest = network.address.wrapper ? network.addresses.wrapper : network.addresses.deposit
     if (isBatch) {
       try {
         setTxData({ status: 'loading' })
@@ -139,7 +141,7 @@ function useDeposit(wallet, network, tokenInfo) {
           data += deposit.signature
           data += deposit.deposit_data_root
         })
-        const tx = await token.transferAndCall(network.addresses.deposit, totalDepositAmountBN, data)
+        const tx = await token.transferAndCall(callDest, totalDepositAmountBN, data)
         setTxData({ status: 'pending', data: tx })
         await tx.wait()
         setTxData({ status: 'successful', data: tx })
@@ -164,7 +166,7 @@ function useDeposit(wallet, network, tokenInfo) {
 
           let tx = null
           try {
-            tx = await token.transferAndCall(network.addresses.deposit, depositAmountBN, data)
+            tx = await token.transferAndCall(callDest, depositAmountBN, data)
           } catch (error) {
             console.log(error)
           }
