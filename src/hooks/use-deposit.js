@@ -72,7 +72,11 @@ function useDeposit(wallet, network, tokenInfo) {
     }
 
     const wc = newDeposits[0].withdrawal_credentials
-    const isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
+    let isBatch = false;
+
+    if (newDeposits.length > 1) {
+      isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
+    }
 
     if (isBatch && newDeposits.length > 128) {
       throw Error('Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.')
@@ -135,7 +139,7 @@ function useDeposit(wallet, network, tokenInfo) {
           data += deposit.signature
           data += deposit.deposit_data_root
         })
-        const tx = await token.transferAndCall(network.addresses.wrapper, totalDepositAmountBN, data)
+        const tx = await token.transferAndCall(network.addresses.deposit, totalDepositAmountBN, data)
         setTxData({ status: 'pending', data: tx })
         await tx.wait()
         setTxData({ status: 'successful', data: tx })
@@ -160,7 +164,7 @@ function useDeposit(wallet, network, tokenInfo) {
 
           let tx = null
           try {
-            tx = await token.transferAndCall(network.addresses.wrapper, depositAmountBN, data)
+            tx = await token.transferAndCall(network.addresses.deposit, depositAmountBN, data)
           } catch (error) {
             console.log(error)
           }
