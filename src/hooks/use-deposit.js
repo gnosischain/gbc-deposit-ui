@@ -72,11 +72,8 @@ function useDeposit(wallet, network, tokenInfo) {
     }
 
     const wc = newDeposits[0].withdrawal_credentials
-    let isBatch = false;
 
-    if (newDeposits.length > 1) {
-      isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
-    }
+    const isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
 
     if (isBatch && newDeposits.length > 128) {
       throw Error('Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.')
