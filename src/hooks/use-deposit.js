@@ -73,6 +73,7 @@ function useDeposit(wallet, network, tokenInfo) {
 
     const wc = newDeposits[0].withdrawal_credentials
 
+    // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
     const isBatch = newDeposits.every(d => d.withdrawal_credentials === wc)
 
     if (isBatch && newDeposits.length > 128) {
