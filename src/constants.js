@@ -6,8 +6,8 @@ const NETWORKS = {
     symbol: 'XDAI',
     chainName: 'Gnosis Chain',
     rpcUrl: 'https://rpc.gnosischain.com',
-    blockExplorerUrl: 'https://blockscout.com/xdai/mainnet',
-    beaconExplorerUrl: 'https://beacon.gnosischain.com',
+    blockExplorerUrl: 'https://gnosisscan.io/',
+    beaconExplorerUrl: 'https://gnosischa.in',
     addresses: {
       wrapper: '0x647507A70Ff598F386CB96ae5046486389368C66',
       token: '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb',
