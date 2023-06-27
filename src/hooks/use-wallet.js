@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, isValidElement } from 'react';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
@@ -9,7 +9,16 @@ import walletConnectLogo from '../images/walletconnect.svg';
 
 import { NETWORKS } from '../constants';
 
-const rpc = Object.entries(NETWORKS).map((n) => [n[1].chainId, n[1].rpcUrl])
+const rpc = {}
+// Get supported chains
+const supportedNetworks = process.env.REACT_APP_NETWORK_IDS.split(",")
+for (var chainID in NETWORKS) {
+  let isValidNetwork = supportedNetworks.includes(chainID)
+  if (isValidNetwork) {
+    // { chainID: RPC_URL }
+    rpc[chainID] = NETWORKS[chainID].rpcUrl
+  }
+}
 
 const web3Modal = new SafeAppWeb3Modal({
   cacheProvider: true,
@@ -35,7 +44,7 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletConnectProvider,
       options: {
-        rpc: rpc,
+        rpc: rpc2
       },
       connector: async (ProviderPackage, options) => {
         const provider = new ProviderPackage(options);
