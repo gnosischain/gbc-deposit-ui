@@ -44,7 +44,7 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletConnectProvider,
       options: {
-        rpc: rpc2
+        rpc: rpc
       },
       connector: async (ProviderPackage, options) => {
         const provider = new ProviderPackage(options);
