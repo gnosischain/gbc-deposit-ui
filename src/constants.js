@@ -23,10 +23,9 @@ const NETWORKS = {
     symbol: 'CHI',
     chainName: 'Chiado Testnet',
     rpcUrl: 'https://rpc.chiadochain.net',
-    blockExplorerUrl: 'https://blockscout.chiadochain.net',
+    blockExplorerUrl: 'https://blockscout.com/gnosis/chiado',
     beaconExplorerUrl: 'https://beacon.chiadochain.net',
     addresses: {
-      wrapper: '0x917947dC7E341d843ab38e91623bcAeb65512b75',
       token: '0x19C653Da7c37c66208fbfbE8908A5051B57b4C70',
       deposit: '0xb97036A26259B7147018913bD58a774cf91acf25',
       dappnodeDeposit: null,
