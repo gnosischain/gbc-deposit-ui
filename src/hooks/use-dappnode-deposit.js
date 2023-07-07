@@ -136,28 +136,39 @@ function useDappNodeDeposit(wallet, network) {
   return { dappNodeDeposit, validate, txData, dappNodeDepositData: { deposits, filename }, setDappNodeDepositData }
 }
 
-async function getPastLogs(contract, event, { fromBlock, toBlock }, isFirstCall = false) {
-  try {
-    if (isFirstCall) {
-      throw Error('query returned more than')
+const stepSize = 50000
+const maxConcurrency = 20
+async function getPastLogs(contract, event, { fromBlock, toBlock }, isFirstCall) {
+  const allEvents = []
+  const range = toBlock - fromBlock
+
+  if (isFirstCall) {
+    const chunkSize = Math.ceil((range) / maxConcurrency);
+    const promises = [];
+
+    for (let i = 0; i < maxConcurrency; i++) {
+      const startBlock = fromBlock + i * chunkSize;
+      let endBlock = startBlock + chunkSize - 1;
+      endBlock = endBlock < toBlock ? endBlock : toBlock
+      promises.push(getPastLogs(contract, event, { fromBlock: startBlock, toBlock: endBlock }, false));
     }
-    return contract.queryFilter(event, fromBlock, toBlock)
-  } catch (e) {
-    if (e.message.includes('query returned more than') || e.message.toLowerCase().includes('timeout')) {
-      const middle = Math.round((fromBlock + toBlock) / 2)
-      const firstHalfEvents = await getPastLogs(contract, event, {
-        fromBlock,
-        toBlock: middle
-      })
-      const secondHalfEvents = await getPastLogs(contract, event, {
-        fromBlock: middle + 1,
-        toBlock
-      })
-      return [ ...firstHalfEvents, ...secondHalfEvents ]
-    } else {
-      throw e
+
+    const results = await Promise.all(promises);
+    results.forEach((result) => allEvents.push(...result));
+    return allEvents
+  }
+
+  for(;fromBlock < toBlock; fromBlock = fromBlock + stepSize) {
+    let stepBlock = fromBlock + stepSize - 1
+    stepBlock = stepBlock < toBlock ? stepBlock : toBlock
+    try {
+      const newEvents = await contract.queryFilter(event, fromBlock, stepBlock)
+      allEvents.push(...newEvents)
+    } catch (e) {
+      console.log(e)
     }
   }
+  return allEvents
 }
 
 export default useDappNodeDeposit
