@@ -44,7 +44,8 @@ const web3Modal = new SafeAppWeb3Modal({
       },
       package: WalletConnectProvider,
       options: {
-        rpc: rpc
+        rpc: rpc,
+        bridge: "https://walletconnect.gnosis.io",
       },
       connector: async (ProviderPackage, options) => {
         const provider = new ProviderPackage(options);
