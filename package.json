@@ -25,8 +25,10 @@
     "lint-staged": "^11.1.2",
     "standard": "^16.0.3"
   },
+  "type": "module",
   "scripts": {
-    "build": "react-scripts build",
+    "updateExistingDeposits": "node ./src/scripts/updateExistngDeposits.js",
+    "build": "npm run updateExistingDeposits && react-scripts build",
     "predeploy": "npm run build",
     "lint": "standard",
     "lint:fix": "standard --fix",
