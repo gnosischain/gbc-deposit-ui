@@ -126,7 +126,7 @@ function useDeposit(wallet, network, tokenInfo) {
   const deposit = useCallback(async () => {
     const token = new Contract(tokenInfo.address, erc677ABI, wallet.provider.getSigner(0))
     // if wrapper address is not null => use it for call (mainnet), otherwise use deposit address (chiado)
-    const callDest = network.address.wrapper ? network.addresses.wrapper : network.addresses.deposit
+    const callDest = network.address.wrapper ?? network.addresses.deposit
     if (isBatch) {
       try {
         setTxData({ status: 'loading' })
