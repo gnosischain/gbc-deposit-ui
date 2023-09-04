@@ -1,6 +1,7 @@
 {
   "name": "gbc-deposit-ui",
   "version": "0.1.0",
+  "type": "module",
   "engines": {
     "node": "16.14.2"
   },
