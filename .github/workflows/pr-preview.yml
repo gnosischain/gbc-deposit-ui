@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  REACT_APP_NETWORK_IDS: "100,10200"
 
 jobs:
   deploy:
