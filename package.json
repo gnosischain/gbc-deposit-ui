@@ -29,13 +29,13 @@
   },
   "scripts": {
     "build": "react-scripts build",
-    "predeploy": "npm run update-deposits && npm run build",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "start": "react-scripts start",
-    "update-deposits": "node ./src/scripts/update-deposits.js"
+    "update-deposits": "node ./src/scripts/update-deposits.js",
+    "heroku-postbuild": "npm run update-deposits && npm run build"
   },
   "eslintConfig": {
     "extends": [
