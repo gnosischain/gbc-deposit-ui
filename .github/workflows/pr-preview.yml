@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 16
 
-      - name: Yarn Install and Build
+      - name: NPM Install and Build
         run: |
           npm install
           npm run build

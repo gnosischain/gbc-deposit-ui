@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, isValidElement } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
