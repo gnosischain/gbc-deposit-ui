@@ -3,8 +3,5 @@
     "description": "Gnosis Beacon Chain Deposit UI",
     "env": {
         "REACT_APP_NETWORK_IDS": "100,10200"
-    },
-    "scripts": {
-        "postdeploy": "npm run build"
     }
 }
