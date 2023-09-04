@@ -54,7 +54,7 @@ async function getPastLogs (contract, event, { fromBlock, toBlock }, replacer) {
   }
 
   await queue.onIdle()
-  process.isTTY && process.stdout.write('\n')
+  process.stdout.isTTY && process.stdout.write("\n");
   return allEvents
 }
 
