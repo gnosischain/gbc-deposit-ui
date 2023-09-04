@@ -6,6 +6,7 @@ on:
 
 env:
   REACT_APP_NETWORK_IDS: "100,10200"
+  GITHUB_ENV: "./"
 
 jobs:
   deploy:
@@ -15,10 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.14.2
-
-      - name: Set env
-        run: echo "PUBLIC_URL=./" >> $GITHUB_ENV
+          node-version-file: 'package.json'
 
       - name: NPM Install and Build
         run: |
