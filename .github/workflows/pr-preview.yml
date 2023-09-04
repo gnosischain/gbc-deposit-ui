@@ -15,6 +15,9 @@ jobs:
         with:
           node-version: 16.14.2
 
+      - name: Set env
+        run: echo "PUBLIC_URL=./" >> $GITHUB_ENV
+
       - name: NPM Install and Build
         run: |
           npm install

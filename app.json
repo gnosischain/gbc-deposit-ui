@@ -1,8 +1,0 @@
-{
-    "name": "gbc-deposit-ui",
-    "description": "Gnosis Beacon Chain Deposit UI",
-    "env": {
-        "REACT_APP_NETWORK_IDS": "100,10200",
-        "NODE_OPTIONS": "--max_old_space_size=1024"
-    }
-}
