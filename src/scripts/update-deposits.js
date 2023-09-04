@@ -113,7 +113,7 @@ async function updateNetwork (networkId) {
   lastBlock = toBlock
 
   // Write the new deposits to file
-  const newContent = JSON.stringify({ lastBlock, deposits }, '\t')
+  const newContent = JSON.stringify({ lastBlock, deposits })
   await mkdir(path.dirname(filePath), { recursive: true })
   await writeFile(filePath, newContent, 'utf8')
 
