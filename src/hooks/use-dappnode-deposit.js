@@ -3,7 +3,7 @@ import { Contract, ethers } from 'ethers'
 
 import depositABI from "../abis/deposit"
 import dappnodeDepositABI from '../abis/dappnodeDeposit'
-import existingDeposits from '../existing_deposits.json'
+import { loadCachedDeposits } from '../utils/deposits'
 
 const INITIAL_DATA = { status: 'pending' }
 
@@ -59,7 +59,10 @@ function useDappNodeDeposit(wallet, network) {
     const depositContract = new Contract(network.addresses.deposit, depositABI, provider)
 
     console.log('Fetching existing deposits')
-    const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0
+    const {
+      deposits: existingDeposits,
+      lastBlock: fromBlock,
+    } = await loadCachedDeposits(network);
     const toBlock = await provider.getBlockNumber()
     const events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     let pks = events.map(e => e.args.pubkey)

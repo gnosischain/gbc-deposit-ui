@@ -4,7 +4,7 @@ import { formatUnits } from 'ethers/lib/utils'
 
 import erc677ABI from '../abis/erc677'
 import depositABI from '../abis/deposit'
-import existingDeposits from '../existing_deposits.json'
+import { loadCachedDeposits } from '../utils/deposits'
 
 const depositAmountBN = BigNumber.from(1).mul(BigNumber.from(ethers.constants.WeiPerEther))
 
@@ -48,9 +48,13 @@ function useDeposit(wallet, network, tokenInfo) {
     const depositContract = new Contract(network.addresses.deposit, depositABI, provider)
 
     let events = []
+    const {
+      deposits: existingDeposits,
+      lastBlock: fromBlock,
+    } = await loadCachedDeposits(network);
+      
     try {
       console.log('Fetching existing deposits')
-      const fromBlock = parseInt(network.depositStartBlockNumber, 10) || 0
       const toBlock = await provider.getBlockNumber()
       events = await getPastLogs(depositContract, 'DepositEvent', { fromBlock, toBlock }, true)
     } catch (error) {

@@ -13,7 +13,7 @@ const NETWORKS = {
       deposit: '0x0B98057eA310F4d31F2a452B414647007d1645d9',
       dappnodeDeposit: '0x6C68322cf55f5f025F2aebd93a28761182d077c3',
     },
-    depositStartBlockNumber: 22673201,
+    depositStartBlockNumber: 19475089,
   },
   10200: {
     forkVersion: "0000006f",
@@ -28,7 +28,7 @@ const NETWORKS = {
       token: '0x19C653Da7c37c66208fbfbE8908A5051B57b4C70',
       deposit: '0xb97036A26259B7147018913bD58a774cf91acf25',
     },
-    depositStartBlockNumber: 0,
+    depositStartBlockNumber: 155530,
   }
 }
 
