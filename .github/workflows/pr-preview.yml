@@ -6,7 +6,7 @@ on:
 
 env:
   REACT_APP_NETWORK_IDS: "100,10200"
-  GITHUB_ENV: "./"
+  PUBLIC_URL: "./"
 
 jobs:
   deploy:
