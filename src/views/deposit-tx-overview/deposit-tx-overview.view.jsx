@@ -51,7 +51,7 @@ function TxOverview ({ wallet, txData, onGoBack, onDisconnectWallet }) {
         <b>Note!</b> The validators will be live in 1.5 - 2 hours.{' '}
         <a
           className={classes.noteLink}
-          href="https://docs.gnosischain.com/node/guide/validator/deposit"
+          href="https://docs.gnosischain.com/node/manual/validator/deposit"
           target='_blank'
           rel='noopener noreferrer'
         >

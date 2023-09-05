@@ -52,7 +52,7 @@ function Dropzone({ onDrop, dappNode, isMultiple }) {
           <span>
             Upload deposit data file{isMultiple && 's'} <b>deposit_data.json</b>{' '}
             <a
-              href="https://docs.gnosischain.com/node/guide/validator/deposit"
+              href="https://docs.gnosischain.com/node/manual/validator/deposit"
               target='_blank'
               rel='noopener noreferrer'
               data-tip="How to generate deposit_data.json?"
