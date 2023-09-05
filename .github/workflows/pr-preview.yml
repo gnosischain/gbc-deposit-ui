@@ -6,6 +6,8 @@ on:
 
 env:
   REACT_APP_NETWORK_IDS: "100,10200"
+   # Ref: https://create-react-app.dev/docs/using-the-public-folder/
+   # Scope of Public URL: rewrite href base path to the one specified by PUBLIC_URL.
   PUBLIC_URL: "./"
 
 jobs:
