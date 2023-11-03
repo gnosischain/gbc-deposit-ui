@@ -20,6 +20,7 @@ import ValidatorStatus from '../validator-status/validator-status.view'
 import useDappnodeWhitelist from '../../hooks/use-dappnode-whitelist'
 import useDappnodeContract from '../../hooks/use-dappnode-contract'
 import { NETWORKS } from '../../constants';
+import WithdrawalClaim from '../withdrawal-claim/withdrawal-claim.view'
 
 function Stepper () {
   const classes = useStepperStyles()
@@ -41,6 +42,7 @@ function Stepper () {
   const tabs = [{ name: 'Deposit', step: Step.Deposit }]
   if(network && network.addresses.dappnodeDeposit)
     tabs.push({ name: 'DAppNode', step: Step.DappNodeDeposit })
+  tabs.push({name:'Withdrawal Claim', step: Step.WithdrawalClaim })
   tabs.push({ name: 'Validator Status', step: Step.ValidatorStatus })
 
   const [activeTab, setActiveTab] = useState(tabs[0].name)
@@ -82,7 +84,7 @@ function Stepper () {
               key={tab.name}
               className={activeTab === tab.name ? classes.tabActive : classes.tab}
               onClick={() => selectTab(tab)}
-              disabled={![Step.Deposit, Step.DappNodeDeposit, Step.DepositOverview, Step.ValidatorStatus].includes(step)}
+              disabled={![Step.Deposit, Step.DappNodeDeposit, Step.DepositOverview, Step.ValidatorStatus, Step.WithdrawalClaim].includes(step)}
             >
               <span className={classes.tabName}>{tab.name}</span>
             </button>
@@ -203,6 +205,14 @@ function Stepper () {
                   dappnodeWhitelist={dappnodeWhitelist}
                 />
               )
+            }
+            case Step.WithdrawalClaim: {
+              return <WithdrawalClaim
+                wallet={wallet}
+                network={network}
+                tokenInfo={tokenInfo}
+                balance={tokenBalance}
+                onDisconnectWallet={disconnectWallet} />
             }
             default: {
               return <></>

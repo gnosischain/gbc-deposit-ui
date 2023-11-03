@@ -1,312 +1,221 @@
 const depositABI = [
   {
-    "type":"constructor",
-    "stateMutability":"nonpayable",
-    "inputs":[
-      {
-        "type":"address",
-        "name":"_token",
-        "internalType":"address"
-      }
-    ]
+    inputs: [{ internalType: "address", name: "_token", type: "address" }],
+    stateMutability: "nonpayable",
+    type: "constructor",
   },
   {
-    "type":"event",
-    "name":"DepositEvent",
-    "inputs":[
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "bytes", name: "pubkey", type: "bytes" },
       {
-        "type":"bytes",
-        "name":"pubkey",
-        "internalType":"bytes",
-        "indexed":false
+        indexed: false,
+        internalType: "bytes",
+        name: "withdrawal_credentials",
+        type: "bytes",
       },
+      { indexed: false, internalType: "bytes", name: "amount", type: "bytes" },
       {
-        "type":"bytes",
-        "name":"withdrawal_credentials",
-        "internalType":"bytes",
-        "indexed":false
+        indexed: false,
+        internalType: "bytes",
+        name: "signature",
+        type: "bytes",
       },
-      {
-        "type":"bytes",
-        "name":"amount",
-        "internalType":"bytes",
-        "indexed":false
-      },
-      {
-        "type":"bytes",
-        "name":"signature",
-        "internalType":"bytes",
-        "indexed":false
-      },
-      {
-        "type":"bytes",
-        "name":"index",
-        "internalType":"bytes",
-        "indexed":false
-      }
+      { indexed: false, internalType: "bytes", name: "index", type: "bytes" },
     ],
-    "anonymous":false
+    name: "DepositEvent",
+    type: "event",
   },
   {
-    "type":"event",
-    "name":"Paused",
-    "inputs":[
+    anonymous: false,
+    inputs: [
       {
-        "type":"address",
-        "name":"account",
-        "internalType":"address",
-        "indexed":false
-      }
+        indexed: false,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
     ],
-    "anonymous":false
+    name: "Paused",
+    type: "event",
   },
   {
-    "type":"event",
-    "name":"Unpaused",
-    "inputs":[
+    anonymous: false,
+    inputs: [
       {
-        "type":"address",
-        "name":"account",
-        "internalType":"address",
-        "indexed":false
-      }
+        indexed: false,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
     ],
-    "anonymous":false
+    name: "Unpaused",
+    type: "event",
   },
   {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
+    inputs: [
+      { internalType: "bytes", name: "pubkeys", type: "bytes" },
+      { internalType: "bytes", name: "withdrawal_credentials", type: "bytes" },
+      { internalType: "bytes", name: "signatures", type: "bytes" },
+      {
+        internalType: "bytes32[]",
+        name: "deposit_data_roots",
+        type: "bytes32[]",
+      },
+    ],
+    name: "batchDeposit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_token", type: "address" },
+      { internalType: "address", name: "_to", type: "address" },
+    ],
+    name: "claimTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "_address", type: "address" }],
+    name: "claimWithdrawal",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address[]", name: "_addresses", type: "address[]" },
+    ],
+    name: "claimWithdrawals",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "bytes", name: "pubkey", type: "bytes" },
+      { internalType: "bytes", name: "withdrawal_credentials", type: "bytes" },
+      { internalType: "bytes", name: "signature", type: "bytes" },
+      { internalType: "bytes32", name: "deposit_data_root", type: "bytes32" },
+      { internalType: "uint256", name: "stake_amount", type: "uint256" },
+    ],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint64[]", name: "_amounts", type: "uint64[]" },
+      { internalType: "address[]", name: "_addresses", type: "address[]" },
+    ],
+    name: "executeSystemWithdrawals",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint64[]", name: "_amounts", type: "uint64[]" },
+      { internalType: "address[]", name: "_addresses", type: "address[]" },
+    ],
+    name: "executeSystemWithdrawals",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "get_deposit_count",
+    outputs: [{ internalType: "bytes", name: "", type: "bytes" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "get_deposit_root",
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "uint256", name: "stake_amount", type: "uint256" },
+      { internalType: "bytes", name: "data", type: "bytes" },
+    ],
+    name: "onTokenTransfer",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "paused",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "stake_token",
+    outputs: [{ internalType: "contract IERC20", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IUnwrapper",
+        name: "_unwrapper",
+        type: "address",
+      },
+      { internalType: "contract IERC20", name: "_token", type: "address" },
+    ],
+    name: "unwrapTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes", name: "", type: "bytes" }],
+    name: "validator_withdrawal_credentials",
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "withdrawableAmount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
-    ],
-    "name":"batchDeposit",
-    "inputs":[
-      {
-        "type":"bytes",
-        "name":"pubkeys",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes",
-        "name":"withdrawal_credentials",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes",
-        "name":"signatures",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes32[]",
-        "name":"deposit_data_roots",
-        "internalType":"bytes32[]"
-      }
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
-
-    ],
-    "name":"claimTokens",
-    "inputs":[
-      {
-        "type":"address",
-        "name":"_token",
-        "internalType":"address"
-      },
-      {
-        "type":"address",
-        "name":"_to",
-        "internalType":"address"
-      }
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
-
-    ],
-    "name":"deposit",
-    "inputs":[
-      {
-        "type":"bytes",
-        "name":"pubkey",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes",
-        "name":"withdrawal_credentials",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes",
-        "name":"signature",
-        "internalType":"bytes"
-      },
-      {
-        "type":"bytes32",
-        "name":"deposit_data_root",
-        "internalType":"bytes32"
-      },
-      {
-        "type":"uint256",
-        "name":"stake_amount",
-        "internalType":"uint256"
-      }
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"view",
-    "outputs":[
-      {
-        "type":"bytes",
-        "name":"",
-        "internalType":"bytes"
-      }
-    ],
-    "name":"get_deposit_count",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"view",
-    "outputs":[
-      {
-        "type":"bytes32",
-        "name":"",
-        "internalType":"bytes32"
-      }
-    ],
-    "name":"get_deposit_root",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
-      {
-        "type":"bool",
-        "name":"",
-        "internalType":"bool"
-      }
-    ],
-    "name":"onTokenTransfer",
-    "inputs":[
-      {
-        "type":"address",
-        "name":"",
-        "internalType":"address"
-      },
-      {
-        "type":"uint256",
-        "name":"stake_amount",
-        "internalType":"uint256"
-      },
-      {
-        "type":"bytes",
-        "name":"data",
-        "internalType":"bytes"
-      }
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
-
-    ],
-    "name":"pause",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"view",
-    "outputs":[
-      {
-        "type":"bool",
-        "name":"",
-        "internalType":"bool"
-      }
-    ],
-    "name":"paused",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"view",
-    "outputs":[
-      {
-        "type":"address",
-        "name":"",
-        "internalType":"contract IERC20"
-      }
-    ],
-    "name":"stake_token",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"pure",
-    "outputs":[
-      {
-        "type":"bool",
-        "name":"",
-        "internalType":"bool"
-      }
-    ],
-    "name":"supportsInterface",
-    "inputs":[
-      {
-        "type":"bytes4",
-        "name":"interfaceId",
-        "internalType":"bytes4"
-      }
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"nonpayable",
-    "outputs":[
-
-    ],
-    "name":"unpause",
-    "inputs":[
-
-    ]
-  },
-  {
-    "type":"function",
-    "stateMutability":"view",
-    "outputs":[
-      {
-        "type":"bytes32",
-        "name":"",
-        "internalType":"bytes32"
-      }
-    ],
-    "name":"validator_withdrawal_credentials",
-    "inputs":[
-      {
-        "type":"bytes",
-        "name":"",
-        "internalType":"bytes"
-      }
-    ]
-  }
-]
-
-export default depositABI
+export default depositABI;
