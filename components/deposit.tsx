@@ -1,5 +1,6 @@
 "use client";
 
+import useDeposit from "@/hooks/use-deposit";
 import { truncateAddress } from "@/utils/truncateAddress";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { ArrowRightStartOnRectangleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
@@ -15,6 +16,7 @@ export default function Deposit() {
   const balance = useBalance({ address: account.address, chainId: gnosis.id });
   const { disconnect } = useDisconnect();
   const router = useRouter();
+  const { deposit, txData: depositTxData, depositData, setDepositData } = useDeposit(account);
 
   useAccountEffect({
     onDisconnect() {

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { UseAccountReturnType, useReadContract } from "wagmi";
+import { UseAccountReturnType, useReadContract, useWriteContract } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import depositABI from "@/utils/abis/deposit";
@@ -26,10 +26,11 @@ type DepositDataJson = {
 
 function useDeposit(account: UseAccountReturnType) {
   const [txData, setTxData] = useState(INITIAL_DATA);
-  const [deposits, setDeposits] = useState(null);
+  const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
-  const [filename, setFilename] = useState(null);
+  const [filename, setFilename] = useState("");
+  const { data: hash, isPending, writeContract } = useWriteContract() 
 
   const chainId = account?.chainId || 0;
 
@@ -126,7 +127,7 @@ function useDeposit(account: UseAccountReturnType) {
   );
 
   const setDepositData = useCallback(
-    async (fileData, filename) => {
+    async (fileData: string, filename: string) => {
       setFilename(filename);
       if (fileData) {
         let data;
@@ -140,7 +141,7 @@ function useDeposit(account: UseAccountReturnType) {
         setHasDuplicates(hasDuplicates);
         setIsBatch(isBatch);
       } else {
-        setDeposits(null);
+        setDeposits([]);
         setHasDuplicates(false);
         setIsBatch(false);
       }
@@ -149,36 +150,34 @@ function useDeposit(account: UseAccountReturnType) {
   );
 
   const deposit = useCallback(async () => {
-    const token = new Contract(tokenInfo.address, ERC677ABI, account.provider.getSigner(0));
-    // if wrapper address is not null => use it for call (mainnet), otherwise use deposit address (chiado)
-    const callDest = network.addresses.wrapper ?? network.addresses.deposit;
     if (isBatch) {
       try {
         setTxData({ status: "loading" });
-        const totalDepositAmountBN = depositAmountBN.mul(BigNumber.from(deposits.length));
+        const totalDepositAmountBN = depositAmountBN * BigInt(deposits.length);
         console.log(`Sending deposit transaction for ${deposits.length} deposits`);
-        let data = "0x";
+        let data = "";
         data += deposits[0].withdrawal_credentials;
         deposits.forEach((deposit) => {
           data += deposit.pubkey;
           data += deposit.signature;
           data += deposit.deposit_data_root;
         });
-        const tx = await token.transferAndCall(callDest, totalDepositAmountBN, data);
-        setTxData({ status: "pending", data: tx });
-        await tx.wait();
-        setTxData({ status: "successful", data: tx });
-        console.log(`\tTx hash: ${tx.hash}`);
+        writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, totalDepositAmountBN, `0x${data}`]  });
+        // const tx = await token.transferAndCall(callDest, totalDepositAmountBN, data);
+        // setTxData({ status: "pending", data: tx });
+        // await tx.wait();
+        // setTxData({ status: "successful", data: tx });
+        // console.log(`\tTx hash: ${tx.hash}`);
       } catch (err) {
-        let error = "Transaction failed.";
-        if (err?.code === -32603) {
-          error = "Transaction was not sent because of the low gas price. Try to increase it.";
-        }
-        setTxData({ status: "failed", error });
+        // let error = "Transaction failed.";
+        // if (err?.code === -32603) {
+        //   error = "Transaction was not sent because of the low gas price. Try to increase it.";
+        // }
+        // setTxData({ status: "failed", error });
         console.log(err);
       }
     } else {
-      setTxData({ status: "loading", isArray: true });
+      // setTxData({ status: "loading", isArray: true });
       let txs = await Promise.all(
         deposits.map(async (deposit) => {
           let data = "0x";
@@ -189,7 +188,8 @@ function useDeposit(account: UseAccountReturnType) {
 
           let tx = null;
           try {
-            tx = await token.transferAndCall(callDest, depositAmountBN, data);
+            writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`]  });
+            // tx = await token.transferAndCall(callDest, depositAmountBN, data);
           } catch (error) {
             console.log(error);
           }
@@ -198,18 +198,18 @@ function useDeposit(account: UseAccountReturnType) {
       );
       txs = txs.filter((tx) => !!tx);
       if (!txs.length) {
-        setTxData({ status: "failed", isArray: true, error: "All transactions were rejected" });
+        // setTxData({ status: "failed", isArray: true, error: "All transactions were rejected" });
       }
-      setTxData({ status: "pending", isArray: true, data: txs });
-      await Promise.all(txs.map((tx) => tx.wait()));
-      setTxData({ status: "successful", isArray: true, data: txs });
+      // setTxData({ status: "pending", isArray: true, data: txs });
+      // await Promise.all(txs.map((tx) => tx.wait()));
+      // setTxData({ status: "successful", isArray: true, data: txs });
     }
-  }, [account, network, tokenInfo, deposits, isBatch]);
+  }, [account, deposits, isBatch]);
 
   return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData };
 }
 
-async function getPastLogs(contract: Address, event: string, fromBlock: bigint, toBlock: bigint, isFirstCall = false) {
+async function getPastLogs(contract: Address, event: any, fromBlock: bigint, toBlock: bigint, isFirstCall = false) {
   try {
     if (isFirstCall) {
       throw Error("query returned more than");
