@@ -5,15 +5,22 @@ import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { ArrowRightStartOnRectangleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { formatEther } from "viem";
 import { gnosis } from "viem/chains";
-import { useAccount, useBalance, useDisconnect } from "wagmi";
+import { useAccount, useAccountEffect, useBalance, useDisconnect } from "wagmi";
 
 export default function Deposit() {
   const account = useAccount();
   const balance = useBalance({ address: account.address, chainId: gnosis.id });
   const { disconnect } = useDisconnect();
   const router = useRouter();
+
+  useAccountEffect({
+    onDisconnect() {
+      router.push("/");
+    },
+  });
 
   return (
     <div className="w-full h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center px-4 py-6">
@@ -42,7 +49,7 @@ export default function Deposit() {
           <div className="flex font-bold items-center">
             deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
           </div>
-          <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8"/>
+          <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8" />
           <div>Drag file to upload or browse</div>
         </div>
       </div>
