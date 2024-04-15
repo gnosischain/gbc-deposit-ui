@@ -30,7 +30,7 @@ export default function Page({
               <p className="text-[6px] lg:text-[8px] mt-2">BEACON CHAIN DEPOSIT</p>
             </div>
           </div>
-          <Link target="_blank" className="w-2/4 flex justify-center text-sm lg:text-base items-center underline" href={"https://docs.gnosischain.com/node/"}>
+          <Link target="_blank" className="w-2/4 flex justify-center text-sm lg:text-base items-center underline hover:text-slate-200" href={"https://docs.gnosischain.com/node/"}>
             Learn more about the Gnosis Beacon Chain
           </Link>
           <div className="w-1/4 flex justify-center items-center">

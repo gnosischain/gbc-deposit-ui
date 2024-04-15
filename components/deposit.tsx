@@ -8,7 +8,7 @@ import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 
 export default function Deposit() {
-  const { deposit, txData: depositTxData, depositData, setDepositData, balance } = useDeposit();
+  const { setDepositData } = useDeposit();
   const onDrop = useCallback(async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -28,7 +28,7 @@ export default function Deposit() {
       <div className="flex font-bold items-center">
         deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
       </div>
-      <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8" />
+      <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8 rounded-full shadow-lg" />
       <div>Drag file to upload or browse</div>
     </div>
   );
