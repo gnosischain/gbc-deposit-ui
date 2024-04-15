@@ -98,8 +98,8 @@ function useDeposit(account: UseAccountReturnType) {
         throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
       }
 
-      if (!newDeposits.every((d) => BigInt(d.amount) === depositAmountBN)) {
-        throw Error("Amount should be exactly 1 tokens for deposits.");
+      if (!newDeposits.every((d) => BigInt(d.amount) === BigInt(32000000000))) {
+        throw Error("Amount should be exactly 32 tokens for deposits.");
       }
 
       const pubKeys = newDeposits.map((d) => d.pubkey);
