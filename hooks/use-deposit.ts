@@ -41,6 +41,12 @@ function useDeposit() {
     functionName: "balanceOf",
     args: [account.address || "0x0"],
   });
+  const { data: claimBalance } = useReadContract({
+    abi: depositABI,
+    address: contractConfig?.addresses.deposit,
+    functionName: "withdrawableAmount",
+    args: [account.address || "0x0"],
+  });
   const { data: hash, isPending, writeContract } = useWriteContract();
 
 
@@ -199,7 +205,11 @@ function useDeposit() {
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
+  const claim = useCallback(async() =>{
+    writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
+  }, [account])
+
+  return { deposit, claim, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, claimBalance };
 }
 
 async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {

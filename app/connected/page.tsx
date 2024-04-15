@@ -4,6 +4,7 @@ import Deposit from "@/components/deposit";
 import NavigationTab from "@/components/navigation-tab";
 import Link from "next/link";
 import Withdrawal from "@/components/withdrawal";
+import Dashboard from "@/components/dashboard";
 
 export default function Page({
   searchParams,
@@ -20,7 +21,7 @@ export default function Page({
           <NavigationTab value="withdrawal" />
           <NavigationTab value="validator" />
         </div>
-        {searchParams?.state == "deposit" ? <Deposit /> : searchParams?.state == "withdrawal" ? <Withdrawal /> : ""}
+        <Dashboard />
         <div className="w-full flex justify-between">
           <div className="w-1/4 flex">
             <Image src="/logo.svg" alt="Gnosis Logo" width={45} height={24} />
