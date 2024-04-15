@@ -12,7 +12,7 @@ import { formatEther } from "viem";
 import { useAccount, useAccountEffect, useDisconnect } from "wagmi";
 import { FileRejection } from "react-dropzone";
 
-export default function Deposit() {
+export default function Withdrawal() {
   const account = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
@@ -43,14 +43,10 @@ export default function Deposit() {
           <div className="w-min bg-[#133629] flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer">
             {truncateAddress(account.address ? account.address : "")} <DocumentDuplicateIcon className="ml-2 h-5 w-5" />
           </div>
-          <div className="w-full lg:hidden bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col items-center rounded-2xl hover:cursor-pointer" {...getRootProps()}>
-            <input {...getInputProps()} />
-            Upload deposit date file
-            <div className="flex font-bold items-center">
-              deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
-            </div>
-            <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8" />
-            <div>Drag file to upload or browse</div>
+          <div className="w-full flex lg:hidden w-4/6 bg-[#FFFFFFB2] h-[280px] p-6 flex-col justify-center items-center rounded-2xl hover:cursor-pointer">
+            Claimable balance:
+            <div className="flex font-bold items-center my-8">XX GNOS</div>
+            <div className="bg-[#DD7143] px-6 py-2 rounded-full text-white text-lg font-semibold">Claim</div>
           </div>
           <div className="flex flex-col justify-between items-start mt-2 lg:mt-0">
             <div className="flex items-center gap-x-2 lg:block">
@@ -72,14 +68,10 @@ export default function Deposit() {
             </button>
           </div>
         </div>
-        <div className="hidden w-4/6 bg-[#FFFFFFB2] h-[280px] p-6 lg:flex flex-col items-center rounded-2xl hover:cursor-pointer" {...getRootProps()}>
-          <input {...getInputProps()} />
-          Upload deposit date file
-          <div className="flex font-bold items-center">
-            deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
-          </div>
-          <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8" />
-          <div>Drag file to upload or browse</div>
+        <div className="hidden w-4/6 bg-[#FFFFFFB2] h-[280px] p-6 lg:flex flex-col justify-center items-center rounded-2xl hover:cursor-pointer">
+          Claimable balance:
+          <div className="flex font-bold items-center my-8">XX GNOS</div>
+          <div className="bg-[#DD7143] px-6 py-2 rounded-full text-white text-lg font-semibold">Claim</div>
         </div>
       </div>
     </div>

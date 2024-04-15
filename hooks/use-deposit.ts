@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { UseAccountReturnType, useReadContract, useWriteContract } from "wagmi";
+import { UseAccountReturnType, useAccount, useReadContract, useWriteContract } from "wagmi";
 import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import depositABI from "@/utils/abis/deposit";
@@ -9,7 +9,7 @@ import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 
 const depositAmountBN = parseUnits("1", 18);
-const BLOCK_RANGE_SIZE = 500000;
+const BLOCK_RANGE_SIZE = 50000;
 
 const INITIAL_DATA = { status: "pending" };
 
@@ -25,12 +25,13 @@ type DepositDataJson = {
   fork_version: string;
 };
 
-function useDeposit(account: UseAccountReturnType) {
+function useDeposit() {
   const [txData, setTxData] = useState(INITIAL_DATA);
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
+  const account = useAccount();
 
   const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
@@ -54,8 +55,6 @@ function useDeposit(account: UseAccountReturnType) {
         return depositDataJson.pubkey && depositDataJson.withdrawal_credentials && depositDataJson.amount && depositDataJson.signature && depositDataJson.deposit_message_root && depositDataJson.deposit_data_root && depositDataJson.fork_version;
       };
 
-      console.log(account.chainId);
-
       if (!deposits.every) {
         throw Error("Oops, something went wrong while parsing your json file. Please check the file and try again.");
       }
@@ -73,7 +72,6 @@ function useDeposit(account: UseAccountReturnType) {
       //   console.log("Fetching existing deposits");
       const events = await fetchAllEvents(contractConfig.addresses.deposit, fromBlock);
 
-      console.log(events)
       let pks = events.map((e) => e.topics[1]);
       pks = pks.concat(existingDeposits);
       console.log(`Found ${pks.length} existing deposits`);
@@ -201,7 +199,7 @@ function useDeposit(account: UseAccountReturnType) {
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData };
+  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
 }
 
 async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {

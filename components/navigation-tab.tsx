@@ -3,8 +3,16 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface NavigationTabProps {
-  value: string;
+  value: ActionKey;
 }
+
+type ActionKey = "deposit" | "withdrawal" | "validator";
+
+const texts: Record<ActionKey, string> = {
+  deposit: "Deposit",
+  withdrawal: "Withdrawal Claim",
+  validator: "Validator Status",
+};
 
 export default function NavigationTab({ value }: NavigationTabProps) {
   const searchParams = useSearchParams();
@@ -18,8 +26,8 @@ export default function NavigationTab({ value }: NavigationTabProps) {
   };
 
   return (
-    <div onClick={handleClick} className={`${searchParams.get("state") == value ? "border-[#DD7143]" : ""} w-full flex justify-center p-3.5 font-bold border-b-2`}>
-      {value}
+    <div onClick={handleClick} className={`${searchParams.get("state") == value ? "border-[#DD7143]" : ""} w-full flex justify-center p-3.5 font-bold border-b-2 hover:cursor-pointer`}>
+      {texts[value]}
     </div>
   );
 }

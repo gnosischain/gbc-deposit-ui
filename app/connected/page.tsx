@@ -2,6 +2,8 @@ import Image from "next/image";
 import DropDown from "@/components/dropdown";
 import Deposit from "@/components/deposit";
 import NavigationTab from "@/components/navigation-tab";
+import Link from "next/link";
+import Withdrawal from "@/components/withdrawal";
 
 export default function Page({
   searchParams,
@@ -14,11 +16,11 @@ export default function Page({
     <main className="flex h-screen flex-col items-center justify-center">
       <div className="w-full lg:w-[775px] bg-[#133629CC] backdrop-blur-sm p-4 rounded-2xl flex gap-y-6 flex-col justify-start items-center">
         <div className="w-full gap-x-4 flex justify-between">
-          <NavigationTab value="deposit"/>
-          <NavigationTab value="withdrawal"/>
-          <NavigationTab value="validator"/>
+          <NavigationTab value="deposit" />
+          <NavigationTab value="withdrawal" />
+          <NavigationTab value="validator" />
         </div>
-        <Deposit />
+        {searchParams?.state == "deposit" ? <Deposit /> : searchParams?.state == "withdrawal" ? <Withdrawal /> : ""}
         <div className="w-full flex justify-between">
           <div className="w-1/4 flex">
             <Image src="/logo.svg" alt="Gnosis Logo" width={45} height={24} />
@@ -27,7 +29,9 @@ export default function Page({
               <p className="text-[6px] lg:text-[8px] mt-2">BEACON CHAIN DEPOSIT</p>
             </div>
           </div>
-          <div className="w-2/4 flex justify-center text-sm lg:text-base items-center underline">Learn more about the Gnosis Beacon Chain</div>
+          <Link target="_blank" className="w-2/4 flex justify-center text-sm lg:text-base items-center underline" href={"https://docs.gnosischain.com/node/"}>
+            Learn more about the Gnosis Beacon Chain
+          </Link>
           <div className="w-1/4 flex justify-center items-center">
             {" "}
             <DropDown />{" "}
