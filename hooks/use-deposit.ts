@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { UseAccountReturnType, useReadContract, useWriteContract } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import depositABI from "@/utils/abis/deposit";
 import { Address, formatUnits, parseUnits } from "viem";
@@ -9,6 +9,7 @@ import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 
 const depositAmountBN = parseUnits("1", 18);
+const BLOCK_RANGE_SIZE = 500000;
 
 const INITIAL_DATA = { status: "pending" };
 
@@ -30,11 +31,18 @@ function useDeposit(account: UseAccountReturnType) {
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const { data: hash, isPending, writeContract } = useWriteContract() 
 
-  const chainId = account?.chainId || 0;
-
+  const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
+  const { data: balance } = useReadContract({
+    abi: ERC677ABI,
+    address: contractConfig?.addresses.token,
+    functionName: "balanceOf",
+    args: [account.address || "0x0"],
+  });
+  const { data: hash, isPending, writeContract } = useWriteContract();
+
+
 
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
@@ -60,17 +68,12 @@ function useDeposit(account: UseAccountReturnType) {
         throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + account.chain);
       }
 
-      // let events;
       const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
 
-      // try {
       //   console.log("Fetching existing deposits");
-      const toBlock = await client.getBlockNumber();
-      const events = await client.getContractEvents({ abi: depositABI, address: contractConfig.addresses.deposit, eventName: "DepositEvent", fromBlock: fromBlock, toBlock: toBlock });
-      // let filter = await getPastLogs(contractConfig.addresses.deposit, "DepositEvent", fromBlock, toBlock, true);
-      // } catch (error) {
-      //   throw Error("Failed to fetch existing deposits. Please try again");
-      // }
+      const events = await fetchAllEvents(contractConfig.addresses.deposit, fromBlock);
+
+      console.log(events)
       let pks = events.map((e) => e.topics[1]);
       pks = pks.concat(existingDeposits);
       console.log(`Found ${pks.length} existing deposits`);
@@ -95,7 +98,7 @@ function useDeposit(account: UseAccountReturnType) {
         throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
       }
 
-      if (!newDeposits.every((d) => d.amount === depositAmountBN)) {
+      if (!newDeposits.every((d) => BigInt(d.amount) === depositAmountBN)) {
         throw Error("Amount should be exactly 1 tokens for deposits.");
       }
 
@@ -104,18 +107,9 @@ function useDeposit(account: UseAccountReturnType) {
         throw Error("Duplicated public keys.");
       }
 
-      // const token = new Contract(tokenInfo.address, ERC677ABI, provider);
       const totalDepositAmountBN = depositAmountBN * BigInt(newDeposits.length);
-      const { data: _balance } = useReadContract({
-        abi: ERC677ABI,
-        address: contractConfig.addresses.token,
-        functionName: "balanceOf",
-        args: [account.address || "0x0"],
-      });
 
-      const balance = _balance ? _balance : BigInt(0);
-
-      if (balance < totalDepositAmountBN) {
+      if (balance && balance < totalDepositAmountBN) {
         throw Error(`
         Unsufficient balance. ${Number(formatUnits(totalDepositAmountBN, 18))} is required.
       `);
@@ -130,7 +124,7 @@ function useDeposit(account: UseAccountReturnType) {
     async (fileData: string, filename: string) => {
       setFilename(filename);
       if (fileData) {
-        let data;
+        let data: DepositDataJson[];
         try {
           data = JSON.parse(fileData);
         } catch (error) {
@@ -162,7 +156,7 @@ function useDeposit(account: UseAccountReturnType) {
           data += deposit.signature;
           data += deposit.deposit_data_root;
         });
-        writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, totalDepositAmountBN, `0x${data}`]  });
+        writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, totalDepositAmountBN, `0x${data}`] });
         // const tx = await token.transferAndCall(callDest, totalDepositAmountBN, data);
         // setTxData({ status: "pending", data: tx });
         // await tx.wait();
@@ -178,6 +172,7 @@ function useDeposit(account: UseAccountReturnType) {
       }
     } else {
       // setTxData({ status: "loading", isArray: true });
+      console.log("sending deposit transaction");
       let txs = await Promise.all(
         deposits.map(async (deposit) => {
           let data = "0x";
@@ -188,7 +183,7 @@ function useDeposit(account: UseAccountReturnType) {
 
           let tx = null;
           try {
-            writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`]  });
+            writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`] });
             // tx = await token.transferAndCall(callDest, depositAmountBN, data);
           } catch (error) {
             console.log(error);
@@ -209,29 +204,31 @@ function useDeposit(account: UseAccountReturnType) {
   return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData };
 }
 
-async function getPastLogs(contract: Address, event: any, fromBlock: bigint, toBlock: bigint, isFirstCall = false) {
-  try {
-    if (isFirstCall) {
-      throw Error("query returned more than");
-    }
-    const filter = await client.createContractEventFilter({ abi: depositABI, address: contract, eventName: event, fromBlock: fromBlock, toBlock: toBlock });
-    return filter;
-  } catch (e) {
-    // if (e.message.includes("query returned more than") || e.message.toLowerCase().includes("timeout")) {
-    //   const middle = Math.round((fromBlock + toBlock) / 2);
-    //   const firstHalfEvents = await getPastLogs(contract, event, {
-    //     fromBlock,
-    //     toBlock: middle,
-    //   });
-    //   const secondHalfEvents = await getPastLogs(contract, event, {
-    //     fromBlock: middle + 1,
-    //     toBlock,
-    //   });
-    //   return [...firstHalfEvents, ...secondHalfEvents];
-    // } else {
-    throw e;
-    // }
+async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {
+  const toBlock = await client.getBlockNumber();
+  
+  let currentBlock = BigInt(fromBlock);
+  const endBlock = BigInt(toBlock);
+  let allEvents = [];
+
+  while (currentBlock <= endBlock) {
+      const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
+      
+      console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
+      
+      const events = await client.getContractEvents({
+          abi: depositABI,
+          address: depositAddress,
+          eventName: "DepositEvent",
+          fromBlock: currentBlock,
+          toBlock: nextBlock
+      });
+
+      allEvents.push(...events);
+      currentBlock = nextBlock + BigInt(1);
   }
+
+  return allEvents;
 }
 
 export default useDeposit;

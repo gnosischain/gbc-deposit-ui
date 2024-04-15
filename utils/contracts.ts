@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 
-type ContractNetwork = {
+export type ContractNetwork = {
   forkVersion: string;
   addresses: {
     token: Address;
