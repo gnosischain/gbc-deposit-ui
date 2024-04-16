@@ -12,7 +12,7 @@ export default function DropDown() {
     <div className="w-56 text-right">
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white text-black px-4 py-2 text-xs lg:text-sm font-medium hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
+          <Menu.Button className="inline-flex w-full justify-center items-center rounded-md bg-white text-black px-4 py-2 text-xs lg:text-sm font-medium hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
             Stay Updated
             <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100" aria-hidden="true" />
           </Menu.Button>
