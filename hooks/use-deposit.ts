@@ -7,6 +7,7 @@ import { Address, formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
+import Deposit from "@/components/deposit";
 
 const depositAmountBN = parseUnits("1", 18);
 const BLOCK_RANGE_SIZE = 50000;
@@ -70,7 +71,7 @@ function useDeposit() {
       }
 
       if (!deposits.every((d) => d.fork_version === contractConfig.forkVersion)) {
-        throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + account.chain);
+        throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + account.chainId);
       }
 
       const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
@@ -113,9 +114,13 @@ function useDeposit() {
 
       const totalDepositAmountBN = depositAmountBN * BigInt(newDeposits.length);
 
-      if (balance && balance < totalDepositAmountBN) {
+      if (balance === undefined) {
+        throw Error("Balance not loaded.");
+      }
+
+      if (balance < totalDepositAmountBN) {
         throw Error(`
-        Unsufficient balance. ${Number(formatUnits(totalDepositAmountBN, 18))} is required.
+        Unsufficient balance. ${Number(formatUnits(totalDepositAmountBN, 18))} GNO is required.
       `);
       }
 
@@ -128,7 +133,7 @@ function useDeposit() {
     async (fileData: string, filename: string) => {
       setFilename(filename);
       if (fileData) {
-        let data: DepositDataJson[];
+        let data: DepositDataJson[] = [];
         try {
           data = JSON.parse(fileData);
         } catch (error) {
