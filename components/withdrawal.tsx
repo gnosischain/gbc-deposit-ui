@@ -1,18 +1,7 @@
-"use client";
-
 import useClaimBalance from "@/hooks/use-claim-balance";
-import { useRouter } from "next/navigation";
-import { useAccount, useAccountEffect } from "wagmi";
 
 export default function Withdrawal() {
-  const router = useRouter();
   const { claim, claimBalance } = useClaimBalance();
-
-  useAccountEffect({
-    onDisconnect() {
-      router.push("/");
-    },
-  });
 
   return (
     <div className="w-full bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col justify-center items-center rounded-2xl">

@@ -9,7 +9,7 @@ import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 
 const depositAmountBN = parseUnits("1", 18);
-const BLOCK_RANGE_SIZE = 20000;
+const BLOCK_RANGE_SIZE = 5000;
 
 const INITIAL_DATA = { status: "pending" };
 
