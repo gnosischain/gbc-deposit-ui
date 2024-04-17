@@ -1,13 +1,12 @@
 "use client";
 
-import useDeposit from "@/hooks/use-deposit";
+import useClaimBalance from "@/hooks/use-claim-balance";
 import { useRouter } from "next/navigation";
 import { useAccount, useAccountEffect } from "wagmi";
 
 export default function Withdrawal() {
-  const account = useAccount();
   const router = useRouter();
-  const { claim, claimBalance } = useDeposit();
+  const { claim, claimBalance } = useClaimBalance();
 
   useAccountEffect({
     onDisconnect() {

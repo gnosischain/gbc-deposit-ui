@@ -1,16 +1,15 @@
 import { useCallback, useState } from "react";
-import { UseAccountReturnType, useAccount, useReadContract, useWriteContract } from "wagmi";
-import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import CONTRACTS from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import depositABI from "@/utils/abis/deposit";
 import { Address, formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
-import Deposit from "@/components/deposit";
 
 const depositAmountBN = parseUnits("1", 18);
-const BLOCK_RANGE_SIZE = 50000;
+const BLOCK_RANGE_SIZE = 20000;
 
 const INITIAL_DATA = { status: "pending" };
 
@@ -40,12 +39,6 @@ function useDeposit() {
     abi: ERC677ABI,
     address: contractConfig?.addresses.token,
     functionName: "balanceOf",
-    args: [account.address || "0x0"],
-  });
-  const { data: claimBalance } = useReadContract({
-    abi: depositABI,
-    address: contractConfig?.addresses.deposit,
-    functionName: "withdrawableAmount",
     args: [account.address || "0x0"],
   });
   const { data: hash, isPending, writeContract } = useWriteContract();
@@ -210,11 +203,7 @@ function useDeposit() {
     }
   }, [account, deposits, isBatch]);
 
-  const claim = useCallback(async() =>{
-    writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
-  }, [account])
-
-  return { deposit, claim, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, claimBalance };
+  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
 }
 
 async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {

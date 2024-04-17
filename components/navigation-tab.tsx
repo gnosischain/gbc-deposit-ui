@@ -6,12 +6,13 @@ interface NavigationTabProps {
   value: ActionKey;
 }
 
-type ActionKey = "deposit" | "withdrawal" | "validator";
+type ActionKey = "deposit" | "withdrawal" | "validator" | "autoclaim";
 
 const texts: Record<ActionKey, string> = {
   deposit: "Deposit",
   withdrawal: "Withdrawal Claim",
   validator: "Validator Status",
+  autoclaim: "Reward Autoclaim",
 };
 
 export default function NavigationTab({ value }: NavigationTabProps) {

@@ -1,9 +1,7 @@
 import Image from "next/image";
 import DropDown from "@/components/dropdown";
-import Deposit from "@/components/deposit";
 import NavigationTab from "@/components/navigation-tab";
 import Link from "next/link";
-import Withdrawal from "@/components/withdrawal";
 import Dashboard from "@/components/dashboard";
 
 export default function Page({
@@ -20,6 +18,7 @@ export default function Page({
           <NavigationTab value="deposit" />
           <NavigationTab value="withdrawal" />
           <NavigationTab value="validator" />
+          {/* <NavigationTab value="autoclaim" /> */}
         </div>
         <Dashboard />
         <div className="w-full flex justify-between">
