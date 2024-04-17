@@ -8,7 +8,7 @@ import { formatEther } from "viem";
 import { useAccount, useAccountEffect, useDisconnect } from "wagmi";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -17,6 +17,8 @@ export default function Dashboard() {
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const { balance } = useDeposit();
+  const [address, setAddress] = useState('');
+  const [network, setNetwork] = useState('');
 
   useAccountEffect({
     onConnect() {
@@ -26,6 +28,18 @@ export default function Dashboard() {
       router.push("/");
     },
   });
+
+  useEffect(() => {
+    if (account.address) {
+      setAddress(account.address);
+    }
+  }, [account.address]);
+
+  useEffect(() => {
+    if (account.chain?.name) {
+      setNetwork(account.chain.name);
+    }
+  }, [account.chain?.name]);
 
   console.log(account.isConnected, account.isConnecting, account.isReconnecting);
 
@@ -49,7 +63,7 @@ export default function Dashboard() {
       <div className="w-full flex mt-4">
         <div className="w-full lg:w-2/6 flex flex-col text-base">
           <div className="w-min bg-[#133629] hidden lg:flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer hover:bg-[#2a4a3e]" onClick={handleCopyAddress}>
-            {truncateAddress(account.address ? account.address : "")} {isCopied ? <CheckIcon className="ml-2 h-5 w-5" /> : <DocumentDuplicateIcon className="ml-2 h-5 w-5" />}
+            {truncateAddress(address)} {isCopied ? <CheckIcon className="ml-2 h-5 w-5" /> : <DocumentDuplicateIcon className="ml-2 h-5 w-5" />}
           </div>
           <div className="flex lg:hidden">{searchParams.get("state") == "deposit" ? <Deposit /> : searchParams.get("state") == "withdrawal" ? <Withdrawal /> : ""}</div>
           <div className="flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0">
@@ -59,7 +73,7 @@ export default function Dashboard() {
             </div>
             <div>
               Network:
-              <p className="font-bold text-lg">{account.chain?.name}</p>
+              <p className="font-bold text-lg">{network}</p>
             </div>
             <button
               onClick={() => {

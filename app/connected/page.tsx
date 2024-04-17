@@ -1,3 +1,5 @@
+'use client'; //TODO move down suspense into components
+
 import Image from "next/image";
 import DropDown from "@/components/dropdown";
 import NavigationTab from "@/components/navigation-tab";
