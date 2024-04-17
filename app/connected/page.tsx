@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <main className="flex h-screen flex-col items-center justify-center">
-        <div className="w-full lg:w-[775px] bg-[#133629CC] backdrop-blur-sm p-4 rounded-2xl flex gap-y-6 flex-col justify-start items-center">
+        <div className="w-full lg:w-[775px] bg-[#133629CC] h-full lg:h-auto backdrop-blur-sm p-4 lg:rounded-2xl flex gap-y-6 flex-col justify-start items-center">
           <div className="w-full gap-x-4 flex justify-between">
             <NavigationTab value="deposit" />
             <NavigationTab value="withdrawal" />
