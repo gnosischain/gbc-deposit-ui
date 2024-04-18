@@ -26,7 +26,6 @@ type DepositDataJson = {
 };
 
 function useDeposit() {
-  const [txData, setTxData] = useState(INITIAL_DATA);
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
@@ -42,8 +41,6 @@ function useDeposit() {
     args: [account.address || "0x0"],
   });
   const { data: hash, isPending, writeContract } = useWriteContract();
-
-
 
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
@@ -148,7 +145,6 @@ function useDeposit() {
   const deposit = useCallback(async () => {
     if (isBatch) {
       try {
-        setTxData({ status: "loading" });
         const totalDepositAmountBN = depositAmountBN * BigInt(deposits.length);
         console.log(`Sending deposit transaction for ${deposits.length} deposits`);
         let data = "";
@@ -159,23 +155,12 @@ function useDeposit() {
           data += deposit.deposit_data_root;
         });
         writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, totalDepositAmountBN, `0x${data}`] });
-        // const tx = await token.transferAndCall(callDest, totalDepositAmountBN, data);
-        // setTxData({ status: "pending", data: tx });
-        // await tx.wait();
-        // setTxData({ status: "successful", data: tx });
-        // console.log(`\tTx hash: ${tx.hash}`);
       } catch (err) {
-        // let error = "Transaction failed.";
-        // if (err?.code === -32603) {
-        //   error = "Transaction was not sent because of the low gas price. Try to increase it.";
-        // }
-        // setTxData({ status: "failed", error });
         console.log(err);
       }
-    } else {
-      // setTxData({ status: "loading", isArray: true });
+    } else { //too much complexity by handling multiple withdrawal credential in one batch?
       console.log("sending deposit transaction");
-      let txs = await Promise.all(
+      await Promise.all(
         deposits.map(async (deposit) => {
           let data = "0x";
           data += deposit.withdrawal_credentials;
@@ -183,51 +168,41 @@ function useDeposit() {
           data += deposit.signature;
           data += deposit.deposit_data_root;
 
-          let tx = null;
           try {
             writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`] });
-            // tx = await token.transferAndCall(callDest, depositAmountBN, data);
           } catch (error) {
             console.log(error);
           }
-          return tx;
         })
       );
-      txs = txs.filter((tx) => !!tx);
-      if (!txs.length) {
-        // setTxData({ status: "failed", isArray: true, error: "All transactions were rejected" });
-      }
-      // setTxData({ status: "pending", isArray: true, data: txs });
-      // await Promise.all(txs.map((tx) => tx.wait()));
-      // setTxData({ status: "successful", isArray: true, data: txs });
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, txData, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
+  return { deposit, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
 }
 
 async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {
   const toBlock = await client.getBlockNumber();
-  
+
   let currentBlock = BigInt(fromBlock);
   const endBlock = BigInt(toBlock);
   let allEvents = [];
 
   while (currentBlock <= endBlock) {
-      const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
-      
-      console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
-      
-      const events = await client.getContractEvents({
-          abi: depositABI,
-          address: depositAddress,
-          eventName: "DepositEvent",
-          fromBlock: currentBlock,
-          toBlock: nextBlock
-      });
+    const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
 
-      allEvents.push(...events);
-      currentBlock = nextBlock + BigInt(1);
+    console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
+
+    const events = await client.getContractEvents({
+      abi: depositABI,
+      address: depositAddress,
+      eventName: "DepositEvent",
+      fromBlock: currentBlock,
+      toBlock: nextBlock,
+    });
+
+    allEvents.push(...events);
+    currentBlock = nextBlock + BigInt(1);
   }
 
   return allEvents;

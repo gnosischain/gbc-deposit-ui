@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import claimRegistryABI from "@/utils/abis/claimRegistry";
 

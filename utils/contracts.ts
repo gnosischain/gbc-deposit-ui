@@ -2,6 +2,7 @@ import { Address } from "viem";
 
 export type ContractNetwork = {
   forkVersion: string;
+  beaconExplorerUrl: string;
   addresses: {
     token: Address;
     deposit: Address;
@@ -17,6 +18,7 @@ type Contracts = {
 const CONTRACTS: Contracts = {
   100: {
     forkVersion: "00000064",
+    beaconExplorerUrl: 'https://gnosischa.in',
     addresses: {
       token: "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb",
       deposit: "0x0B98057eA310F4d31F2a452B414647007d1645d9",
@@ -26,6 +28,7 @@ const CONTRACTS: Contracts = {
   },
   10200: {
     forkVersion: "0000006f",
+    beaconExplorerUrl: 'https://beacon.chiadochain.net',
     addresses: {
       token: "0x19C653Da7c37c66208fbfbE8908A5051B57b4C70",
       deposit: "0xb97036A26259B7147018913bD58a774cf91acf25",

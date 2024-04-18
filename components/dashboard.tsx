@@ -43,7 +43,7 @@ export default function Dashboard() {
     }
   }, [account.chain?.name]);
 
-  console.log(account.isConnected, account.isConnecting, account.isReconnecting);
+  // console.log(account.isConnected, account.isConnecting, account.isReconnecting); //TODO redirect user disconnected
 
   const handleCopyAddress = async () => {
     if (account.address) {
