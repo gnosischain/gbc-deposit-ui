@@ -60,7 +60,7 @@ export default function Deposit() {
           </div>
           <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8 rounded-full shadow-lg" />
           <div>Drag file to upload or browse</div>
-          {errorMessage && <p className="text-red-400 text-sm">{errorMessage}</p>}
+          {errorMessage && <p className="text-red-400 text-sm">{errorMessage.substring(0,150)}</p>}
         </div>
       ) : step === "validation" ? (
         <div className="w-full flex flex-col items-center">
