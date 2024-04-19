@@ -16,7 +16,6 @@ export default function Page() {
             <NavigationTab value="deposit" />
             <NavigationTab value="withdrawal" />
             <NavigationTab value="validator" />
-            {/* <NavigationTab value="autoclaim" /> */}
           </div>
           <Dashboard />
           <div className="w-full flex justify-between">

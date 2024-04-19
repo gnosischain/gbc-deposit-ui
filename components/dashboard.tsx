@@ -9,7 +9,6 @@ import { useAccount, useAccountEffect, useDisconnect } from "wagmi";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
 import { useEffect, useState } from "react";
-import Autoclaim from "./autoclaim";
 import Validator from "./validator";
 
 export default function Dashboard() {
