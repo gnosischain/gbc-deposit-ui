@@ -5,8 +5,8 @@ import { useCallback, useState } from "react";
 export default function Withdrawal() {
   const { claim, claimBalance } = useClaimBalance();
   const [timeValue, setTimeValue] = useState(1);
-  const [amountValue, setAmountValue] = useState(0);
-  const { register } = useAutoclaim();
+  const [amountValue, setAmountValue] = useState(1);
+  const { register, updateConfig, unregister, isRegister } = useAutoclaim();
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTimeValue(parseFloat(event.target.value));
@@ -14,11 +14,24 @@ export default function Withdrawal() {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmountValue(parseFloat(event.target.value));
+    const newAmount = parseFloat(event.target.value);
+    if (newAmount <= 0) {
+      setAmountValue(1);
+    } else {
+      setAmountValue(newAmount);
+    }
   };
 
   const onRegister = useCallback(async () => {
-    await register(timeValue, amountValue);
+    if (!isNaN(amountValue) && amountValue > 0) {
+      await register(timeValue, amountValue);
+    }
+  }, [timeValue, amountValue, register]);
+
+  const onUpdateConfig = useCallback(async () => {
+    if (!isNaN(amountValue) && amountValue > 0) {
+      await updateConfig(timeValue, amountValue);
+    }
   }, [timeValue, amountValue, register]);
 
   return (
@@ -55,16 +68,23 @@ export default function Withdrawal() {
           </label>
           <input type="number" value={amountValue} onChange={handleInputChange} id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-1" />
         </div>
-        <button className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold" onClick={onRegister}>
-          Register
+        <button className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold" onClick={isRegister ? onUpdateConfig : onRegister}>
+          {isRegister ? "Update" : "Register"}
         </button>
       </div>
-      <div className="w-full flex text-sm items-center gap-x-2">
-        Claimable balance:
-        <div className="flex font-bold items-center">{claimBalance?.toString()} GNOS</div>
-        <button className="text-[#DD7143] hover:text-[#E07F55]" onClick={claim}>
-          Manual claim
-        </button>
+      <div className="w-full flex text-sm items-center justify-between">
+        <div className="w-full flex gap-x-2">
+          Claimable balance:
+          <div className="flex font-bold items-center">{claimBalance?.toString()} GNOS</div>
+          <button className="text-[#DD7143] underline hover:text-[#E07F55]" onClick={claim}>
+            Manual claim
+          </button>
+        </div>
+        {isRegister && (
+          <button className="text-black underline" onClick={unregister}>
+            Unsubscribe
+          </button>
+        )}
       </div>
     </div>
   );

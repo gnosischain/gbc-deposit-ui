@@ -9,6 +9,7 @@ export type ContractNetwork = {
     claimRegistry: Address;
   };
   depositStartBlockNumber: bigint;
+  claimRegistryStartBlockNumber: bigint;
 };
 
 type Contracts = {
@@ -25,6 +26,7 @@ const CONTRACTS: Contracts = {
       claimRegistry: "0xe4d0a119cc2546c1ec4945c04b04985d1e59cdba",
     },
     depositStartBlockNumber: BigInt(19475089),
+    claimRegistryStartBlockNumber: BigInt(33473327),
   },
   10200: {
     forkVersion: "0000006f",
@@ -35,6 +37,7 @@ const CONTRACTS: Contracts = {
       claimRegistry: "0x28f1ba1f2Db9Aa0ca4b3B7cD9Ae327f6E872867D",
     },
     depositStartBlockNumber: BigInt(155530),
+    claimRegistryStartBlockNumber: BigInt(9311142),
   },
 };
 

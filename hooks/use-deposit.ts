@@ -5,15 +5,11 @@ import ERC677ABI from "@/utils/abis/erc677";
 import depositABI from "@/utils/abis/deposit";
 import { Address, formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
-import { getPublicClient } from "wagmi/actions";
+import { GetPublicClientReturnType, getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 
 const depositAmountBN = parseUnits("1", 18);
 const BLOCK_RANGE_SIZE = 5000;
-
-const INITIAL_DATA = { status: "pending" };
-
-const client = getPublicClient(config);
 
 type DepositDataJson = {
   pubkey: string;
@@ -34,6 +30,7 @@ function useDeposit() {
 
   const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
+  const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
   const { data: balance } = useReadContract({
     abi: ERC677ABI,
     address: contractConfig?.addresses.token,
@@ -67,7 +64,7 @@ function useDeposit() {
       const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
 
       //   console.log("Fetching existing deposits");
-      const events = await fetchAllEvents(contractConfig.addresses.deposit, fromBlock);
+      const events = await fetchAllEvents(contractConfig.addresses.deposit, fromBlock, client);
 
       let pks = events.map((e) => e.topics[1]);
       pks = pks.concat(existingDeposits);
@@ -181,7 +178,8 @@ function useDeposit() {
   return { deposit, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
 }
 
-async function fetchAllEvents(depositAddress: Address, fromBlock: bigint) {
+async function fetchAllEvents(depositAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
+  if (!client) return;
   const toBlock = await client.getBlockNumber();
 
   let currentBlock = BigInt(fromBlock);
