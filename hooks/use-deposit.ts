@@ -7,6 +7,7 @@ import { Address, formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { GetPublicClientReturnType, getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
+import { fetchDeposit } from "@/utils/fetchEvents";
 
 const depositAmountBN = parseUnits("1", 18);
 const BLOCK_RANGE_SIZE = 5000;
@@ -64,7 +65,7 @@ function useDeposit() {
       const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
 
       //   console.log("Fetching existing deposits");
-      const events = await fetchAllEvents(contractConfig.addresses.deposit, fromBlock, client);
+      const events = await fetchDeposit(contractConfig.addresses.deposit, fromBlock, client);
 
       let pks = events.map((e) => e.topics[1]);
       pks = pks.concat(existingDeposits);
@@ -176,34 +177,6 @@ function useDeposit() {
   }, [account, deposits, isBatch]);
 
   return { deposit, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
-}
-
-async function fetchAllEvents(depositAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
-  if (!client) return;
-  const toBlock = await client.getBlockNumber();
-
-  let currentBlock = BigInt(fromBlock);
-  const endBlock = BigInt(toBlock);
-  let allEvents = [];
-
-  while (currentBlock <= endBlock) {
-    const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
-
-    console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
-
-    const events = await client.getContractEvents({
-      abi: depositABI,
-      address: depositAddress,
-      eventName: "DepositEvent",
-      fromBlock: currentBlock,
-      toBlock: nextBlock,
-    });
-
-    allEvents.push(...events);
-    currentBlock = nextBlock + BigInt(1);
-  }
-
-  return allEvents;
 }
 
 export default useDeposit;

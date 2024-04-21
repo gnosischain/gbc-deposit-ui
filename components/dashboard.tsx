@@ -15,20 +15,12 @@ export default function Dashboard() {
   const searchParams = useSearchParams();
   const account = useAccount();
   const [isCopied, setIsCopied] = useState(false);
+  const [connectionAttempted, setConnectionAttemped] = useState(false);
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const { balance } = useDeposit();
   const [address, setAddress] = useState("");
   const [network, setNetwork] = useState("");
-
-  useAccountEffect({
-    onConnect() {
-      console.log("connecting..");
-    },
-    onDisconnect() {
-      router.push("/");
-    },
-  });
 
   useEffect(() => {
     if (account.address) {
@@ -42,7 +34,13 @@ export default function Dashboard() {
     }
   }, [account.chain?.name]);
 
-  // console.log(account.isConnected, account.isConnecting, account.isReconnecting); //TODO redirect user disconnected
+  useEffect(() => {
+    if (account.isConnecting) {
+      setConnectionAttemped(true);
+    } else if(connectionAttempted && !account.isConnected) {
+      router.push("/");
+    }
+  }, [account.isConnecting]);
 
   const handleCopyAddress = async () => {
     if (account.address) {
