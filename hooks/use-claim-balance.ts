@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
 
@@ -14,7 +14,10 @@ function useClaimBalance() {
     functionName: "withdrawableAmount",
     args: [account.address || "0x0"],
   });
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: hash, writeContract } = useWriteContract();
+  const { isSuccess: claimSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
@@ -24,7 +27,7 @@ function useClaimBalance() {
     writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
   }, [account])
 
-  return { claim, claimBalance };
+  return { claim, claimBalance, claimSuccess };
 }
 
 export default useClaimBalance;

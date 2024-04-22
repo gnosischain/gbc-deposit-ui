@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import claimRegistryABI from "@/utils/abis/claimRegistry";
 import { getPublicClient } from "wagmi/actions";
@@ -12,7 +12,10 @@ function useAutoclaim() {
   const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: hash, writeContract } = useWriteContract();
+  const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
@@ -64,7 +67,7 @@ function useAutoclaim() {
     writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
   }, [account]);
 
-  return { register, updateConfig, unregister, isRegister };
+  return { register, updateConfig, unregister, isRegister, autoclaimSuccess };
 }
 
 export default useAutoclaim;

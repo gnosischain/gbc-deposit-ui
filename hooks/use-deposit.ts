@@ -1,16 +1,14 @@
 import { useCallback, useState } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
-import depositABI from "@/utils/abis/deposit";
-import { Address, formatUnits, parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
-import { GetPublicClientReturnType, getPublicClient } from "wagmi/actions";
+import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchDeposit } from "@/utils/fetchEvents";
 
 const depositAmountBN = parseUnits("1", 18);
-const BLOCK_RANGE_SIZE = 5000;
 
 type DepositDataJson = {
   pubkey: string;
@@ -38,8 +36,13 @@ function useDeposit() {
     functionName: "balanceOf",
     args: [account.address || "0x0"],
   });
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: hash, writeContract } = useWriteContract();
+  const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
+  console.log(balance);
+  
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
   }
@@ -64,7 +67,6 @@ function useDeposit() {
 
       const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
 
-      //   console.log("Fetching existing deposits");
       const events = await fetchDeposit(contractConfig.addresses.deposit, fromBlock, client);
 
       let pks = events.map((e) => e.topics[1]);
@@ -101,7 +103,7 @@ function useDeposit() {
       }
 
       const totalDepositAmountBN = depositAmountBN * BigInt(newDeposits.length);
-
+      
       if (balance === undefined) {
         throw Error("Balance not loaded.");
       }
@@ -114,7 +116,7 @@ function useDeposit() {
 
       return { deposits: newDeposits, hasDuplicates, isBatch };
     },
-    [account]
+    [account, contractConfig, balance]
   );
 
   const setDepositData = useCallback(
@@ -156,7 +158,8 @@ function useDeposit() {
       } catch (err) {
         console.log(err);
       }
-    } else { //too much complexity by handling multiple withdrawal credential in one batch?
+    } else {
+      //too much complexity by handling multiple withdrawal credential in one batch?
       console.log("sending deposit transaction");
       await Promise.all(
         deposits.map(async (deposit) => {
@@ -176,7 +179,7 @@ function useDeposit() {
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
+  return { deposit, depositSuccess, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance };
 }
 
 export default useDeposit;

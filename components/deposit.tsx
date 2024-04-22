@@ -1,16 +1,15 @@
 "use client";
 
 import useDeposit from "@/hooks/use-deposit";
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
+import { ArrowUturnLeftIcon, InformationCircleIcon, CheckIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
-import { CheckIcon } from "@heroicons/react/24/outline";
 
 export default function Deposit() {
-  const { setDepositData, depositData, deposit } = useDeposit();
+  const { setDepositData, depositData, deposit, depositSuccess } = useDeposit();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("deposit");
@@ -44,6 +43,18 @@ export default function Deposit() {
   }, []);
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
 
+  const onDeposit = useCallback(async () => {
+    setLoading(true);
+    await deposit();
+  }, [deposit]);
+
+  useEffect(() => {
+    if (depositSuccess) {
+      setLoading(false);
+      setStep("summary");
+    }
+  }, [depositSuccess]);
+
   return (
     <div className="w-full bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
@@ -74,8 +85,17 @@ export default function Deposit() {
           <div className="flex items-center">
             <CheckIcon className="h-5 w-5" /> Total amount required: {depositData.deposits.length} GNO
           </div>
-          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={deposit}>
+          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit}>
             Deposit
+          </button>
+        </div>
+      ) : step === "summary" ? (
+        <div className="w-full flex flex-col items-center">
+          <div className="flex items-center">
+            <CheckIcon className="h-5 w-5" /> Your transaction is completed !
+          </div>
+          <button className="text-[#DD7143] flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold" onClick={() => setStep("deposit")}>
+            Back <ArrowUturnLeftIcon className="h-4 w-4 ml-2" />
           </button>
         </div>
       ) : (
