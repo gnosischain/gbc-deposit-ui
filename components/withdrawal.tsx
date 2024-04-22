@@ -37,6 +37,16 @@ export default function Withdrawal() {
     }
   }, [timeValue, amountValue, register, updateConfig]);
 
+  const onClaim = useCallback(async () => {
+    setLoading(true);
+    await claim();
+  }, [claim]);
+
+  const onUnregister = useCallback(async () => {
+    setLoading(true);
+    await unregister();
+  }, [unregister]);
+
   useEffect(() => {
     if (claimSuccess || autoclaimSuccess) {
       setLoading(false);
@@ -93,12 +103,12 @@ export default function Withdrawal() {
             <div className="w-full flex gap-x-2">
               Claimable balance:
               <div className="flex font-bold items-center">{claimBalance?.toString()} GNOS</div>
-              <button className="text-[#DD7143] underline hover:text-[#E07F55]" onClick={claim}>
+              <button className="text-[#DD7143] underline hover:text-[#E07F55]" onClick={onClaim}>
                 Manual claim
               </button>
             </div>
             {isRegister && (
-              <button className="text-black underline" onClick={unregister}>
+              <button className="text-black underline" onClick={onUnregister}>
                 Unsubscribe
               </button>
             )}
