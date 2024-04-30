@@ -31,6 +31,7 @@ export default function Deposit() {
             console.log(error);
             setLoading(false);
             if (error instanceof Error) {
+              console.log(error);
               setErrorMessage(error.message);
             } else {
               setErrorMessage("An unexpected error occurred.");

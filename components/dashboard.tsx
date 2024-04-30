@@ -5,7 +5,7 @@ import { truncateAddress } from "@/utils/truncateAddress";
 import { ArrowRightStartOnRectangleIcon, DocumentDuplicateIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatEther } from "viem";
-import { useAccount, useAccountEffect, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
 import { useEffect, useState } from "react";

@@ -42,13 +42,13 @@ function useDeposit() {
   });
 
   console.log(balance);
-  
+
   if (!contractConfig) {
     throw Error(`No contract configuration found for chain ID ${chainId}`);
   }
 
   const validate = useCallback(
-    async (deposits: DepositDataJson[]) => {
+    async (deposits: DepositDataJson[], balance: bigint) => {
       const checkJsonStructure = (depositDataJson: DepositDataJson) => {
         return depositDataJson.pubkey && depositDataJson.withdrawal_credentials && depositDataJson.amount && depositDataJson.signature && depositDataJson.deposit_message_root && depositDataJson.deposit_data_root && depositDataJson.fork_version;
       };
@@ -103,7 +103,8 @@ function useDeposit() {
       }
 
       const totalDepositAmountBN = depositAmountBN * BigInt(newDeposits.length);
-      
+
+      console.log(balance, contractConfig.addresses.token, account.address, account.chainId);
       if (balance === undefined) {
         throw Error("Balance not loaded.");
       }
@@ -129,7 +130,9 @@ function useDeposit() {
         } catch (error) {
           throw Error("Oops, something went wrong while parsing your json file. Please check the file and try again.");
         }
-        const { deposits, hasDuplicates, isBatch } = await validate(data);
+        if (balance) {
+          const { deposits, hasDuplicates, isBatch } = await validate(data, balance);
+        }
         setDeposits(deposits);
         setHasDuplicates(hasDuplicates);
         setIsBatch(isBatch);
@@ -139,7 +142,7 @@ function useDeposit() {
         setIsBatch(false);
       }
     },
-    [validate]
+    [validate, balance]
   );
 
   const deposit = useCallback(async () => {

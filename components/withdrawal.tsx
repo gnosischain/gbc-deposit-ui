@@ -1,6 +1,6 @@
 import useAutoclaim from "@/hooks/use-autoclaim";
 import useClaimBalance from "@/hooks/use-claim-balance";
-import { ArrowUturnLeftIcon, InformationCircleIcon, CheckIcon } from "@heroicons/react/20/solid";
+import { ArrowUturnLeftIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useState } from "react";
 import Loader from "./loader";
 

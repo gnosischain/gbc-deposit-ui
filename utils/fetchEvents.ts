@@ -3,7 +3,7 @@ import { GetPublicClientReturnType } from "wagmi/actions";
 import claimRegistryABI from "./abis/claimRegistry";
 import depositABI from "./abis/deposit";
 
-const BLOCK_RANGE_SIZE = 50000;
+const BLOCK_RANGE_SIZE = 500000;
 
 export async function fetchRegister(claimRegistryAddress: Address, userAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
   if (!client) return [];
@@ -38,13 +38,12 @@ export async function fetchUnregister(claimRegistryAddress: Address, userAddress
   if (!client) return [];
   const toBlock = await client.getBlockNumber();
 
-  let currentBlock = BigInt(fromBlock);
   let allEvents = [];
 
-  while (currentBlock <= toBlock) {
-    const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > toBlock ? toBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
+  while (fromBlock <= toBlock) {
+    const nextBlock = fromBlock + BigInt(BLOCK_RANGE_SIZE) > toBlock ? toBlock : fromBlock + BigInt(BLOCK_RANGE_SIZE);
 
-    console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
+    console.log(`Fetching from block ${fromBlock} to ${nextBlock}`);
 
     const events = await client.getContractEvents({
       abi: claimRegistryABI,
@@ -53,12 +52,12 @@ export async function fetchUnregister(claimRegistryAddress: Address, userAddress
       args: {
         user: userAddress,
       },
-      fromBlock: currentBlock,
+      fromBlock: fromBlock,
       toBlock: nextBlock,
     });
 
     allEvents.push(...events);
-    currentBlock = nextBlock + BigInt(1);
+    fromBlock = nextBlock + BigInt(1);
   }
 
   return allEvents;
@@ -67,26 +66,26 @@ export async function fetchUnregister(claimRegistryAddress: Address, userAddress
 export async function fetchDeposit(depositAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
     if (!client) return [];
     const toBlock = await client.getBlockNumber();
-  
-    let currentBlock = BigInt(fromBlock);
+    let startBlock = BigInt(fromBlock);
     const endBlock = BigInt(toBlock);
+  
     let allEvents = [];
   
-    while (currentBlock <= endBlock) {
-      const nextBlock = currentBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : currentBlock + BigInt(BLOCK_RANGE_SIZE);
+    while (startBlock <= endBlock) {
+      const nextBlock = startBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : startBlock + BigInt(BLOCK_RANGE_SIZE);
   
-      console.log(`Fetching from block ${currentBlock} to ${nextBlock}`);
+      console.log(`Fetching from block ${fromBlock} to ${nextBlock}`);
   
       const events = await client.getContractEvents({
         abi: depositABI,
         address: depositAddress,
         eventName: "DepositEvent",
-        fromBlock: currentBlock,
+        fromBlock: startBlock,
         toBlock: nextBlock,
       });
   
       allEvents.push(...events);
-      currentBlock = nextBlock + BigInt(1);
+      startBlock = nextBlock + BigInt(1);
     }
   
     return allEvents;
