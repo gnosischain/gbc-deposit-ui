@@ -8,13 +8,15 @@ const BLOCK_RANGE_SIZE = 500000;
 export async function fetchRegister(claimRegistryAddress: Address, userAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
   if (!client) return [];
   const toBlock = await client.getBlockNumber();
+  let startBlock = BigInt(fromBlock);
+  const endBlock = BigInt(toBlock);
 
   let allEvents = [];
 
-  while (fromBlock <= toBlock) {
-    const nextBlock = fromBlock + BigInt(BLOCK_RANGE_SIZE) > toBlock ? toBlock : fromBlock + BigInt(BLOCK_RANGE_SIZE);
+  while (startBlock <= endBlock) {
+    const nextBlock = fromBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : startBlock + BigInt(BLOCK_RANGE_SIZE);
 
-    console.log(`Fetching from block ${fromBlock} to ${nextBlock}`);
+    console.log(`Fetching from block ${startBlock} to ${nextBlock}`);
 
     const events = await client.getContractEvents({
       abi: claimRegistryABI,
@@ -23,12 +25,12 @@ export async function fetchRegister(claimRegistryAddress: Address, userAddress: 
       args: {
         user: userAddress,
       },
-      fromBlock: fromBlock,
+      fromBlock: startBlock,
       toBlock: nextBlock,
     });
 
     allEvents.push(...events);
-    fromBlock = nextBlock + BigInt(1);
+    startBlock = nextBlock + BigInt(1);
   }
 
   return allEvents;
@@ -37,13 +39,15 @@ export async function fetchRegister(claimRegistryAddress: Address, userAddress: 
 export async function fetchUnregister(claimRegistryAddress: Address, userAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
   if (!client) return [];
   const toBlock = await client.getBlockNumber();
+  let startBlock = BigInt(fromBlock);
+  const endBlock = BigInt(toBlock);
 
   let allEvents = [];
 
-  while (fromBlock <= toBlock) {
-    const nextBlock = fromBlock + BigInt(BLOCK_RANGE_SIZE) > toBlock ? toBlock : fromBlock + BigInt(BLOCK_RANGE_SIZE);
+  while (startBlock <= endBlock) {
+    const nextBlock = fromBlock + BigInt(BLOCK_RANGE_SIZE) > endBlock ? endBlock : startBlock + BigInt(BLOCK_RANGE_SIZE);
 
-    console.log(`Fetching from block ${fromBlock} to ${nextBlock}`);
+    console.log(`Fetching from block ${startBlock} to ${nextBlock}`);
 
     const events = await client.getContractEvents({
       abi: claimRegistryABI,
@@ -52,12 +56,12 @@ export async function fetchUnregister(claimRegistryAddress: Address, userAddress
       args: {
         user: userAddress,
       },
-      fromBlock: fromBlock,
+      fromBlock: startBlock,
       toBlock: nextBlock,
     });
 
     allEvents.push(...events);
-    fromBlock = nextBlock + BigInt(1);
+    startBlock = nextBlock + BigInt(1);
   }
 
   return allEvents;
