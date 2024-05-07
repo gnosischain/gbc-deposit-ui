@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { useAccount, useConnect } from "wagmi";
+import Link from "next/link";
 
 export default function Page() {
   const account = useAccount();
@@ -21,7 +22,9 @@ export default function Page() {
     <main className="flex h-screen w-screen bg-[#000000b3] backdrop-blur-xl flex-col items-center justify-center">
       <div className="w-full lg:w-[590px] h-[550px] bg-[#F0EBDE] p-6 rounded-3xl flex gap-y-4 flex-col justify-start items-center">
         <div className="w-full flex justify-end">
-          <XMarkIcon className="h-8 w-8 text-blue-950" />{" "}
+          <Link href={"/"}>
+            <XMarkIcon className="h-8 w-8 text-blue-950" />
+          </Link>
         </div>
         <p className="text-2xl lg:text-3xl text-black font-bold mt-8 w-1/2 text-center">Choose your preferred wallet</p>
         <div className="w-full flex flex-col divide-slate-700 divide-y mt-8">
