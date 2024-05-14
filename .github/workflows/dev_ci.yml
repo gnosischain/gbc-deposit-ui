@@ -7,6 +7,9 @@ on:
       - main
       - dev
 
+env:
+  REACT_APP_NETWORK_IDS: 100,10200
+
 jobs:
   deploy:
     name: Deployment
@@ -41,8 +44,6 @@ jobs:
           pip install awscli --upgrade --user
 
       - name: Build App
-        env:
-          REACT_APP_NETWORK_IDS: 100,10200
         run: yarn build
 
       - name: Configure AWS Development credentials
