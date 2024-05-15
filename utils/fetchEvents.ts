@@ -91,8 +91,6 @@ export async function fetchDeposit(depositAddress: Address, fromBlock: bigint, c
       allEvents.push(...events);
       startBlock = nextBlock + BigInt(1);
     }
-
-    console.log("RETURN");
   
     return allEvents;
   }

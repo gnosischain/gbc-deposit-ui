@@ -67,12 +67,14 @@ function useDeposit() {
 
         const events = await fetchDeposit(contractConfig.addresses.deposit, fromBlock, client);
 
-        let pks = events.map((e) => e.topics[1]);
+        let pks = events.map((e) => e.args.pubkey);
         pks = pks.concat(existingDeposits);
+        console.log(pks);
         console.log(`Found ${pks.length} existing deposits`);
 
         for (const deposit of deposits) {
-          if (!pks.some((pk) => pk === "0x" + deposit.pubkey)) {
+          if (!pks.includes(`0x${deposit.pubkey}`)) {
+            console.log("new deposit", deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
