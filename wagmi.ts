@@ -5,7 +5,7 @@ import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 export const config = createConfig({
   chains: [gnosis, gnosisChiado],
   multiInjectedProviderDiscovery: false,
-  connectors: [coinbaseWallet({ appName: "Gnosis Deposit" }), walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "" }), metaMask()],
+  connectors: [coinbaseWallet({ appName: "Gnosis Deposit" }), walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "" }), metaMask({dappMetadata: {name: "Gnosis Deposit"}})],
   ssr: true,
   transports: {
     [gnosis.id]: http("https://rpc.gnosischain.com/"),
