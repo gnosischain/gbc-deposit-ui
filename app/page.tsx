@@ -14,7 +14,9 @@ export default function Page() {
         <Link href="/connect" className="bg-[#DD7143] px-8 py-4 rounded-full text-xl font-semibold">
           Connect Wallet
         </Link>
-        <p className="mt-20 underline">Learn more about Gnosis Beacon Chain</p>
+        <Link target="_blank" className="w-full flex justify-center mt-20 text-sm lg:text-base items-center underline hover:text-slate-200" href={"https://docs.gnosischain.com/node/"}>
+          Learn more about the Gnosis Beacon Chain
+        </Link>
       </div>
     </main>
   );
