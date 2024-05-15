@@ -39,10 +39,6 @@ function useValidators() {
   const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
 
-  if (!contractConfig) {
-    throw Error(`No contract configuration found for chain ID ${chainId}`);
-  }
-
   const fetchStatuses = useCallback(async (beaconExplorerUrl: string, pubkeys: string[]): Promise<ValidatorStatus[]> => {
     const chunkSize = 64;
     const chunks = [];
@@ -65,31 +61,33 @@ function useValidators() {
 
   const validateStatus = useCallback(
     async (files: FileDepositData[]) => {
-      const pubkeys = files.flatMap((file) =>
-        file.data.map((deposit) => ({
-          pubkey: deposit.pubkey,
-          fileName: file.fileName,
-        }))
-      );
-
-      try {
-        const fetchedStatuses = await fetchStatuses(
-          contractConfig.beaconExplorerUrl,
-          pubkeys.map((item) => item.pubkey)
+      if (contractConfig) {
+        const pubkeys = files.flatMap((file) =>
+          file.data.map((deposit) => ({
+            pubkey: deposit.pubkey,
+            fileName: file.fileName,
+          }))
         );
 
-        if (fetchedStatuses.length === 0) {
-          setStatuses(null);
-          return;
-        }
+        try {
+          const fetchedStatuses = await fetchStatuses(
+            contractConfig.beaconExplorerUrl,
+            pubkeys.map((item) => item.pubkey)
+          );
 
-        setStatuses(fetchedStatuses);
-      } catch (error: unknown) {
-        setStatuses(null);
-        throw Error("Failed to fetch or process validator statuses.");
+          if (fetchedStatuses.length === 0) {
+            setStatuses(null);
+            return;
+          }
+
+          setStatuses(fetchedStatuses);
+        } catch (error: unknown) {
+          setStatuses(null);
+          throw Error("Failed to fetch or process validator statuses.");
+        }
       }
     },
-    [fetchStatuses, contractConfig.beaconExplorerUrl]
+    [fetchStatuses, contractConfig?.beaconExplorerUrl]
   );
 
   return { validateStatus, statuses };

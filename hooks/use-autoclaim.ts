@@ -17,10 +17,6 @@ function useAutoclaim() {
     hash,
   });
 
-  if (!contractConfig) {
-    throw Error(`No contract configuration found for chain ID ${chainId}`);
-  }
-
   useEffect(() => {
     async function fetchEvents() {
       if (contractConfig && account.address && account.address !== "0x0") {
@@ -49,22 +45,28 @@ function useAutoclaim() {
 
   const register = useCallback(
     async (days: number, amount: number) => {
-      const timeStamp = BigInt(days * 86400000);
-      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+      if (contractConfig) {
+        const timeStamp = BigInt(days * 86400000);
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+      }
     },
     [account]
   );
 
   const updateConfig = useCallback(
     async (days: number, amount: number) => {
-      const timeStamp = BigInt(days * 86400000);
-      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+      if (contractConfig) {
+        const timeStamp = BigInt(days * 86400000);
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+      }
     },
     [account]
   );
 
   const unregister = useCallback(async () => {
-    writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
+    if (contractConfig) {
+      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
+    }
   }, [account]);
 
   return { register, updateConfig, unregister, isRegister, autoclaimSuccess };

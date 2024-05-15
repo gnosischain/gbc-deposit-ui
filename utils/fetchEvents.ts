@@ -3,7 +3,7 @@ import { GetPublicClientReturnType } from "wagmi/actions";
 import claimRegistryABI from "./abis/claimRegistry";
 import depositABI from "./abis/deposit";
 
-const BLOCK_RANGE_SIZE = 500000;
+const BLOCK_RANGE_SIZE = 1000000;
 
 export async function fetchRegister(claimRegistryAddress: Address, userAddress: Address, fromBlock: bigint, client: GetPublicClientReturnType) {
   if (!client) return [];
@@ -91,6 +91,8 @@ export async function fetchDeposit(depositAddress: Address, fromBlock: bigint, c
       allEvents.push(...events);
       startBlock = nextBlock + BigInt(1);
     }
+
+    console.log("RETURN");
   
     return allEvents;
   }

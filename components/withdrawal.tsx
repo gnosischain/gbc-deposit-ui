@@ -14,7 +14,6 @@ export default function Withdrawal() {
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTimeValue(parseFloat(event.target.value));
-    console.log(parseFloat(event.target.value));
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +34,7 @@ export default function Withdrawal() {
         await register(timeValue, amountValue);
       }
     }
-  }, [timeValue, amountValue, register, updateConfig]);
+  }, [timeValue, amountValue, isRegister, register, updateConfig]);
 
   const onClaim = useCallback(async () => {
     setLoading(true);

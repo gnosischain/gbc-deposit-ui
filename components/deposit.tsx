@@ -41,7 +41,8 @@ export default function Deposit() {
       };
       reader.readAsText(acceptedFiles[0]);
     }
-  }, []);
+  }, [setDepositData]);
+  
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
 
   const onDeposit = useCallback(async () => {
