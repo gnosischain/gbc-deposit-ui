@@ -12,9 +12,9 @@ function useAutoclaim() {
   const chainId = account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: autoclaimHash, writeContract } = useWriteContract();
   const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
-    hash,
+    hash: autoclaimHash,
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function useAutoclaim() {
     }
   }, [account]);
 
-  return { register, updateConfig, unregister, isRegister, autoclaimSuccess };
+  return { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash };
 }
 
 export default useAutoclaim;

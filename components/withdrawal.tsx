@@ -3,13 +3,16 @@ import useClaimBalance from "@/hooks/use-claim-balance";
 import { ArrowUturnLeftIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useState } from "react";
 import Loader from "./loader";
+import { Address } from "viem";
+import Link from "next/link";
 
 export default function Withdrawal() {
-  const { claim, claimBalance, claimSuccess } = useClaimBalance();
-  const { register, updateConfig, unregister, isRegister, autoclaimSuccess } = useAutoclaim();
+  const { claim, claimBalance, claimSuccess, claimHash } = useClaimBalance();
+  const { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash } = useAutoclaim();
   const [timeValue, setTimeValue] = useState(1);
   const [amountValue, setAmountValue] = useState(1);
   const [step, setStep] = useState("claim");
+  const [tx, setTx] = useState<Address>("0x0");
   const [loading, setLoading] = useState(false);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +56,14 @@ export default function Withdrawal() {
     }
   }, [claimSuccess, autoclaimSuccess]);
 
+  useEffect(() => {
+    if (claimHash) {
+      setTx(claimHash);
+    } else if (autoclaimHash) {
+      setTx(autoclaimHash);
+    }
+  }, [claimHash, autoclaimHash]);
+
   return (
     <div className="w-full bg-[#FFFFFFB2] h-[280px] p-4 flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
@@ -62,6 +73,7 @@ export default function Withdrawal() {
         </div>
       ) : step === "claim" ? (
         <>
+          <div className="w-full text-sm flex justify-center">Set up automated claim with your preferred frequency and threshold.</div>
           <div className="flex h-full flex-col justify-center gap-y-4">
             <div className="flex flex-col">
               <label htmlFor="default-input" className="block mb-2 text-xs font-bold text-gray-700">
@@ -116,7 +128,11 @@ export default function Withdrawal() {
       ) : step === "summary" ? (
         <div className="w-full flex flex-col items-center">
           <div className="flex items-center">
-            <CheckIcon className="h-5 w-5" /> Your transaction is completed !
+            <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
+            <Link href={"https://gnosis.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
+              here
+            </Link>
+            .
           </div>
           <button className="text-[#DD7143] flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold" onClick={() => setStep("claim")}>
             Back <ArrowUturnLeftIcon className="h-4 w-4 ml-2" />

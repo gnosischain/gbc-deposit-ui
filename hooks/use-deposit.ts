@@ -37,9 +37,9 @@ function useDeposit() {
     args: [account.address || "0x0"],
   });
   const isWrongNetwork = contractConfig === undefined;
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: depositHash, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
-    hash,
+    hash: depositHash,
   });
 
   const validate = useCallback(
@@ -182,7 +182,7 @@ function useDeposit() {
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, depositSuccess, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, isWrongNetwork };
+  return { deposit, depositSuccess, depositHash, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, isWrongNetwork };
 }
 
 export default useDeposit;

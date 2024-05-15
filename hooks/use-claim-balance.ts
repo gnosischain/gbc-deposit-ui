@@ -14,9 +14,9 @@ function useClaimBalance() {
     functionName: "withdrawableAmount",
     args: [account.address || "0x0"],
   });
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: claimHash, writeContract } = useWriteContract();
   const { isSuccess: claimSuccess } = useWaitForTransactionReceipt({
-    hash,
+    hash: claimHash,
   });
 
   const claim = useCallback(async () => {
@@ -25,7 +25,7 @@ function useClaimBalance() {
     }
   }, [account]);
 
-  return { claim, claimBalance, claimSuccess };
+  return { claim, claimBalance, claimSuccess, claimHash };
 }
 
 export default useClaimBalance;

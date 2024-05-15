@@ -21,7 +21,7 @@ export default function Dashboard() {
   const { balance, isWrongNetwork } = useDeposit();
   const [address, setAddress] = useState("");
   const [networkMessage, setNetworkMessage] = useState("");
-  const [network, setNetwork] = useState("");
+  const [network, setNetwork] = useState("Not supported");
 
   useEffect(() => {
     if (account.address) {
@@ -32,6 +32,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (isWrongNetwork) {
       setNetworkMessage("Wrong Network. Please connect to Gnosis Chain");
+    } else {
+      setNetworkMessage("");
     }
   }, [isWrongNetwork]);
 
@@ -64,11 +66,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between px-4 py-6">
+    <div className="w-full relative h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between px-4 py-6">
+      <p className="text-red-400 text-sm font-bold rounded-md absolute z-20 top-1">{networkMessage}</p>
       <p className="font-bold text-xl lg:text-2xl">{searchParams.get("state") == "validator" ? "Check Validators Status" : "Gnosis Beacon Chain Deposit"}</p>
       <div className="w-full flex mt-4">
         <div className="w-full lg:w-2/6 flex flex-col text-base">
-          <p className="text-red-400 text-sm rounded-md">{networkMessage}</p>
           <div className="w-min bg-[#133629] hidden lg:flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer hover:bg-[#2a4a3e]" onClick={handleCopyAddress}>
             {truncateAddress(address)} {isCopied ? <CheckIcon className="ml-2 h-5 w-5" /> : <DocumentDuplicateIcon className="ml-2 h-5 w-5" />}
           </div>
