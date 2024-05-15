@@ -163,11 +163,13 @@ function useDeposit() {
         console.log("sending deposit transaction");
         await Promise.all(
           deposits.map(async (deposit) => {
-            let data = "0x";
+            let data = "";
             data += deposit.withdrawal_credentials;
             data += deposit.pubkey;
             data += deposit.signature;
             data += deposit.deposit_data_root;
+
+            console.log(data);
 
             try {
               writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`] });
