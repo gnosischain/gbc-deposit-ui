@@ -1,0 +1,52 @@
+name: Create Github Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+# Permission can be added at job level or workflow level    
+permissions:
+  contents: write # This is required for actions/checkout and create release
+
+jobs:
+  release:
+    name: Github Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create Github Release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if (!${{ toJson(github.ref_name) }}) {
+              core.setFailed("RELEASE_TAG is not defined.")
+
+              return;
+            }
+            try {
+              const response = await github.rest.repos.createRelease({
+                name: ${{ toJson(github.ref_name) }},
+                tag_name: ${{ toJson(github.ref_name) }},
+                draft: false,
+                generate_release_notes: true,
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+              });
+
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }

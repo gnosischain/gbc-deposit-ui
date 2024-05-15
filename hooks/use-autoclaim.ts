@@ -1,0 +1,73 @@
+import { useCallback, useEffect, useState } from "react";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import CONTRACTS from "@/utils/contracts";
+import claimRegistryABI from "@/utils/abis/claimRegistry";
+import { getPublicClient } from "wagmi/actions";
+import { config } from "@/wagmi";
+import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
+
+function useAutoclaim() {
+  const account = useAccount();
+  const [isRegister, setIsRegister] = useState(false);
+  const chainId = account?.chainId || 100;
+  const contractConfig = CONTRACTS[chainId];
+  const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
+  const { data: hash, writeContract } = useWriteContract();
+  const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  if (!contractConfig) {
+    throw Error(`No contract configuration found for chain ID ${chainId}`);
+  }
+
+  useEffect(() => {
+    async function fetchEvents() {
+      if (contractConfig && account.address && account.address !== "0x0") {
+        const registerEvents = await fetchRegister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
+        const unregisterEvents = await fetchUnregister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
+
+        if (registerEvents.length == 0 && unregisterEvents.length == 0) {
+          setIsRegister(false);
+        } else if (registerEvents && unregisterEvents.length == 0) {
+          setIsRegister(true);
+        } else {
+          const lastRegisterEvent = registerEvents[registerEvents.length - 1].blockNumber;
+          const lastUnregisterEvent = unregisterEvents[unregisterEvents.length - 1].blockNumber;
+
+          if (lastRegisterEvent > lastUnregisterEvent) {
+            setIsRegister(true);
+          } else {
+            setIsRegister(false);
+          }
+        }
+      }
+    }
+
+    fetchEvents();
+  }, [account.address, contractConfig]);
+
+  const register = useCallback(
+    async (days: number, amount: number) => {
+      const timeStamp = BigInt(days * 86400000);
+      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+    },
+    [account]
+  );
+
+  const updateConfig = useCallback(
+    async (days: number, amount: number) => {
+      const timeStamp = BigInt(days * 86400000);
+      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+    },
+    [account]
+  );
+
+  const unregister = useCallback(async () => {
+    writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
+  }, [account]);
+
+  return { register, updateConfig, unregister, isRegister, autoclaimSuccess };
+}
+
+export default useAutoclaim;
