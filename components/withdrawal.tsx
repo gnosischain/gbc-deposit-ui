@@ -3,12 +3,12 @@ import useClaimBalance from "@/hooks/use-claim-balance";
 import { ArrowUturnLeftIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useState } from "react";
 import Loader from "./loader";
-import { Address } from "viem";
+import { Address, formatEther } from "viem";
 import Link from "next/link";
 
 export default function Withdrawal() {
   const { claim, claimBalance, claimSuccess, claimHash } = useClaimBalance();
-  const { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash } = useAutoclaim();
+  const { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash, chainId } = useAutoclaim();
   const [timeValue, setTimeValue] = useState(1);
   const [amountValue, setAmountValue] = useState(1);
   const [step, setStep] = useState("claim");
@@ -113,7 +113,7 @@ export default function Withdrawal() {
           <div className="w-full flex text-sm items-center justify-between">
             <div className="w-full flex gap-x-2">
               Claimable balance:
-              <div className="flex font-bold items-center">{claimBalance?.toString()} GNOS</div>
+              <div className="flex font-bold items-center">{Math.round(Number(formatEther(claimBalance || BigInt(0))))} GNOS</div>
               <button className="text-[#DD7143] underline hover:text-[#E07F55]" onClick={onClaim}>
                 Manual claim
               </button>
@@ -129,7 +129,7 @@ export default function Withdrawal() {
         <div className="w-full flex flex-col items-center">
           <div className="flex items-center">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
-            <Link href={"https://gnosis.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
+            <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
               here
             </Link>
             .
