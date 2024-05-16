@@ -14,20 +14,18 @@ function useClaimBalance() {
     functionName: "withdrawableAmount",
     args: [account.address || "0x0"],
   });
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: claimHash, writeContract } = useWriteContract();
   const { isSuccess: claimSuccess } = useWaitForTransactionReceipt({
-    hash,
+    hash: claimHash,
   });
 
-  if (!contractConfig) {
-    throw Error(`No contract configuration found for chain ID ${chainId}`);
-  }
+  const claim = useCallback(async () => {
+    if (contractConfig) {
+      writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
+    }
+  }, [account]);
 
-  const claim = useCallback(async() =>{
-    writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
-  }, [account])
-
-  return { claim, claimBalance, claimSuccess };
+  return { claim, claimBalance, claimSuccess, claimHash };
 }
 
 export default useClaimBalance;

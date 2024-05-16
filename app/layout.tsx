@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="bg-[url('../public/background.jpg')] bg-cover bg-center w-full h-full">
+        <div className="bg-[url('../public/background.jpg')] bg-cover bg-center w-full h-full text-white">
           <Providers>{children}</Providers>
         </div>
       </body>

@@ -18,15 +18,24 @@ export default function Dashboard() {
   const [connectionAttempted, setConnectionAttemped] = useState(false);
   const { disconnect } = useDisconnect();
   const router = useRouter();
-  const { balance } = useDeposit();
+  const { balance, isWrongNetwork } = useDeposit();
   const [address, setAddress] = useState("");
-  const [network, setNetwork] = useState("");
+  const [networkMessage, setNetworkMessage] = useState("");
+  const [network, setNetwork] = useState("Not supported");
 
   useEffect(() => {
     if (account.address) {
       setAddress(account.address);
     }
   }, [account.address]);
+
+  useEffect(() => {
+    if (isWrongNetwork) {
+      setNetworkMessage("Wrong Network. Please connect to Gnosis Chain");
+    } else {
+      setNetworkMessage("");
+    }
+  }, [isWrongNetwork]);
 
   useEffect(() => {
     if (account.chain?.name) {
@@ -37,10 +46,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (account.isConnecting) {
       setConnectionAttemped(true);
-    } else if(connectionAttempted && !account.isConnected) {
+    } else if (connectionAttempted && !account.isConnected) {
       router.push("/");
     }
-  }, [account.isConnecting]);
+  }, [account.isConnecting, connectionAttempted, account.isConnected]);
 
   const handleCopyAddress = async () => {
     if (account.address) {
@@ -57,7 +66,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between px-4 py-6">
+    <div className="w-full relative h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between px-4 py-6">
+      <p className="text-red-400 text-sm font-bold rounded-md absolute z-20 top-1">{networkMessage}</p>
       <p className="font-bold text-xl lg:text-2xl">{searchParams.get("state") == "validator" ? "Check Validators Status" : "Gnosis Beacon Chain Deposit"}</p>
       <div className="w-full flex mt-4">
         <div className="w-full lg:w-2/6 flex flex-col text-base">
@@ -68,7 +78,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0">
             <div>
               Balance:
-              <p className="font-bold text-2xl lg:text-4xl">{Math.round(Number(formatEther(balance || BigInt(0))))} GNO</p>
+              <p className="font-bold text-xl lg:text-3xl">{Math.round(Number(formatEther(balance || BigInt(0))))} GNO</p>
             </div>
             <div>
               Network:

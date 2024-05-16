@@ -16,7 +16,7 @@ export default function DropDown() {
             <div className="px-1 py-1 ">
               <Menu.Item>
                 {({ active }) => (
-                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={""}>
+                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={"https://docs.gnosischain.com/faq/Node%20FAQs/generalQuestions"}>
                     <QuestionMarkCircleIcon className="h-5 w-5 mr-2" />
                     FAQ
                   </Link>
@@ -24,7 +24,7 @@ export default function DropDown() {
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={"https://docs.gnosischain.com/"}>
+                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={"https://docs.gnosischain.com/node"}>
                     <DocumentIcon className="h-5 w-5 mr-2" />
                     Official Docs
                   </Link>
@@ -32,7 +32,7 @@ export default function DropDown() {
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={""}>
+                  <Link target="_blank" className={`${active ? "bg-stone-100" : ""} text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm`} href={"https://gnosisvalidator.substack.com"}>
                     <NewspaperIcon className="h-5 w-5 mr-2" />
                     Validator Newsletter
                   </Link>

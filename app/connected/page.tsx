@@ -1,4 +1,4 @@
-'use client'; //TODO move down suspense into components
+"use client"; //TODO move down suspense into components
 
 import Image from "next/image";
 import DropDown from "@/components/dropdown";
@@ -10,7 +10,7 @@ import { Suspense } from "react";
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <main className="flex h-screen flex-col items-center justify-center">
+      <main className="flex h-full lg:h-screen flex-col items-center justify-center">
         <div className="w-full lg:w-[775px] bg-[#133629CC] h-full lg:h-auto backdrop-blur-sm p-4 lg:rounded-2xl flex gap-y-6 flex-col justify-start items-center">
           <div className="w-full gap-x-4 flex justify-between">
             <NavigationTab value="deposit" />
@@ -30,8 +30,7 @@ export default function Page() {
               Learn more about the Gnosis Beacon Chain
             </Link>
             <div className="w-2/4 lg:w-1/4 flex justify-center items-center">
-              {" "}
-              <DropDown />{" "}
+              <DropDown />
             </div>
           </div>
           <div className="w-full flex lg:hidden justify-center">

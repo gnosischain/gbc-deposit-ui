@@ -10,7 +10,7 @@ type ActionKey = "deposit" | "withdrawal" | "validator";
 
 const texts: Record<ActionKey, string> = {
   deposit: "Deposit",
-  withdrawal: "Withdrawal Claim",
+  withdrawal: "Autoclaim Rewards",
   validator: "Validator Status",
 };
 

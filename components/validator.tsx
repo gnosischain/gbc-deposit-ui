@@ -50,7 +50,7 @@ export default function Validator() {
         }
       }
     }
-  }, []);
+  }, [validateStatus]);
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] } });
 
   return (
