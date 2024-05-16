@@ -69,7 +69,7 @@ function useAutoclaim() {
     }
   }, [account]);
 
-  return { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash };
+  return { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash, chainId };
 }
 
 export default useAutoclaim;

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Address } from "viem";
 
 export default function Deposit() {
-  const { setDepositData, depositData, deposit, depositSuccess, depositHash } = useDeposit();
+  const { setDepositData, depositData, deposit, depositSuccess, depositHash, chainId } = useDeposit();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [tx, setTx] = useState<Address>("0x0");
@@ -104,7 +104,7 @@ export default function Deposit() {
         <div className="w-full flex flex-col items-center">
           <div className="flex items-center">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
-            <Link href={"https://gnosis.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
+            <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
               here
             </Link>
             .

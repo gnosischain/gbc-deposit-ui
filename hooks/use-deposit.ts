@@ -184,7 +184,7 @@ function useDeposit() {
     }
   }, [account, deposits, isBatch]);
 
-  return { deposit, depositSuccess, depositHash, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, isWrongNetwork };
+  return { deposit, depositSuccess, depositHash, depositData: { deposits, filename, hasDuplicates, isBatch }, setDepositData, balance, isWrongNetwork, chainId };
 }
 
 export default useDeposit;
