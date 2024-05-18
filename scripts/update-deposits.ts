@@ -2,10 +2,10 @@ import path from "path";
 import { readFile, writeFile, mkdir } from "fs/promises";
 
 // Network config and ABI
-import CONTRACTS from "@/utils/contracts";
-import depositABI from "@/utils/abis/deposit.js";
+import CONTRACTS from "../utils/contracts.ts";
+import depositABI from "../utils/abis/deposit.ts";
 import { getPublicClient } from "wagmi/actions";
-import { config } from "@/wagmi";
+import { config } from "../wagmi.ts";
 import { Address } from "viem";
 
 // Config
