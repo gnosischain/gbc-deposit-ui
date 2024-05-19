@@ -29,7 +29,7 @@ jobs:
 
             - uses: actions/checkout@v2
               with:
-                fetch-depth: 0
+                fetch-tags: true
             
             - name: Tag checkout
               run:
@@ -52,7 +52,7 @@ jobs:
                 pip install awscli --upgrade --user
 
             - name: Build App for release
-              run: yarn build
+              run: yarn update-deposits && yarn build
 
             - name: Configure AWS Production credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -67,6 +67,7 @@ jobs:
                 aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*.html" --exclude "sitemap.xml" --cache-control max-age=86400,public
                 aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
                 aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "sitemap.xml" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/xml
+                aws s3 sync data/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete
 
     notify:
       uses: ./.github/workflows/slack_release_notification.yml

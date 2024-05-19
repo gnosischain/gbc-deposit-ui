@@ -22,8 +22,6 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - uses: actions/cache@v2
         with:
@@ -42,7 +40,7 @@ jobs:
           pip install awscli --upgrade --user
 
       - name: Build App
-        run: yarn build
+        run: yarn update-deposits && yarn build
 
       - name: Configure AWS Development credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -58,6 +56,7 @@ jobs:
         run: |
           aws s3 sync build/ s3://${{ secrets.DEV_BUCKET_NAME }}/dev --exclude "*.html" --cache-control max-age=0,no-cache,no-store,public
           aws s3 sync build/ s3://${{ secrets.DEV_BUCKET_NAME }}/dev --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
+          aws s3 sync data/ s3://${{ secrets.DEV_BUCKET_NAME }}/dev
 
       # Script to deploy to staging environment
       - name: 'Deploy to S3: Staging'
@@ -65,3 +64,4 @@ jobs:
         run: |
           aws s3 sync build/ s3://${{ secrets.DEV_BUCKET_NAME }}/main --exclude "*.html" --cache-control max-age=0,no-cache,no-store,public
           aws s3 sync build/ s3://${{ secrets.DEV_BUCKET_NAME }}/main --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
+          aws s3 sync data/ s3://${{ secrets.DEV_BUCKET_NAME }}/main
