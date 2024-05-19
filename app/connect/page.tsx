@@ -27,7 +27,7 @@ export default function Page() {
           </Link>
         </div>
         <p className="text-2xl lg:text-3xl text-black font-bold mt-8 w-1/2 text-center">Choose your preferred wallet</p>
-        <div className="w-full flex flex-col divide-slate-700 divide-y mt-8 overflow-y-scroll">
+        <div className="w-full flex flex-col divide-slate-700 divide-y mt-8 overflow-y-auto">
           {connectors.map((connector, index) => {
             return (
               <div className="flex w-full justify-between items-center text-black hover:bg-[#E8E1CF] py-4 p-2 first:rounded-t-lg last:rounded-b-lg" key={connector.uid} onClick={() => connect({ connector })}>
