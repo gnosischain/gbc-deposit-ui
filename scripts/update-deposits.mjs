@@ -4,8 +4,9 @@ import { Contract, providers } from "ethers";
 import PQueue from "p-queue";
 
 // Network config and ABI
-import depositABI from "./deposits.js";
-import { NETWORKS } from "./contracts.js";
+import depositABI from "./deposits.mjs";
+import { NETWORKS } from './contracts.mjs';
+
 
 // Config
 const stepSize = 25_000;

@@ -49,7 +49,7 @@ export default function Dashboard() {
     } else if (connectionAttempted && !account.isConnected) {
       router.push("/");
     }
-  }, [account.isConnecting, connectionAttempted, account.isConnected]);
+  }, [account.isConnecting, connectionAttempted, account.isConnected, router]);
 
   const handleCopyAddress = async () => {
     if (account.address) {
