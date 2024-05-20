@@ -12,7 +12,7 @@ export default function Validator() {
   const { validateStatus, statuses } = useValidators();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState("validated");
+  const [step, setStep] = useState("validation");
 
   const onDrop = useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
