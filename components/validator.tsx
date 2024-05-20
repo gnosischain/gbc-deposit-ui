@@ -74,7 +74,7 @@ export default function Validator() {
       ) : step === "validated" ? (
         <div className="w-full flex flex-col items-center">
           {statuses && statuses.length > 0 ? (
-            <div>
+            <div className="overflow-y-auto">
               {statuses.map((status, index) => (
                 <div key={index}>
                   <h2>

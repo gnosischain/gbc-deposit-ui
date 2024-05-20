@@ -46,6 +46,7 @@ function useDeposit() {
     async (deposits: DepositDataJson[], balance: bigint) => {
       let newDeposits = [];
       let hasDuplicates = false;
+      let _isBatch = false;
       if (contractConfig) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {
           return depositDataJson.pubkey && depositDataJson.withdrawal_credentials && depositDataJson.amount && depositDataJson.signature && depositDataJson.deposit_message_root && depositDataJson.deposit_data_root && depositDataJson.fork_version;
@@ -87,9 +88,9 @@ function useDeposit() {
         const wc = newDeposits[0].withdrawal_credentials;
 
         // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
-        const isBatch = newDeposits.every((d) => d.withdrawal_credentials === wc);
+        _isBatch = newDeposits.every((d) => d.withdrawal_credentials === wc);
 
-        if (isBatch && newDeposits.length > 128) {
+        if (_isBatch && newDeposits.length > 128) {
           throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
         }
 
@@ -115,7 +116,7 @@ function useDeposit() {
         }
       }
 
-      return { deposits: newDeposits, hasDuplicates, isBatch };
+      return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
     [account, contractConfig, balance]
   );
@@ -130,10 +131,11 @@ function useDeposit() {
         } catch (error) {
           throw Error("Oops, something went wrong while parsing your json file. Please check the file and try again.");
         }
-        const { deposits, hasDuplicates, isBatch } = await validate(data, balance || BigInt(0));
+        const { deposits, hasDuplicates, _isBatch } = await validate(data, balance || BigInt(0));
+        console.log(_isBatch);
         setDeposits(deposits);
         setHasDuplicates(hasDuplicates);
-        setIsBatch(isBatch);
+        setIsBatch(_isBatch);
       } else {
         setDeposits([]);
         setHasDuplicates(false);
@@ -170,8 +172,6 @@ function useDeposit() {
             data += deposit.pubkey;
             data += deposit.signature;
             data += deposit.deposit_data_root;
-
-            console.log(data);
 
             try {
               writeContract({ address: contractConfig.addresses.token, abi: ERC677ABI, functionName: "transferAndCall", args: [contractConfig.addresses.deposit, depositAmountBN, `0x${data}`] });

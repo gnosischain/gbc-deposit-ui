@@ -113,7 +113,7 @@ export default function Withdrawal() {
           <div className="w-full flex text-sm items-center justify-between">
             <div className="w-full flex gap-x-2">
               Claimable balance:
-              <div className="flex font-bold items-center">{Math.round(Number(formatEther(claimBalance || BigInt(0))))} GNOS</div>
+              <div className="flex font-bold items-center">{Number(formatEther(claimBalance || BigInt(0))).toFixed(3)} GNOS</div>
               <button className="text-[#DD7143] underline hover:text-[#E07F55]" onClick={onClaim}>
                 Manual claim
               </button>
