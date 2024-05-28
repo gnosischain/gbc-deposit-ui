@@ -1,15 +1,10 @@
-name: Manual Deployment to Production
+name: Update deposits data
 
 on:
-    workflow_dispatch:
-      inputs:
-        tag:
-          description: Tagged version to deploy
-          required: true
-          type: string
-
-env:
-    NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.PROD_WC_PROJECT_ID }}
+    schedule:
+        # https://crontab.guru/#0_9_*_*_*
+        # Every day at 9am UTC
+        - cron: "0 9 * * *"
 
 jobs:
     deploy:
@@ -17,23 +12,17 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Cancel Previous Runs
-              uses: styfle/cancel-workflow-action@0.8.0
-              with:
-                access_token: ${{ github.token }}
-
-            - name: Remove broken apt repos [Ubuntu]
-              if: ${{ matrix.os }} == 'ubuntu-latest'
-              run: |
-                for apt_file in `grep -lr microsoft /etc/apt/sources.list.d/`; do sudo rm $apt_file; done
-
             # Ref: https://github.com/actions/checkout/issues/1471#issuecomment-1771231294
             - uses: actions/checkout@v4
-            
+
+            - name: Get latest tag available
+              id: latest_tag
+              run: echo "tag=$(git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1)" >> "$GITHUB_OUTPUT"
+
             - name: Tag checkout
               run: |
                 git fetch --prune --unshallow --tags
-                git checkout ${{ github.event.inputs.tag }}
+                git checkout ${{ steps.latest_tag.outputs.tag }}
 
             - uses: actions/cache@v2
               with:
@@ -51,8 +40,8 @@ jobs:
                 yarn install
                 pip install awscli --upgrade --user
 
-            - name: Build App for release
-              run: yarn update-deposits && yarn build
+            - name: Build deposits map
+              run: yarn update-deposits
 
             - name: Configure AWS Production credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -64,14 +53,11 @@ jobs:
             # Script to deploy to release environment
             - name: 'Deploy to S3: Release'
               run: |
-                aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*.html" --exclude "sitemap.xml" --cache-control max-age=86400,public
-                aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
-                aws s3 sync build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "sitemap.xml" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/xml
                 aws s3 sync data s3://${{ secrets.RELEASE_BUCKET_NAME }}/data --delete
 
             - name: 'Cloudfront: cache invalidation'
               run: |
-                aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_AWS_CLOUDFRONT_ID }} --paths "/*"
+                aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_AWS_CLOUDFRONT_ID }} --paths "/data/*"
 
     notify:
       uses: ./.github/workflows/slack_release_notification.yml
@@ -81,7 +67,7 @@ jobs:
         RELEASES_SLACK_WEBHOOK_URL: ${{ secrets.RELEASES_SLACK_WEBHOOK_URL }}
       with:
         environment: Production
-        service: GC Deposit UI
+        service: GC Deposit UI - Update Deposits
         success: ${{ contains(join(needs.*.result, ','), 'success') }}
-        message: "deploy service `GC Deposit UI` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
+        message: "deploy service `GC Deposit UI - Update Deposits data` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
   

@@ -13,44 +13,48 @@ export default function Validator() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("validation");
-  const onDrop = useCallback(async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    if (rejectedFiles.length > 0) {
-      setErrorMessage("Please upload a valid JSON file.");
-    } else if (acceptedFiles.length > 0) {
-      const data = await Promise.all(
-        acceptedFiles.map(
-          (file) =>
-            new Promise<FileDepositData>((resolve) => {
-              const reader = new FileReader();
-              reader.onload = async (event) => {
-                if (event.target?.result) {
-                  const depositData = JSON.parse(event.target.result as string);
-                  resolve({
-                    fileName: file.name,
-                    data: depositData,
-                  });
-                }
-              };
-              reader.readAsText(file);
-            })
-        )
-      );
-      try {
-        setLoading(true);
-        await validateStatus(data);
-        setStep("validated");
-        setLoading(false);
-      } catch (error: unknown) {
-        console.log(error);
-        setLoading(false);
-        if (error instanceof Error) {
-          setErrorMessage(error.message);
-        } else {
-          setErrorMessage("An unexpected error occurred.");
+
+  const onDrop = useCallback(
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (rejectedFiles.length > 0) {
+        setErrorMessage("Please upload a valid JSON file.");
+      } else if (acceptedFiles.length > 0) {
+        const data = await Promise.all(
+          acceptedFiles.map(
+            (file) =>
+              new Promise<FileDepositData>((resolve) => {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                  if (event.target?.result) {
+                    const depositData = JSON.parse(event.target.result as string);
+                    resolve({
+                      fileName: file.name,
+                      data: depositData,
+                    });
+                  }
+                };
+                reader.readAsText(file);
+              })
+          )
+        );
+        try {
+          setLoading(true);
+          await validateStatus(data);
+          setStep("validated");
+          setLoading(false);
+        } catch (error: unknown) {
+          console.log(error);
+          setLoading(false);
+          if (error instanceof Error) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage("An unexpected error occurred.");
+          }
         }
       }
-    }
-  }, [validateStatus]);
+    },
+    [validateStatus]
+  );
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] } });
 
   return (
@@ -72,7 +76,7 @@ export default function Validator() {
           {errorMessage && <p className="text-red-400 text-sm">{errorMessage.substring(0, 150)}</p>}
         </div>
       ) : step === "validated" ? (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full h-full flex flex-col items-center">
           {statuses && statuses.length > 0 ? (
             <div className="overflow-y-auto">
               {statuses.map((status, index) => (
