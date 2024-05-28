@@ -69,5 +69,5 @@ jobs:
         environment: Production
         service: GC Deposit UI - Update Deposits
         success: ${{ contains(join(needs.*.result, ','), 'success') }}
-        message: "deploy service `GC Deposit UI` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
+        message: "deploy service `GC Deposit UI - Update Deposits data` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
   
