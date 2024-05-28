@@ -10,7 +10,7 @@ export default function Withdrawal() {
   const { claim, claimBalance, claimSuccess, claimHash } = useClaimBalance();
   const { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash, chainId } = useAutoclaim();
   const [timeValue, setTimeValue] = useState(1);
-  const [amountValue, setAmountValue] = useState(1);
+  const [amountValue, setAmountValue] = useState("1");
   const [step, setStep] = useState("claim");
   const [tx, setTx] = useState<Address>("0x0");
   const [loading, setLoading] = useState(false);
@@ -20,21 +20,18 @@ export default function Withdrawal() {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newAmount = parseFloat(event.target.value);
-    if (newAmount <= 0) {
-      setAmountValue(1);
-    } else {
-      setAmountValue(newAmount);
-    }
+    const inputVal = event.target.value;
+    setAmountValue(inputVal);
   };
 
   const onAutoclaim = useCallback(async () => {
-    if (!isNaN(amountValue) && amountValue > 0) {
+    const parsedValue = parseFloat(amountValue.replace(/,/, "."));
+    if (!isNaN(parsedValue) && parsedValue > 0) {
       setLoading(true);
       if (isRegister) {
-        await updateConfig(timeValue, amountValue);
+        await updateConfig(timeValue, parsedValue);
       } else {
-        await register(timeValue, amountValue);
+        await register(timeValue, parsedValue);
       }
     }
   }, [timeValue, amountValue, isRegister, register, updateConfig]);
@@ -104,7 +101,7 @@ export default function Withdrawal() {
               <label htmlFor="default-input" className="block mb-2 text-xs font-bold text-gray-700">
                 Amount threshold
               </label>
-              <input type="number" value={amountValue} onChange={handleInputChange} id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-1" />
+              <input type="text" value={amountValue.toString()} onChange={handleInputChange} id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-1" />
             </div>
             <button className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold" onClick={onAutoclaim}>
               {isRegister ? "Update" : "Register"}

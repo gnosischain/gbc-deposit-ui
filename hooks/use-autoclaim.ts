@@ -5,6 +5,7 @@ import claimRegistryABI from "@/utils/abis/claimRegistry";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
+import { parseUnits } from "viem";
 
 function useAutoclaim() {
   const account = useAccount();
@@ -47,7 +48,7 @@ function useAutoclaim() {
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
     [account]
@@ -57,7 +58,7 @@ function useAutoclaim() {
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, BigInt(amount)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
     [account]
