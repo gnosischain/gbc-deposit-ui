@@ -6,6 +6,8 @@ on:
         # Every day at 9am UTC
         - cron: "0 9 * * *"
 
+    workflow_dispatch:
+
 jobs:
     deploy:
         name: Deployment
@@ -15,13 +17,17 @@ jobs:
             # Ref: https://github.com/actions/checkout/issues/1471#issuecomment-1771231294
             - uses: actions/checkout@v4
 
-            - name: Get latest tag available
+            - uses: oprypin/find-latest-tag@v1
+              with:
+                repository: gnosischain/gbc-deposit-ui
+                releases-only: true
+                prefix: 'v'
               id: latest_tag
-              run: echo "tag=$(git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1)" >> "$GITHUB_OUTPUT"
 
             - name: Tag checkout
               run: |
                 git fetch --prune --unshallow --tags
+                echo "Checking out tag ${{ steps.latest_tag.outputs.tag }}"
                 git checkout ${{ steps.latest_tag.outputs.tag }}
 
             - uses: actions/cache@v2
@@ -69,5 +75,5 @@ jobs:
         environment: Production
         service: GC Deposit UI - Update Deposits
         success: ${{ contains(join(needs.*.result, ','), 'success') }}
-        message: "deploy service `GC Deposit UI - Update Deposits data` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
+        message: "deploy service `GC Deposit UI - Update Deposits data` based on version `${{ needs.deploy.outputs.tag }}`. Triggered by `${{ github.actor }}`."
   
