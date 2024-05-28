@@ -1,0 +1,73 @@
+name: Update deposits data
+
+on:
+    schedule:
+        # https://crontab.guru/#0_9_*_*_*
+        # Every day at 9am UTC
+        - cron: "0 9 * * *"
+
+jobs:
+    deploy:
+        name: Deployment
+        runs-on: ubuntu-latest
+
+        steps:
+            # Ref: https://github.com/actions/checkout/issues/1471#issuecomment-1771231294
+            - uses: actions/checkout@v4
+
+            - name: Get latest tag available
+              id: latest_tag
+              run: echo "tag=$(git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1)" >> "$GITHUB_OUTPUT"
+
+            - name: Tag checkout
+              run: |
+                git fetch --prune --unshallow --tags
+                git checkout ${{ steps.latest_tag.outputs.tag }}
+
+            - uses: actions/cache@v2
+              with:
+                path: '**/node_modules'
+                key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v2
+
+            - name: Install
+              run: |
+                rm -rf .cache
+                rm -rf build
+                yarn config set cache-folder .yarn
+                yarn install
+                pip install awscli --upgrade --user
+
+            - name: Build deposits map
+              run: yarn update-deposits
+
+            - name: Configure AWS Production credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.PROD_AWS_DEFAULT_REGION }}
+
+            # Script to deploy to release environment
+            - name: 'Deploy to S3: Release'
+              run: |
+                aws s3 sync data s3://${{ secrets.RELEASE_BUCKET_NAME }}/data --delete
+
+            - name: 'Cloudfront: cache invalidation'
+              run: |
+                aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_AWS_CLOUDFRONT_ID }} --paths "/data/*"
+
+    notify:
+      uses: ./.github/workflows/slack_release_notification.yml
+      if: ${{ always() }}
+      needs: [ deploy ]
+      secrets: 
+        RELEASES_SLACK_WEBHOOK_URL: ${{ secrets.RELEASES_SLACK_WEBHOOK_URL }}
+      with:
+        environment: Production
+        service: GC Deposit UI - Update Deposits
+        success: ${{ contains(join(needs.*.result, ','), 'success') }}
+        message: "deploy service `GC Deposit UI` version `${{ inputs.tag }}`. Triggered by `${{ github.actor }}`."
+  
