@@ -68,7 +68,7 @@ jobs:
     notify:
       uses: ./.github/workflows/slack_release_notification.yml
       if: ${{ always() }}
-      needs: [ deploy ]
+      needs: deploy
       secrets: 
         RELEASES_SLACK_WEBHOOK_URL: ${{ secrets.RELEASES_SLACK_WEBHOOK_URL }}
       with:
