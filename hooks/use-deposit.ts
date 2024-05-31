@@ -90,6 +90,9 @@ function useDeposit() {
         // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
         _isBatch = newDeposits.every((d) => d.withdrawal_credentials === wc);
 
+        // check if withdrawal credential start with 0x00
+        _isBatch = !wc.startsWith("00");
+
         if (_isBatch && newDeposits.length > 128) {
           throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
         }
@@ -163,7 +166,7 @@ function useDeposit() {
           console.log(err);
         }
       } else {
-        //too much complexity by handling multiple withdrawal credential in one batch?
+        // too much complexity by handling multiple withdrawal credential in one batch?
         console.log("sending deposit transaction");
         await Promise.all(
           deposits.map(async (deposit) => {

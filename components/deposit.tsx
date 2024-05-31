@@ -16,36 +16,39 @@ export default function Deposit() {
   const [loading, setLoading] = useState(false);
   const [tx, setTx] = useState<Address>("0x0");
   const [step, setStep] = useState("deposit");
-  const onDrop = useCallback(async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    if (rejectedFiles.length > 0) {
-      setErrorMessage("Please upload a valid JSON file.");
-    } else if (acceptedFiles.length > 0) {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const result = event.target?.result as string;
-        if (result) {
-          try {
-            setLoading(true);
-            await setDepositData(result, acceptedFiles[0].name);
-            setStep("validation");
-            setLoading(false);
-            setErrorMessage("");
-          } catch (error: unknown) {
-            console.log(error);
-            setLoading(false);
-            if (error instanceof Error) {
+  const onDrop = useCallback(
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (rejectedFiles.length > 0) {
+        setErrorMessage("Please upload a valid JSON file.");
+      } else if (acceptedFiles.length > 0) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const result = event.target?.result as string;
+          if (result) {
+            try {
+              setLoading(true);
+              await setDepositData(result, acceptedFiles[0].name);
+              setStep("validation");
+              setLoading(false);
+              setErrorMessage("");
+            } catch (error: unknown) {
               console.log(error);
-              setErrorMessage(error.message);
-            } else {
-              setErrorMessage("An unexpected error occurred.");
+              setLoading(false);
+              if (error instanceof Error) {
+                console.log(error);
+                setErrorMessage(error.message);
+              } else {
+                setErrorMessage("An unexpected error occurred.");
+              }
             }
           }
-        }
-      };
-      reader.readAsText(acceptedFiles[0]);
-    }
-  }, [setDepositData]);
-  
+        };
+        reader.readAsText(acceptedFiles[0]);
+      }
+    },
+    [setDepositData]
+  );
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
 
   const onDeposit = useCallback(async () => {
@@ -96,6 +99,11 @@ export default function Deposit() {
           <div className="flex items-center">
             <CheckIcon className="h-5 w-5" /> Total amount required: {depositData.deposits.length} GNO
           </div>
+          {depositData.isBatch ? (
+            ""
+          ) : (
+            <p className="text-orange-400 text-xs text-center">Your deposit file contains BLS credentials (starting with 0x00), you'll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.</p>
+          )}
           <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit}>
             Deposit
           </button>
