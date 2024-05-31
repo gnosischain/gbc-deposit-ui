@@ -78,7 +78,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0">
             <div>
               Balance:
-              <p className="font-bold text-xl lg:text-3xl">{Number(formatEther(balance || BigInt(0))).toFixed(3)} GNO</p>
+              <p className="font-bold text-xl lg:text-2xl">{Number(formatEther(balance || BigInt(0))).toFixed(3)} GNO</p>
             </div>
             <div>
               Network:
