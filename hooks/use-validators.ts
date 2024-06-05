@@ -36,7 +36,7 @@ type ValidatorStatus = {
 function useValidators() {
   const [statuses, setStatuses] = useState<ValidatorStatus[] | null>(null);
   const account = useAccount();
-  const chainId = process.env.NODE_ENV === 'test' ? 31337 : account?.chainId || 100;
+  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === 'test' ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
 
   const fetchStatuses = useCallback(async (beaconExplorerUrl: string, pubkeys: string[]): Promise<ValidatorStatus[]> => {

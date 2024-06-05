@@ -6,7 +6,7 @@ import depositABI from "@/utils/abis/deposit";
 function useClaimBalance() {
   const account = useAccount();
 
-  const chainId = process.env.NODE_ENV === 'test' ? 31337 : account?.chainId || 100;
+  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === 'test' ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const { data: claimBalance } = useReadContract({
     abi: depositABI,

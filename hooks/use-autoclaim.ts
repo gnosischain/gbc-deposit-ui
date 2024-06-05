@@ -10,7 +10,7 @@ import { parseUnits } from "viem";
 function useAutoclaim() {
   const account = useAccount();
   const [isRegister, setIsRegister] = useState(false);
-  const chainId = process.env.NODE_ENV === 'test' ? 31337 : account?.chainId || 100;
+  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === "test" ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
   const { data: autoclaimHash, writeContract } = useWriteContract();

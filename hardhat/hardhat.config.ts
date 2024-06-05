@@ -3,6 +3,13 @@ import "@nomicfoundation/hardhat-toolbox-viem";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.24",
+  networks: {
+    hardhat: {
+      forking: {
+        url: "https://rpc.chiadochain.net",
+      },
+    },
+  },
 };
 
 export default config;
