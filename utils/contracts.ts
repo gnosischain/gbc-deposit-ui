@@ -39,6 +39,17 @@ const CONTRACTS: Contracts = {
     depositStartBlockNumber: BigInt(155530),
     claimRegistryStartBlockNumber: BigInt(9311142),
   },
+  31337: {
+    forkVersion: "local_test",
+    beaconExplorerUrl: 'http://localhost:8545',
+    addresses: {
+      token: "0x...",
+      deposit: "0x...",
+      claimRegistry: "0x...",
+    },
+    depositStartBlockNumber: BigInt(0),
+    claimRegistryStartBlockNumber: BigInt(0),
+  },
 };
 
 export default CONTRACTS;

@@ -27,7 +27,7 @@ function useDeposit() {
   const [filename, setFilename] = useState("");
   const account = useAccount();
 
-  const chainId = account?.chainId || 100;
+  const chainId = process.env.NODE_ENV === 'test' ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
   const { data: balance } = useReadContract({
