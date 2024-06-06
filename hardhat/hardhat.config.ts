@@ -8,6 +8,13 @@ const config: HardhatUserConfig = {
       forking: {
         url: "https://rpc.chiadochain.net",
       },
+      chains: {
+        10200: {
+          hardforkHistory: {
+            cancun: 10163281,
+          },
+        },
+      },
     },
   },
 };

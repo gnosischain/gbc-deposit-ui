@@ -41,7 +41,7 @@ const CONTRACTS: Contracts = {
   },
   31337: {
     forkVersion: "0000006f",
-    beaconExplorerUrl: 'http://localhost:8545',
+    beaconExplorerUrl: 'https://beacon.chiadochain.net',
     addresses: {
       token: "0x19C653Da7c37c66208fbfbE8908A5051B57b4C70",
       deposit: "0xb97036A26259B7147018913bD58a774cf91acf25",
