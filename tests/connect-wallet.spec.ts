@@ -1,17 +1,50 @@
-import { test, expect } from "../fixtures";
-import * as metamask from "@synthetixio/synpress/commands/metamask";
+import { BrowserContext, expect, test as baseTest } from "@playwright/test";
+import dappwright, { Dappwright, MetaMaskWallet } from "@tenkeylabs/dappwright";
 
-// test.beforeEach(async ({page}) => {
-//   // baseUrl is set in playwright.config.ts
-//   await page.goto("/connect");
-// });
+export const test = baseTest.extend<{
+  context: BrowserContext;
+  wallet: Dappwright;
+}>({
+  context: async ({}, use) => {
+    // Launch context with extension
+    const [wallet, _, context] = await dappwright.bootstrap("", {
+      wallet: "metamask",
+      version: "11.16.3",
+      seed: "test test test test test test test test test test test junk", // Hardhat's default https://hardhat.org/hardhat-network/docs/reference#accounts
+      headless: false,
+    });
 
-test("connect wallet using default metamask account", async ({ page }) => {
-  await page.goto("/connect");
+    // Add Hardhat as a custom network
+    await wallet.addNetwork({
+      networkName: "Hardhat",
+      rpc: "http://127.0.0.1:8545",
+      chainId: 31337,
+      symbol: "ETH",
+    });
+
+    await use(context);
+  },
+
+  wallet: async ({ context }, use) => {
+    const metamask = await dappwright.getWallet("metamask", context);
+
+    await use(metamask);
+  },
+});
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("http://localhost:3000/connect");
+});
+
+test("should be able to connect", async ({ wallet, page }) => {
   await page.click("#metamask");
-  await metamask.acceptAccess();
-  
-  await expect(page.locator("#accounts")).toHaveText(
-    "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
-  );
+  await wallet.approve();
+
+  await page.waitForURL("http://localhost:3000/connected?state=deposit");
+
+  const newURL = page.url();
+  expect(newURL).toBe("http://localhost:3000/connected?state=deposit");
+
+  const networkText = await page.locator("#network").textContent();
+  expect(networkText).toContain("Hardhat");
 });

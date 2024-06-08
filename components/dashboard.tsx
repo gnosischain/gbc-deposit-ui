@@ -82,7 +82,7 @@ export default function Dashboard() {
             </div>
             <div>
               Network:
-              <p className="font-bold text-lg">{network}</p>
+              <p className="font-bold text-lg" id="network">{network}</p>
             </div>
             <button
               onClick={() => {
