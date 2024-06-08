@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev",
+    "test-server": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "update-deposits": "node ./scripts/update-deposits.mjs"
+    "update-deposits": "node ./scripts/update-deposits.mjs",
+    "start:server": "serve ../../node_modules/@metamask/test-dapp/dist -p 3000",
+    "run-test": "playwright test --project=chromium"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -26,6 +28,8 @@
     "wagmi": "^2.5.19"
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@synthetixio/synpress": "^3.7.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
