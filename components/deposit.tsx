@@ -10,6 +10,8 @@ import Loader from "./loader";
 import Link from "next/link";
 import { Address } from "viem";
 
+
+
 export default function Deposit() {
   const { setDepositData, depositData, deposit, depositSuccess, depositHash, chainId } = useDeposit();
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,6 +51,14 @@ export default function Deposit() {
     [setDepositData]
   );
 
+  useEffect(() => {
+    console.log("Deposit component mounted");
+
+    return () => {
+      console.log("Deposit component unmounted");
+    };
+  }, []);
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
 
   const onDeposit = useCallback(async () => {
@@ -78,7 +88,7 @@ export default function Deposit() {
         </>
       ) : step === "deposit" ? (
         <div className="w-full flex flex-col items-center hover:cursor-pointer" {...getRootProps()}>
-          <input {...getInputProps()} />
+          <input id="dropzone" {...getInputProps()} />
           Upload deposit date file
           <div className="flex font-bold items-center">
             deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
@@ -102,7 +112,9 @@ export default function Deposit() {
           {depositData.isBatch ? (
             ""
           ) : (
-            <p className="text-orange-400 text-xs text-center">Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.</p>
+            <p className="text-orange-400 text-xs text-center">
+              Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.
+            </p>
           )}
           <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit}>
             Deposit

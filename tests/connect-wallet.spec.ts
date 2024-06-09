@@ -1,5 +1,7 @@
 import { BrowserContext, expect, test as baseTest } from "@playwright/test";
 import dappwright, { Dappwright, MetaMaskWallet } from "@tenkeylabs/dappwright";
+import fs from 'fs';
+import path from "path";
 
 export const test = baseTest.extend<{
   context: BrowserContext;
@@ -32,11 +34,8 @@ export const test = baseTest.extend<{
   },
 });
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, wallet }) => {
   await page.goto("http://localhost:3000/connect");
-});
-
-test("should be able to connect", async ({ wallet, page }) => {
   await page.click("#metamask");
   await wallet.approve();
 
@@ -47,4 +46,25 @@ test("should be able to connect", async ({ wallet, page }) => {
 
   const networkText = await page.locator("#network").textContent();
   expect(networkText).toContain("Hardhat");
+});
+
+// test("should be able to disconnect", async ({ wallet, page }) => {
+//   await page.click("#disconnect");
+//   await page.waitForURL("http://localhost:3000/");
+//   const newURL = page.url();
+//   expect(newURL).toBe("http://localhost:3000/");
+// });
+
+test("should be able to deposit", async ({ wallet, page }) => {
+  const filePath = path.join(__dirname, '..', 'data', 'deposit_data-1717082979.json');
+
+  if (fs.existsSync(filePath)) {
+    console.log('File exists');
+  } else {
+    console.log('File does not exist');
+    throw new Error('File not found');
+  }
+
+  const input = page.locator("#dropzone");
+  await input.setInputFiles(filePath);
 });
