@@ -54,6 +54,9 @@ jobs:
             - name: Build App for release
               run: yarn update-deposits && yarn build
 
+            - name: Run tests
+              run: yarn run-e2e-tests
+
             - name: Configure AWS Production credentials
               uses: aws-actions/configure-aws-credentials@v1
               with:

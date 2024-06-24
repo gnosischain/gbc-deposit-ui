@@ -42,6 +42,9 @@ jobs:
       - name: Build App
         run: yarn update-deposits && yarn build
 
+      - name: Run tests
+        run: yarn run-e2e-tests
+
       - name: Configure AWS Development credentials
         uses: aws-actions/configure-aws-credentials@v1
         if: ( github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' )
