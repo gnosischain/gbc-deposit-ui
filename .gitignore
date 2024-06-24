@@ -36,6 +36,12 @@ yarn-error.log*
 next-env.d.ts
 
 .env
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+.cache-synpress
 
 hardhat/cache/**
 hardhat/node_modules/**

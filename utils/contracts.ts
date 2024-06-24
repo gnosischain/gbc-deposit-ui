@@ -39,6 +39,17 @@ const CONTRACTS: Contracts = {
     depositStartBlockNumber: BigInt(155530),
     claimRegistryStartBlockNumber: BigInt(9311142),
   },
+  31337: {
+    forkVersion: "0000006f",
+    beaconExplorerUrl: 'https://beacon.chiadochain.net',
+    addresses: {
+      token: "0x19C653Da7c37c66208fbfbE8908A5051B57b4C70",
+      deposit: "0xb97036A26259B7147018913bD58a774cf91acf25",
+      claimRegistry: "0x28f1ba1f2Db9Aa0ca4b3B7cD9Ae327f6E872867D",
+    },
+    depositStartBlockNumber: BigInt(155530),
+    claimRegistryStartBlockNumber: BigInt(9311142),
+  },
 };
 
 export default CONTRACTS;

@@ -103,7 +103,7 @@ export default function Withdrawal() {
               </label>
               <input type="text" value={amountValue.toString()} onChange={handleInputChange} id="default-input" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-1" />
             </div>
-            <button className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold" onClick={onAutoclaim}>
+            <button className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold" onClick={onAutoclaim} id="autoclaim">
               {isRegister ? "Update" : "Register"}
             </button>
           </div>
@@ -116,7 +116,7 @@ export default function Withdrawal() {
               </button>
             </div>
             {isRegister && (
-              <button className="text-black underline" onClick={onUnregister}>
+              <button className="text-black underline" onClick={onUnregister} id="unsubscribe">
                 Unsubscribe
               </button>
             )}
@@ -124,7 +124,7 @@ export default function Withdrawal() {
         </>
       ) : step === "summary" ? (
         <div className="w-full flex flex-col items-center">
-          <div className="flex items-center">
+          <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
             <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
               here
