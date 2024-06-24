@@ -57,12 +57,16 @@ test.beforeEach(async ({ page, wallet }) => {
   expect(networkText).toContain("Hardhat");
 });
 
-// test("should be able to disconnect", async ({ wallet, page }) => {
-//   await page.click("#disconnect");
-//   await page.waitForURL("http://localhost:3000/");
-//   const newURL = page.url();
-//   expect(newURL).toBe("http://localhost:3000/");
-// });
+test.afterEach(async ({ context }) => {
+  await context.close();
+});
+
+test("should be able to disconnect", async ({ wallet, page }) => {
+  await page.click("#disconnect");
+  await page.waitForURL("http://localhost:3000/");
+  const newURL = page.url();
+  expect(newURL).toBe("http://localhost:3000/");
+});
 
 test("should be able to deposit", async ({ wallet, page }) => {
   const filePath = path.join(__dirname, "..", "data", "deposit_data-1717082979.json");
@@ -80,6 +84,40 @@ test("should be able to deposit", async ({ wallet, page }) => {
   expect(filenameText).toContain("deposit_data-1717082979.json");
 
   await page.click("#deposit");
+  await wallet.confirmTransaction();
+  
+  const confirmationText = await page.locator("#confirmation").textContent();
+  expect(confirmationText).toContain("Your transaction is completed ! View it");
+});
+
+test("should be able to subscribe autoclaim", async ({ wallet, page }) => {
+  await page.click("#withdrawal");
+  const autoclaimText = await page.locator("#autoclaim").textContent();
+  expect(autoclaimText).toContain("Register");
+
+  await page.click("#autoclaim");
+  await wallet.confirmTransaction();
+  
+  const confirmationText = await page.locator("#confirmation").textContent();
+  expect(confirmationText).toContain("Your transaction is completed ! View it");
+});
+
+test("should be able to update subscription", async ({ wallet, page }) => {
+  await page.click("#withdrawal");
+  const autoclaimText = await page.locator("#autoclaim").textContent();
+  expect(autoclaimText).toContain("Update");
+
+  await page.click("#autoclaim");
+  await wallet.confirmTransaction();
+  
+  const confirmationText = await page.locator("#confirmation").textContent();
+  expect(confirmationText).toContain("Your transaction is completed ! View it");
+});
+
+test("should be able to unsubscribe", async ({ wallet, page }) => {
+  await page.click("#withdrawal");
+
+  await page.click("#unsubscribe");
   await wallet.confirmTransaction();
   
   const confirmationText = await page.locator("#confirmation").textContent();
