@@ -99,7 +99,7 @@ export default function Deposit() {
         </div>
       ) : step === "validation" ? (
         <div className="w-full flex flex-col items-center">
-          {depositData.filename}
+          <div id="filename">{depositData.filename}</div>
           <div className="flex items-center mt-4">
             <CheckIcon className="h-5 w-5" /> Accepted
           </div>
@@ -116,13 +116,13 @@ export default function Deposit() {
               Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.
             </p>
           )}
-          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit}>
+          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit} id="deposit">
             Deposit
           </button>
         </div>
       ) : step === "summary" ? (
         <div className="w-full flex flex-col items-center">
-          <div className="flex items-center">
+          <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
             <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
               here

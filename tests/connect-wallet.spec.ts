@@ -1,6 +1,6 @@
 import { BrowserContext, expect, test as baseTest } from "@playwright/test";
 import dappwright, { Dappwright, MetaMaskWallet } from "@tenkeylabs/dappwright";
-import fs from 'fs';
+import fs from "fs";
 import path from "path";
 
 export const test = baseTest.extend<{
@@ -11,8 +11,8 @@ export const test = baseTest.extend<{
     // Launch context with extension
     const [wallet, _, context] = await dappwright.bootstrap("", {
       wallet: "metamask",
-      version: "11.16.3",
-      seed: "test test test test test test test test test test test junk", // Hardhat's default https://hardhat.org/hardhat-network/docs/reference#accounts
+      version: "11.16.13",
+      seed: "mango choose scrap wasp hill chest process cloud float clarify worth plastic", // Seed phrase for GC Deposit UI only
       headless: false,
     });
 
@@ -41,6 +41,15 @@ test.beforeEach(async ({ page, wallet }) => {
 
   await page.waitForURL("http://localhost:3000/connected?state=deposit");
 
+  await page.waitForFunction(
+    () => {
+      const networkElement = document.querySelector("#network");
+      return networkElement?.textContent && networkElement.textContent.includes("Hardhat");
+    },
+    null,
+    { timeout: 5000 }
+  );
+
   const newURL = page.url();
   expect(newURL).toBe("http://localhost:3000/connected?state=deposit");
 
@@ -56,15 +65,23 @@ test.beforeEach(async ({ page, wallet }) => {
 // });
 
 test("should be able to deposit", async ({ wallet, page }) => {
-  const filePath = path.join(__dirname, '..', 'data', 'deposit_data-1717082979.json');
+  const filePath = path.join(__dirname, "..", "data", "deposit_data-1717082979.json");
 
   if (fs.existsSync(filePath)) {
-    console.log('File exists');
+    console.log("File exists");
   } else {
-    console.log('File does not exist');
-    throw new Error('File not found');
+    console.log("File does not exist");
+    throw new Error("File not found");
   }
 
   const input = page.locator("#dropzone");
   await input.setInputFiles(filePath);
+  const filenameText = await page.locator("#filename").textContent();
+  expect(filenameText).toContain("deposit_data-1717082979.json");
+
+  await page.click("#deposit");
+  await wallet.confirmTransaction();
+  
+  const confirmationText = await page.locator("#confirmation").textContent();
+  expect(confirmationText).toContain("Your transaction is completed ! View it");
 });
