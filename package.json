@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "update-deposits": "node ./scripts/update-deposits.mjs",
-    "start-test-env": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev",
+    "start-test-env": "cross-env NEXT_PUBLIC_TEST_ENV=test next build && next start -p 3000",
     "start-hardhat-node": "cd hardhat && npx hardhat node",
     "run-playwright": "playwright test playwright.config.ts tests/",
     "run-e2e-tests": "npm-run-all -s start-test-env start-hardhat-node run-playwright"
