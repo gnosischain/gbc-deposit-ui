@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test-server": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "update-deposits": "node ./scripts/update-deposits.mjs",
-    "start:server": "serve ../../node_modules/@metamask/test-dapp/dist -p 3000",
-    "run-test": "playwright test playwright.config.ts tests/"
+    "start-test-env": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev",
+    "start-hardhat-node": "cd hardhat && npx hardhat node",
+    "run-playwright": "playwright test playwright.config.ts tests/",
+    "run-e2e-tests": "npm-run-all -s start-test-env start-hardhat-node run-playwright"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -37,6 +38,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
