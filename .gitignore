@@ -41,7 +41,5 @@ next-env.d.ts
 /blob-report/
 /playwright/.cache/
 
-.cache-synpress
-
 hardhat/cache/**
 hardhat/node_modules/**
