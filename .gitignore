@@ -42,3 +42,6 @@ next-env.d.ts
 /playwright/.cache/
 
 .cache-synpress
+
+hardhat/cache/**
+hardhat/node_modules/**
