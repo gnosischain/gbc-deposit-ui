@@ -12,6 +12,8 @@ jobs:
     deploy:
         name: Deployment
         runs-on: ubuntu-latest
+        outputs:
+          tag: ${{steps.latest_tag.outputs.tag}}
 
         steps:
             # Ref: https://github.com/actions/checkout/issues/1471#issuecomment-1771231294
@@ -75,5 +77,5 @@ jobs:
         environment: Production
         service: GC Deposit UI - Update Deposits
         success: ${{ contains(join(needs.*.result, ','), 'success') }}
-        message: "deploy service `GC Deposit UI - Update Deposits data` based on version `${{ needs.deploy.outputs.latest_tag }}`. Triggered by `${{ github.actor }}`."
+        message: "deploy service `GC Deposit UI - Update Deposits data` based on version `${{ needs.deploy.outputs.tag }}`. Triggered by `${{ github.actor }}`."
   
