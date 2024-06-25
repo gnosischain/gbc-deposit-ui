@@ -27,9 +27,9 @@ function useDeposit() {
   const [filename, setFilename] = useState("");
   const account = useAccount();
 
-  const chainId = account?.chainId || 100;
+  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === 'test' ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
-  const client = getPublicClient(config, { chainId: chainId as 100 | 10200 });
+  const client = getPublicClient(config, { chainId: chainId as 100 | 10200 | 31337 });
   const { data: balance } = useReadContract({
     abi: ERC677ABI,
     address: contractConfig?.addresses.token,
@@ -64,7 +64,7 @@ function useDeposit() {
           throw Error("This JSON file isn't for the right network (" + deposits[0].fork_version + "). Upload a file generated for you current network: " + account.chainId);
         }
 
-        const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId, contractConfig.depositStartBlockNumber);
+        const { deposits: existingDeposits, lastBlock: fromBlock } = await loadCachedDeposits(chainId === 31337 ? 10200 : chainId, contractConfig.depositStartBlockNumber);
 
         const events = await fetchDeposit(contractConfig.addresses.deposit, fromBlock, client);
 

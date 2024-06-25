@@ -38,7 +38,7 @@ export default function Page() {
         <div className="w-full flex flex-col divide-slate-700 divide-y mt-8 overflow-y-auto">
           {uniqueConnectors.map((connector, index) => {
             return (
-              <div className="flex w-full justify-between items-center text-black hover:bg-[#E8E1CF] py-4 p-2 first:rounded-t-lg last:rounded-b-lg" key={connector.uid} onClick={() => connect({ connector })}>
+              <div className="flex w-full justify-between items-center text-black hover:bg-[#E8E1CF] py-4 p-2 first:rounded-t-lg last:rounded-b-lg" key={connector.uid} id={connector.name === "MetaMask" ? "metamask" : ""} onClick={() => connect({ connector })}>
                 {connector.name} <Image src={"./" + connector.id + ".png"} alt={connector.id} width={48} height={24} />
               </div>
             );
