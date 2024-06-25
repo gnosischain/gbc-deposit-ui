@@ -2680,7 +2680,7 @@
   resolved "https://registry.npmjs.org/@tanstack/virtual-core/-/virtual-core-3.7.0.tgz"
   integrity sha512-p0CWuqn+n8iZmsL7/l0Xg7kbyIKnHNqkEJkMDOkg4x3Ni3LohszmnJY8FPhTgG7Ad9ZFGcdKmn1R1mKUGEh9Xg==
 
-"@tenkeylabs/dappwright@^2.8.5":
+"@tenkeylabs/dappwright@^2.8.4":
   version "2.8.5"
   resolved "https://registry.npmjs.org/@tenkeylabs/dappwright/-/dappwright-2.8.5.tgz"
   integrity sha512-Pr1M183hc7hbewWs2ALpqxCf6ZKw+B0gVUXKWaAtP4/zIyHclHWTkTwQVEpnhWadMMC+WsZbFrJiZyIGKpsXlg==
