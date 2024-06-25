@@ -12,6 +12,8 @@ jobs:
     deploy:
         name: Deployment
         runs-on: ubuntu-latest
+        outputs:
+          tag: ${{steps.latest_tag.outputs.tag}}
 
         steps:
             # Ref: https://github.com/actions/checkout/issues/1471#issuecomment-1771231294
