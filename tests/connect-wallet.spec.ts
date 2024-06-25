@@ -13,7 +13,7 @@ export const test = baseTest.extend<{
       wallet: "metamask",
       version: "11.16.13",
       seed: "mango choose scrap wasp hill chest process cloud float clarify worth plastic", // Seed phrase for GC Deposit UI only
-      headless: false,
+      headless: true,
     });
 
     // Add Hardhat as a custom network
