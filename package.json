@@ -10,10 +10,10 @@
     "start": "next start",
     "lint": "next lint",
     "update-deposits": "node ./scripts/update-deposits.mjs",
-    "start-test-env": "cross-env NEXT_PUBLIC_TEST_ENV=test next build && next start -p 3000",
+    "start-test-env": "cross-env NEXT_PUBLIC_TEST_ENV=test next dev -p 3000",
     "start-hardhat-node": "cd hardhat && npx hardhat node",
     "run-playwright": "playwright test playwright.config.ts tests/",
-    "run-e2e-tests": "npm-run-all -s start-test-env start-hardhat-node run-playwright"
+    "run-e2e-tests": "concurrently --kill-others --success first \"npm run start-test-env\" \"npm run start-hardhat-node\" \"npm run run-playwright\""
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -37,6 +37,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",

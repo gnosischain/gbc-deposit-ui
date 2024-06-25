@@ -61,7 +61,7 @@ test.afterEach(async ({ context }) => {
   await context.close();
 });
 
-test("should be able to disconnect", async ({ wallet, page }) => {
+test("should be able to disconnect", async ({ page }) => {
   await page.click("#disconnect");
   await page.waitForURL("http://localhost:3000/");
   const newURL = page.url();
