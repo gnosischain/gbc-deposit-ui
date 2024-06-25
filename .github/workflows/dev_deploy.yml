@@ -42,6 +42,10 @@ jobs:
       - name: Build App
         run: yarn update-deposits && yarn build
 
+      - name: Install Playwright Browsers
+        run: |
+          yarn playwright install
+
       - name: Run tests
         run: yarn run-e2e-tests
 
