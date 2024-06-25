@@ -116,7 +116,7 @@ export default function Deposit() {
               Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.
             </p>
           )}
-          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit} id="deposit">
+          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit} id="depositButton">
             Deposit
           </button>
         </div>

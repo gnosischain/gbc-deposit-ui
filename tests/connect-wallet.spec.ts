@@ -83,7 +83,7 @@ test("should be able to deposit", async ({ wallet, page }) => {
   const filenameText = await page.locator("#filename").textContent();
   expect(filenameText).toContain("deposit_data-1717082979.json");
 
-  await page.click("#deposit");
+  await page.click("#depositButton");
   await wallet.confirmTransaction();
   
   const confirmationText = await page.locator("#confirmation").textContent();
