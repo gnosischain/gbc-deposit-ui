@@ -25,7 +25,6 @@
     "next": "14.1.4",
     "p-queue": "^8.0.1",
     "pino-pretty": "^11.0.0",
-    "playwright": "^1.45.0",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
