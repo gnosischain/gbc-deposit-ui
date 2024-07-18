@@ -7,6 +7,10 @@ on:
       - main
       - dev
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.DEV_WC_PROJECT_ID }}
 
@@ -16,11 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
-
       - uses: actions/checkout@v4
 
       - uses: actions/cache@v2
