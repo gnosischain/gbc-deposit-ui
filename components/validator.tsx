@@ -58,7 +58,7 @@ export default function Validator() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] } });
 
   return (
-    <div className="w-full bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col justify-center items-center rounded-2xl">
+    <div className="w-full h-full bg-[#FFFFFFB2] p-6 flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
         <>
           <Loader />

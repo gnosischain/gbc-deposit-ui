@@ -62,7 +62,7 @@ export default function Withdrawal() {
   }, [claimHash, autoclaimHash]);
 
   return (
-    <div className="w-full bg-[#FFFFFFB2] h-[280px] p-4 flex flex-col justify-center items-center rounded-2xl">
+    <div className="w-full h-full bg-[#FFFFFFB2] p-4 flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
         <div>
           <Loader />

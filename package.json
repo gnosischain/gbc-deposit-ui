@@ -16,7 +16,7 @@
     "run-e2e-tests": "concurrently --kill-others --success first \"npm run start-test-env\" \"npm run start-hardhat-node\" \"npm run run-playwright\""
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.18",
+    "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.3",
     "@tanstack/react-query": "^5.29.0",
     "@tenkeylabs/dappwright": "^2.8.4",
