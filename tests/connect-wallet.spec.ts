@@ -90,6 +90,28 @@ test("should be able to deposit", async ({ wallet, page }) => {
   expect(confirmationText).toContain("Your transaction is completed ! View it");
 });
 
+test("should not be able to deposit twice the same file", async ({ wallet, page }) => {
+  const filePath = path.join(__dirname, "..", "data", "deposit_data-1717082979.json");
+
+  if (fs.existsSync(filePath)) {
+    console.log("File exists");
+  } else {
+    console.log("File does not exist");
+    throw new Error("File not found");
+  }
+
+  const input = page.locator("#dropzone");
+  await input.setInputFiles(filePath);
+  const filenameText = await page.locator("#filename").textContent();
+  expect(filenameText).toContain("deposit_data-1717082979.json");
+
+  await page.click("#depositButton");
+  await wallet.confirmTransaction();
+  
+  const confirmationText = await page.locator("#confirmation").textContent();
+  expect(confirmationText).toContain("Your transaction is completed ! View it");
+});
+
 test("should be able to subscribe autoclaim", async ({ wallet, page }) => {
   await page.click("#withdrawal");
   const autoclaimText = await page.locator("#autoclaim").textContent();
