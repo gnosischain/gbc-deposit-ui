@@ -5,8 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { truncateAddress } from "@/utils/truncateAddress";
-import { ArrowRightStartOnRectangleIcon, DocumentDuplicateIcon, CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import { Select } from "@headlessui/react";
+import {
+  ArrowRightStartOnRectangleIcon,
+  DocumentDuplicateIcon,
+  CheckIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  Select,
+} from "@headlessui/react";
 import useDeposit from "@/hooks/use-deposit";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
@@ -31,12 +42,16 @@ export default function Dashboard() {
   }, [account.address]);
 
   useEffect(() => {
-    setNetworkMessage(isWrongNetwork ? "Wrong Network. Please connect to Gnosis Chain" : "");
+    setNetworkMessage(
+      isWrongNetwork ? "Wrong Network. Please connect to Gnosis Chain" : ""
+    );
   }, [isWrongNetwork]);
 
   useEffect(() => {
     if (chains.length > 0) {
-      const currentNetwork = chains.find(chain => chain.id === account.chain?.id);
+      const currentNetwork = chains.find(
+        (chain) => chain.id === account.chain?.id
+      );
       if (currentNetwork) {
         setNetwork(currentNetwork.name);
       } else {
@@ -66,9 +81,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleNetworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedNetwork = e.target.value;
-    const selectedChain = chains.find(chain => chain.name === selectedNetwork);
+  const handleNetworkChange = (value: string) => {
+    const selectedChain = chains.find((chain) => chain.name === value);
     if (selectedChain) {
       switchChain({ chainId: selectedChain.id });
     }
@@ -76,28 +90,42 @@ export default function Dashboard() {
 
   const renderNetworkOptions = () => {
     const supportedChains = ["Gnosis", "Gnosis Chiado"];
-    const currentNetwork = chains.find(chain => chain.id === account.chain?.id)?.name;
+    const currentNetwork = chains.find(
+      (chain) => chain.id === account.chain?.id
+    )?.name;
 
     if (currentNetwork && supportedChains.includes(currentNetwork)) {
-      return supportedChains.map(option => (
-        <option key={option} value={option}>
+      return supportedChains.map((option) => (
+        <ListboxOption
+          key={option}
+          value={option}
+          className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-[#F0EBDE]/50"
+        >
           {option}
-        </option>
+        </ListboxOption>
       ));
     } else {
-      return ["Not supported", ...supportedChains].map(option => (
-        <option key={option} value={option}>
+      return ["Not supported", ...supportedChains].map((option) => (
+        <ListboxOption
+          key={option}
+          value={option}
+          className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-[#F0EBDE]/50"
+        >
           {option}
-        </option>
+        </ListboxOption>
       ));
     }
   };
 
   return (
     <div className="w-full relative h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between p-4">
-      <p className="text-red-400 text-sm font-bold rounded-md absolute z-20 top-1">{networkMessage}</p>
+      <p className="text-red-400 text-sm font-bold rounded-md absolute z-20 top-1">
+        {networkMessage}
+      </p>
       <p className="font-bold text-xl lg:text-2xl">
-        {searchParams.get("state") === "validator" ? "Check Validators Status" : "Gnosis Beacon Chain Deposit"}
+        {searchParams.get("state") === "validator"
+          ? "Check Validators Status"
+          : "Gnosis Beacon Chain Deposit"}
       </p>
       <div className="w-full flex flex-col-reverse lg:flex-row mt-4">
         <div className="w-full lg:w-2/6 flex flex-col text-base">
@@ -107,12 +135,18 @@ export default function Dashboard() {
             onClick={handleCopyAddress}
           >
             {truncateAddress(address)}
-            {isCopied ? <CheckIcon className="ml-2 h-5 w-5" /> : <DocumentDuplicateIcon className="ml-2 h-5 w-5" />}
+            {isCopied ? (
+              <CheckIcon className="ml-2 h-5 w-5" />
+            ) : (
+              <DocumentDuplicateIcon className="ml-2 h-5 w-5" />
+            )}
           </div>
           <div className="flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0">
             <div>
               Balance:
-              <p className="font-bold text-xl lg:text-2xl">{Number(formatEther(balance || BigInt(0))).toFixed(3)} GNO</p>
+              <p className="font-bold text-xl lg:text-2xl">
+                {Number(formatEther(balance || BigInt(0))).toFixed(3)} GNO
+              </p>
             </div>
             <div className="w-full">
               Network:
@@ -120,18 +154,25 @@ export default function Dashboard() {
                 <div>Loading network...</div>
               ) : (
                 <div className="relative w-36">
-                  <Select
-                    className="block w-full bg-[#F0EBDE] appearance-none border-b border-[#133629] focus:outline-none p-1"
-                    id="network"
-                    value={network}
-                    onChange={handleNetworkChange}
-                  >
-                    {renderNetworkOptions()}
-                  </Select>
-                  <ChevronDownIcon
-                    className="group pointer-events-none absolute top-2 right-2.5 size-4"
-                    aria-hidden="true"
-                  />
+                  <Listbox value={network} onChange={handleNetworkChange}>
+                    <ListboxButton
+                      id="network"
+                      className="flex items-center justify-between w-full rounded-lg bg-[#e6e1d3] p-1.5 font-bold text-nowrap"
+                    >
+                      {network}
+                      <ChevronDownIcon
+                        className="group pointer-events-none ml-2 size-4"
+                        aria-hidden="true"
+                      />
+                    </ListboxButton>
+                    <ListboxOptions
+                      anchor="bottom"
+                      transition
+                      className="w-[var(--button-width)] rounded-xl mt-1 text-black shadow-md bg-[#e6e1d3] p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0"
+                    >
+                      {renderNetworkOptions()}
+                    </ListboxOptions>
+                  </Listbox>
                 </div>
               )}
             </div>
@@ -143,17 +184,30 @@ export default function Dashboard() {
               className="flex w-full items-center justify-center lg:justify-start mt-4 lg:mt-8 underline"
               id="disconnect"
             >
-              Sign Out <ArrowRightStartOnRectangleIcon className="ml-1 h-5 w-5" />
+              Sign Out{" "}
+              <ArrowRightStartOnRectangleIcon className="ml-1 h-5 w-5" />
             </button>
           </div>
         </div>
-        <div className={`w-full ${searchParams.get("state") === "deposit" ? "block" : "hidden"}`}>
+        <div
+          className={`w-full ${
+            searchParams.get("state") === "deposit" ? "block" : "hidden"
+          }`}
+        >
           <Deposit />
         </div>
-        <div className={`w-full ${searchParams.get("state") === "withdrawal" ? "block" : "hidden"}`}>
+        <div
+          className={`w-full ${
+            searchParams.get("state") === "withdrawal" ? "block" : "hidden"
+          }`}
+        >
           <Withdrawal />
         </div>
-        <div className={`w-full ${searchParams.get("state") === "validator" ? "block" : "hidden"}`}>
+        <div
+          className={`w-full ${
+            searchParams.get("state") === "validator" ? "block" : "hidden"
+          }`}
+        >
           <Validator />
         </div>
       </div>
