@@ -80,14 +80,14 @@ export default function Deposit() {
   }, [depositHash]);
 
   return (
-    <div className="w-full h-full bg-[#FFFFFFB2] p-6 flex flex-col justify-center items-center rounded-2xl">
+    <div className="w-full h-full bg-[#FFFFFFB2] flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
         <>
           <Loader />
           <p className="mt-2">Loading...</p>
         </>
       ) : step === "deposit" ? (
-        <div className="w-full flex flex-col items-center hover:cursor-pointer" {...getRootProps()}>
+        <div className="w-full h-full flex flex-col items-center justify-center hover:cursor-pointer" {...getRootProps()}>
           <input id="dropzone" {...getInputProps()} />
           Upload deposit date file
           <div className="flex font-bold items-center">

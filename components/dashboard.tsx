@@ -16,19 +16,20 @@ import {
   ListboxButton,
   ListboxOption,
   ListboxOptions,
-  Select,
 } from "@headlessui/react";
 import useDeposit from "@/hooks/use-deposit";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
 import Validator from "./validator";
+import useBalance from "@/hooks/use-balance";
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { chains, switchChain } = useSwitchChain();
-  const { balance, isWrongNetwork } = useDeposit();
+  const { balance } = useBalance();
+  const { isWrongNetwork } = useDeposit();
   const account = useAccount();
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
