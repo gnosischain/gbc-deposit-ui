@@ -15,6 +15,7 @@ const config: HardhatUserConfig = {
           },
         },
       },
+      loggingEnabled: false,
     },
   },
 };

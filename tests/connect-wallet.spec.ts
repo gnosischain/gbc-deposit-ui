@@ -102,14 +102,8 @@ test("should not be able to deposit twice the same file", async ({ wallet, page 
 
   const input = page.locator("#dropzone");
   await input.setInputFiles(filePath);
-  const filenameText = await page.locator("#filename").textContent();
-  expect(filenameText).toContain("deposit_data-1717082979.json");
-
-  await page.click("#depositButton");
-  await wallet.confirmTransaction();
-  
-  const confirmationText = await page.locator("#confirmation").textContent();
-  expect(confirmationText).toContain("Your transaction is completed ! View it");
+  const errorText = await page.locator("#error").textContent();
+  expect(errorText).toContain("Deposits have already been made to all validators in this file.");
 });
 
 test("should be able to subscribe autoclaim", async ({ wallet, page }) => {
