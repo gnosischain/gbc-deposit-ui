@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatEther } from "viem";
 import { useAccount, useDisconnect } from "wagmi";
 import Deposit from "./deposit";
+import DappnodeDeposit from "./dappnodeDeposit";
 import Withdrawal from "./withdrawal";
 import { useEffect, useState } from "react";
 import Validator from "./validator";
@@ -74,7 +75,7 @@ export default function Dashboard() {
           <div className="w-min bg-[#133629] hidden lg:flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer hover:bg-[#2a4a3e]" onClick={handleCopyAddress}>
             {truncateAddress(address)} {isCopied ? <CheckIcon className="ml-2 h-5 w-5" /> : <DocumentDuplicateIcon className="ml-2 h-5 w-5" />}
           </div>
-          <div className="flex lg:hidden">{searchParams.get("state") == "deposit" ? <Deposit /> : searchParams.get("state") == "withdrawal" ? <Withdrawal /> : searchParams.get("state") == "validator" ? <Validator /> : "no route"}</div>
+          <div className="flex lg:hidden">{searchParams.get("state") == "deposit" ? <Deposit /> : searchParams.get("state") == "dappnode" ? <DappnodeDeposit /> : searchParams.get("state") == "withdrawal" ? <Withdrawal /> : searchParams.get("state") == "validator" ? <Validator /> : "no route"}</div>
           <div className="flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0">
             <div>
               Balance:
@@ -95,7 +96,7 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-        <div className="w-full hidden lg:flex">{searchParams.get("state") == "deposit" ? <Deposit /> : searchParams.get("state") == "withdrawal" ? <Withdrawal /> : searchParams.get("state") == "validator" ? <Validator /> : "no route"}</div>
+        <div className="w-full hidden lg:flex">{searchParams.get("state") == "deposit" ? <Deposit /> : searchParams.get("state") == "dappnode" ? <DappnodeDeposit /> : searchParams.get("state") == "withdrawal" ? <Withdrawal /> : searchParams.get("state") == "validator" ? <Validator /> : "no route"}</div>
       </div>
     </div>
   );
