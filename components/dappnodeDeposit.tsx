@@ -55,8 +55,6 @@ export default function DappnodeDeposit() {
 
   const [tx, setTx] = useState<Address>("0x0");
 
-  console.log(user);
-
   useEffect(() => {
     if (user) {
       if (user[0] === "0x0000000000000000000000000000000000000000") {
@@ -317,14 +315,14 @@ function ExecutedStatus({ safeAddress }: { safeAddress: string }) {
     <div className="w-full flex flex-col items-center">
       <div className="flex items-center flex-col gap-5 text-center">
         <div className="text-lg font-bold text-green">
-          Your claim has been executed!
+          Your deposit has been executed!
         </div>
         <span className="t">
           {" "}
           Your Safe address is{" "}
           <span className="text-green text-xs">{formattedSafe}</span>
         </span>
-        <div>Your validators are ready to start validating.</div>
+        <div>Ensure you keystores are already in your Dappnode to start validating.</div>
       </div>
     </div>
   );

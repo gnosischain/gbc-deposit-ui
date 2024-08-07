@@ -198,7 +198,6 @@ function useDappnodeDeposit() {
   );
 
   const dappnodeDeposit = useCallback(async () => {
-    console.log(2);
     if (contractConfig) {
       try {
         let data:{
@@ -207,15 +206,12 @@ function useDappnodeDeposit() {
             deposit_data_roots: string[]
         } = {pubkeys:'',signatures:'',deposit_data_roots:[]};
 
-        console.log(deposits![0]);
         deposits.forEach((deposit) => {
           data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
           data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
           data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
         });
-
-        console.log(data);
-
+        
         contractConfig.addresses.dappnodeIncentive &&
         await  writeContractAsync({
             abi: dappnodeIncentiveABI,
