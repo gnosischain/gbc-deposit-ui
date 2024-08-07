@@ -6,8 +6,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
-import dappnodeIncetiveABI from "@/utils/abis/dappnodeIncentive";
-import { formatUnits, parseUnits } from "viem";
+import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
@@ -42,14 +41,14 @@ function useDappnodeDeposit() {
   const client = getPublicClient(config, { chainId: chainId as 100 });
 
   const { data: user }: { data: DappnodeUser | undefined } = useReadContract({
-    abi: dappnodeIncetiveABI,
+    abi: dappnodeIncentiveABI,
     address: contractConfig?.addresses.dappnodeIncentive,
     functionName: "users",
     args: [account.address],
   });
 
   const isWrongNetwork = account.chainId !== 100;
-  const { data: depositHash, writeContract } = useWriteContract();
+  const { data: depositHash, writeContractAsync } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
@@ -95,8 +94,8 @@ function useDappnodeDeposit() {
               account.chainId
           );
         }
-
-        if (!deposits.every((d) => d.withdrawal_credentials === user[0])) {
+                
+        if (!deposits.every((d) => `0x`+d.withdrawal_credentials.substring(24).toLocaleLowerCase() === user[0].toLowerCase())) {
           throw Error(
             "Atleast one of the provided keys does not match your safe address as withdrawal credentials."
           );
@@ -208,23 +207,24 @@ function useDappnodeDeposit() {
             deposit_data_roots: string[]
         } = {pubkeys:'',signatures:'',deposit_data_roots:[]};
 
+        console.log(deposits![0]);
         deposits.forEach((deposit) => {
-          data.pubkeys += deposit.pubkey;
-          data.signatures += deposit.signature;
-          data.deposit_data_roots.push(deposit.deposit_data_root);
+          data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
+          data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+          data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
         });
 
         console.log(data);
 
-        // contractConfig.addresses.dappnodeIncentive &&
-        //   writeContract({
-        //     abi: dappnodeIncetiveABI,
-        //     address: contractConfig.addresses.dappnodeIncentive,
-        //     functionName: "submitPendingDeposits",
-        //     args: [data.pubkeys,data.signatures, data.deposit_data_roots],
-        //   });
+        contractConfig.addresses.dappnodeIncentive &&
+        await  writeContractAsync({
+            abi: dappnodeIncentiveABI,
+            address: contractConfig.addresses.dappnodeIncentive,
+            functionName: "submitPendingDeposits",
+            args: [data.pubkeys, data.signatures, data.deposit_data_roots],
+          });
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     }
   }, [account, deposits]);

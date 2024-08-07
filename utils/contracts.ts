@@ -25,7 +25,7 @@ const CONTRACTS: Contracts = {
       token: "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb",
       deposit: "0x0B98057eA310F4d31F2a452B414647007d1645d9",
       claimRegistry: "0xe4d0a119cc2546c1ec4945c04b04985d1e59cdba",
-      dappnodeIncentive: "0x1577F8EC5a261Da23d35EFC17b7902536E25Ddc0"
+      dappnodeIncentive: "0x485c6Be503D32511c1282b68dD99E85f250572c3"
     },
     depositStartBlockNumber: BigInt(19475089),
     claimRegistryStartBlockNumber: BigInt(33473327),

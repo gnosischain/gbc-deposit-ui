@@ -1,4 +1,4 @@
-const dappnodeIncetiveABI = [
+const dappnodeIncentiveABI = [
   {
     inputs: [
       {
@@ -53,7 +53,13 @@ const dappnodeIncetiveABI = [
       {
         indexed: false,
         internalType: "address",
-        name: "benefactor",
+        name: "beneficiary",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "safe",
         type: "address",
       },
     ],
@@ -66,7 +72,7 @@ const dappnodeIncetiveABI = [
       {
         indexed: false,
         internalType: "address",
-        name: "benefactor",
+        name: "beneficiary",
         type: "address",
       },
       {
@@ -81,12 +87,12 @@ const dappnodeIncetiveABI = [
   },
   {
     inputs: [
-      { internalType: "address", name: "benefactor", type: "address" },
       { internalType: "uint256", name: "expiry", type: "uint256" },
       { internalType: "uint256", name: "withdrawThreshold", type: "uint256" },
+      { internalType: "address", name: "beneficiary", type: "address" },
+      { internalType: "bool", name: "autoClaimEnabled", type: "bool" },
       { internalType: "uint16", name: "expectedDepositCount", type: "uint16" },
       { internalType: "uint256", name: "totalStakeAmount", type: "uint256" },
-      { internalType: "bool", name: "autoClaimEnabled", type: "bool" },
     ],
     name: "assignSafe",
     outputs: [
@@ -106,7 +112,7 @@ const dappnodeIncetiveABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "benefactor", type: "address" }],
+    inputs: [{ internalType: "address", name: "beneficiary", type: "address" }],
     name: "clearPendingDeposits",
     outputs: [],
     stateMutability: "nonpayable",
@@ -126,7 +132,7 @@ const dappnodeIncetiveABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "benefactor", type: "address" }],
+    inputs: [{ internalType: "address", name: "beneficiary", type: "address" }],
     name: "executePendingDeposits",
     outputs: [],
     stateMutability: "nonpayable",
@@ -134,7 +140,7 @@ const dappnodeIncetiveABI = [
   },
   {
     inputs: [
-      { internalType: "address", name: "benefactor", type: "address" },
+      { internalType: "address", name: "beneficiary", type: "address" },
       { internalType: "uint256", name: "index", type: "uint256" },
     ],
     name: "getPendingDeposit",
@@ -219,7 +225,7 @@ const dappnodeIncetiveABI = [
   },
   {
     inputs: [
-      { internalType: "address", name: "benefactor", type: "address" },
+      { internalType: "address", name: "beneficiary", type: "address" },
       { internalType: "bytes", name: "pubkeys", type: "bytes" },
       { internalType: "bytes", name: "signatures", type: "bytes" },
       {
@@ -258,4 +264,4 @@ const dappnodeIncetiveABI = [
   },
 ];
 
-export default dappnodeIncetiveABI;
+export default dappnodeIncentiveABI;

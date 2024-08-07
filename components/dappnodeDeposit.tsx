@@ -3,12 +3,9 @@
 import useDappnodeDeposit, {
   DepositDataJson,
 } from "@/hooks/use-dappnode-deposit";
-import {
-  ArrowUturnLeftIcon,
-  InformationCircleIcon,
-  CheckIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Dispatch,
   SetStateAction,
@@ -16,11 +13,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useDropzone } from "react-dropzone";
-import { FileRejection } from "react-dropzone";
-import Loader from "./loader";
-import Link from "next/link";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { Address } from "viem";
+import Loader from "./loader";
 
 export type DappnodeUser = {
   safe: string;
@@ -47,7 +42,6 @@ export default function DappnodeDeposit() {
     depositData,
     depositSuccess,
     depositHash,
-    chainId,
     user,
     dappnodeDeposit,
     isWrongNetwork,
@@ -82,7 +76,7 @@ export default function DappnodeDeposit() {
   useEffect(() => {
     if (depositSuccess) {
       setLoading(false);
-      setStep("executed");
+      setStep("submitted");
     }
   }, [depositSuccess]);
 
@@ -101,7 +95,7 @@ export default function DappnodeDeposit() {
         </>
       ) : isWrongNetwork ? (
         <div className="flex flex-col w-full h-full justify-evenly text-center text-red-400 font-bold text-lg">
-          To claim Dappnode's GNO Incentive Programm connect your wallet
+          To claim Dappnode&apos;s GNO Incentive Programm connect your wallet
           provider to Gnosis Chain!
         </div>
       ) : step === "notIncluded" ? (
@@ -120,29 +114,11 @@ export default function DappnodeDeposit() {
           setLoading={setLoading}
           depositData={depositData}
           dappnodeDeposit={dappnodeDeposit}
-          setStep={setStep}
         />
       ) : step === "submitted" ? (
-        <SubmittedStatus />
+        <SubmittedStatus tx={tx} />
       ) : step === "executed" ? (
-        <div className="w-full flex flex-col items-center">
-          <div className="flex items-center flex-col gap-5">
-            <div className="flex">
-              <CheckIcon className="h-5 w-5" /> The claim has been executed!{" "}
-            </div>
-            <div>
-              {" "}
-              Check the transaction
-              <Link
-                href={"https://gnosis.blockscout.com/tx/" + tx}
-                target="_blank"
-                className="text-[#DD7143] underline ml-1"
-              >
-                here.
-              </Link>
-            </div>
-          </div>
-        </div>
+        <ExecutedStatus safeAddress={user ? user[0] : ""} />
       ) : (
         ""
       )}
@@ -155,8 +131,8 @@ function AddressNotIncluded() {
     <div className="flex flex-col w-full h-full justify-evenly   text-center">
       {" "}
       <p className="text-red-400 font-bold text-lg">
-        The wallet address provided is not included in Dappnode's GNO Incentive
-        Program!
+        The wallet address provided is not included in Dappnode&apos;s GNO
+        Incentive Program!
       </p>{" "}
       <p>Please, ensure you have connected with the correct address</p>
     </div>
@@ -256,7 +232,6 @@ function Validation({
   setLoading,
   depositData,
   dappnodeDeposit,
-  setStep,
 }: {
   setLoading: Dispatch<SetStateAction<boolean>>;
   depositData: {
@@ -266,16 +241,11 @@ function Validation({
     isBatch: boolean;
   };
   dappnodeDeposit: () => Promise<void>;
-  setStep: Dispatch<SetStateAction<Step>>;
 }) {
   const onDeposit = useCallback(async () => {
     setLoading(true);
     await dappnodeDeposit();
-    setStep("submitted");
-    setLoading(false);
   }, [depositData]);
-
-  console.log(depositData);
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -313,18 +283,49 @@ function Validation({
   );
 }
 
-function SubmittedStatus() {
+function SubmittedStatus({ tx }: { tx: `0x${string}` }) {
   return (
     <div className="flex flex-col justify-evenly text-center h-full">
       <div className="text-lg font-bold text-green">
         Your claim has been submitted!
       </div>
       <div>
-        Dappnode's team will check and execute your claim to your safe address.
-        This is executed at least once a week.
+        {" "}
+        Check the transaction
+        <Link
+          href={"https://gnosis.blockscout.com/tx/" + tx}
+          target="_blank"
+          className="text-[#DD7143] underline ml-1"
+        >
+          here.
+        </Link>
+      </div>
+      <div>
+        Dappnode&apos;s team will check and execute your claim to your safe
+        address. This is executed at least once a week.
       </div>
       <div>Make sure your keystores are already in your Dappnode.</div>
-      <div>Once it's done you will be able to check it in this UI.</div>
+      <div>Once it&apos;s done you will be able to check it in this UI.</div>
+    </div>
+  );
+}
+
+function ExecutedStatus({ safeAddress }: { safeAddress: string }) {
+  let formattedSafe = "0x" + safeAddress.slice(-40);
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      <div className="flex items-center flex-col gap-5 text-center">
+        <div className="text-lg font-bold text-green">
+          Your claim has been executed!
+        </div>
+        <span className="t">
+          {" "}
+          Your Safe address is{" "}
+          <span className="text-green text-xs">{formattedSafe}</span>
+        </span>
+        <div>Your validators are ready to start validating.</div>
+      </div>
     </div>
   );
 }
