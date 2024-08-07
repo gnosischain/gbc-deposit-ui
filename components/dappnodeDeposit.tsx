@@ -45,6 +45,8 @@ export default function DappnodeDeposit() {
     user,
     dappnodeDeposit,
     isWrongNetwork,
+    claimStatusPending,
+    claimStatusError,
   } = useDappnodeDeposit();
 
   useEffect(() => {
@@ -109,9 +111,10 @@ export default function DappnodeDeposit() {
         />
       ) : step === "validation" ? (
         <Validation
-          setLoading={setLoading}
           depositData={depositData}
           dappnodeDeposit={dappnodeDeposit}
+          claimStatusPending={claimStatusPending}
+          claimStatusError={claimStatusError}
         />
       ) : step === "submitted" ? (
         <SubmittedStatus tx={tx} />
@@ -162,7 +165,6 @@ function PendingStatus({
         const reader = new FileReader();
         reader.onload = async (event) => {
           const result = event.target?.result as string;
-          console.log(result);
           if (result) {
             try {
               setLoading(true);
@@ -174,6 +176,7 @@ function PendingStatus({
               console.log(error);
               setLoading(false);
               if (error instanceof Error) {
+                console.log(error);
                 setErrorMessage(error.message);
               } else {
                 setErrorMessage("An unexpected error occurred.");
@@ -227,11 +230,11 @@ function PendingStatus({
 }
 
 function Validation({
-  setLoading,
   depositData,
   dappnodeDeposit,
+  claimStatusPending,
+  claimStatusError,
 }: {
-  setLoading: Dispatch<SetStateAction<boolean>>;
   depositData: {
     deposits: DepositDataJson[];
     filename: string;
@@ -239,13 +242,19 @@ function Validation({
     isBatch: boolean;
   };
   dappnodeDeposit: () => Promise<void>;
+  claimStatusPending: boolean;
+  claimStatusError: boolean;
 }) {
   const onDeposit = useCallback(async () => {
-    setLoading(true);
     await dappnodeDeposit();
   }, [depositData]);
 
-  return (
+  return claimStatusPending ? (
+    <div className="flex flex-col items-center gap-4">
+      <Loader />
+      <p>Check your wallet provider to continue!</p>
+    </div>
+  ) : (
     <div className="w-full flex flex-col items-center">
       {depositData.filename}
       <div className="flex items-center mt-4">
@@ -274,9 +283,10 @@ function Validation({
       <button
         className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold"
         onClick={onDeposit}
-      >
+        >
         Claim
       </button>
+        {claimStatusError && <p className="text-red-500 text-center text-sm mt-5">Error when submitting the transaction. <br/>Check the console for more details!</p>}
     </div>
   );
 }
@@ -322,7 +332,9 @@ function ExecutedStatus({ safeAddress }: { safeAddress: string }) {
           Your Safe address is{" "}
           <span className="text-green text-xs">{formattedSafe}</span>
         </span>
-        <div>Ensure you keystores are already in your Dappnode to start validating.</div>
+        <div>
+          Ensure you keystores are already in your Dappnode to start validating.
+        </div>
       </div>
     </div>
   );

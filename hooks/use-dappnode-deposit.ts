@@ -48,7 +48,7 @@ function useDappnodeDeposit() {
   });
 
   const isWrongNetwork = account.chainId !== 100;
-  const { data: depositHash, writeContractAsync } = useWriteContract();
+  const { data: depositHash, writeContractAsync, isPending, isError } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
@@ -211,7 +211,7 @@ function useDappnodeDeposit() {
           data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
           data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
         });
-        
+
         contractConfig.addresses.dappnodeIncentive &&
         await  writeContractAsync({
             abi: dappnodeIncentiveABI,
@@ -234,6 +234,8 @@ function useDappnodeDeposit() {
     dappnodeDeposit,
     isWrongNetwork,
     chainId,
+    claimStatusPending: isPending,
+    claimStatusError: isError,
   };
 }
 
