@@ -1,17 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import claimRegistryABI from "@/utils/abis/claimRegistry";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
 import { parseUnits } from "viem";
 
-function useAutoclaim() {
-  const account = useAccount();
+function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [isRegister, setIsRegister] = useState(false);
-  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === "test" ? 31337 : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 | 10200 | 31337 });
   const { data: autoclaimHash, writeContract } = useWriteContract();
   const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
@@ -20,9 +17,9 @@ function useAutoclaim() {
 
   useEffect(() => {
     async function fetchEvents() {
-      if (contractConfig && account.address && account.address !== "0x0") {
-        const registerEvents = await fetchRegister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
-        const unregisterEvents = await fetchUnregister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
+      if (contractConfig && address && address !== "0x0") {
+        const registerEvents = await fetchRegister(contractConfig.addresses.claimRegistry, address, contractConfig.claimRegistryStartBlockNumber, client);
+        const unregisterEvents = await fetchUnregister(contractConfig.addresses.claimRegistry, address, contractConfig.claimRegistryStartBlockNumber, client);
 
         if (registerEvents.length == 0 && unregisterEvents.length == 0) {
           setIsRegister(false);
@@ -42,35 +39,35 @@ function useAutoclaim() {
     }
 
     fetchEvents();
-  }, [account.address, contractConfig]);
+  }, [address, contractConfig]);
 
   const register = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
-    [account]
+    [address]
   );
 
   const updateConfig = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
-    [account]
+    [address]
   );
 
   const unregister = useCallback(async () => {
     if (contractConfig) {
-      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
+      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [address || "0x0"] });
     }
-  }, [account]);
+  }, [address]);
 
-  return { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash, chainId };
+  return { register, updateConfig, unregister, isRegister, autoclaimSuccess, autoclaimHash };
 }
 
 export default useAutoclaim;

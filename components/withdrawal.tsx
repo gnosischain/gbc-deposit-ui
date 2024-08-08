@@ -6,10 +6,24 @@ import Loader from "./loader";
 import { Address, formatEther } from "viem";
 import Link from "next/link";
 import useBalance from "@/hooks/use-balance";
+import { ContractNetwork } from "@/utils/contracts";
 
-export default function Withdrawal() {
-  const { claim, claimSuccess, claimHash } = useClaimBalance();
-  const { claimBalance } = useBalance();
+interface WithdrawalProps {
+  contractConfig: ContractNetwork | undefined;
+  address: `0x${string}` | undefined;
+  chainId: number;
+}
+
+export default function Withdrawal({
+  contractConfig,
+  address,
+  chainId,
+}: WithdrawalProps) {
+  const { claim, claimSuccess, claimHash } = useClaimBalance(
+    contractConfig,
+    address
+  );
+  const { claimBalance } = useBalance(contractConfig, address);
   const {
     register,
     updateConfig,
@@ -17,8 +31,7 @@ export default function Withdrawal() {
     isRegister,
     autoclaimSuccess,
     autoclaimHash,
-    chainId,
-  } = useAutoclaim();
+  } = useAutoclaim(contractConfig, address, chainId);
   const [timeValue, setTimeValue] = useState(1);
   const [amountValue, setAmountValue] = useState("1");
   const [step, setStep] = useState("claim");
@@ -195,6 +208,7 @@ export default function Withdrawal() {
           <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed !
             View it
+            {/* TODO: add block explorer within contract config to avoid using chainId in here */}
             <Link
               href={
                 chainId === 100

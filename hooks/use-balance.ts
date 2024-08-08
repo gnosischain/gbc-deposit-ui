@@ -1,30 +1,23 @@
 import { useAccount, useReadContract } from "wagmi";
 import ERC677ABI from "@/utils/abis/erc677";
 import { useQueryClient } from "@tanstack/react-query";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
 
-function useBalance() {
-  const account = useAccount();
+function useBalance(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined) {
   const queryClient = useQueryClient();
-
-  const chainId =
-    process.env.NEXT_PUBLIC_TEST_ENV === "test"
-      ? 31337
-      : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
   const { data: balance, queryKey } = useReadContract({
     abi: ERC677ABI,
     address: contractConfig?.addresses.token,
     functionName: "balanceOf",
-    args: [account.address || "0x0"],
+    args: [address || "0x0"],
   });
 
   const { data: claimBalance, queryKey: claimQueryKey } = useReadContract({
     abi: depositABI,
     address: contractConfig?.addresses.deposit,
     functionName: "withdrawableAmount",
-    args: [account.address || "0x0"],
+    args: [address || "0x0"],
   });
 
   const refetchBalance = () => {
