@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
+import { useDisconnect, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { truncateAddress } from "@/utils/truncateAddress";
 import {
@@ -17,21 +17,21 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import useDeposit from "@/hooks/use-deposit";
+import useContractConfig from "@/hooks/use-contract-config";
+import useBalance from "@/hooks/use-balance";
 import Deposit from "./deposit";
 import DappnodeDeposit from "./dappnodeDeposit";
 import Withdrawal from "./withdrawal";
 import Validator from "./validator";
-import useBalance from "@/hooks/use-balance";
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { chains, switchChain } = useSwitchChain();
-  const { balance } = useBalance();
-  const { isWrongNetwork } = useDeposit();
-  const account = useAccount();
+  const { account, chainId, contractConfig, isWrongNetwork } =
+    useContractConfig();
+  const { balance } = useBalance(contractConfig, account.address);
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
   const [address, setAddress] = useState("");
@@ -196,21 +196,32 @@ export default function Dashboard() {
             searchParams.get("state") === "deposit" ? "block" : "hidden"
           }`}
         >
-          <Deposit />
+          <Deposit
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
         </div>
         <div
           className={`w-full ${
             searchParams.get("state") === "withdrawal" ? "block" : "hidden"
           }`}
         >
-          <Withdrawal />
+          <Withdrawal
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
         </div>
         <div
           className={`w-full ${
             searchParams.get("state") === "validator" ? "block" : "hidden"
           }`}
         >
-          <Validator />
+          <Validator
+            contractConfig={contractConfig}
+            address={account.address}
+          />
         </div>
       </div>
     </div>

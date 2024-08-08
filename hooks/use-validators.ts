@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 
 type DepositDataJson = {
   pubkey: string;
@@ -33,11 +33,8 @@ type ValidatorStatus = {
   withdrawal_credentials: string;
 };
 
-function useValidators() {
+function useValidators(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined) {
   const [statuses, setStatuses] = useState<ValidatorStatus[] | null>(null);
-  const account = useAccount();
-  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === 'test' ? 31337 : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
 
   const fetchStatuses = useCallback(async (beaconExplorerUrl: string, pubkeys: string[]): Promise<ValidatorStatus[]> => {
     const chunkSize = 64;
