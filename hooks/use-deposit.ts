@@ -5,8 +5,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { useQueryClient } from "@tanstack/react-query";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
@@ -27,18 +26,12 @@ type DepositDataJson = {
   fork_version: string;
 };
 
-function useDeposit() {
+function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const account = useAccount();
-  const { balance, refetchBalance } = useBalance();
-  const chainId =
-    process.env.NEXT_PUBLIC_TEST_ENV === "test"
-      ? 31337
-      : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
+  // const { balance, refetchBalance } = useBalance();
   const client = getPublicClient(config, {
     chainId: chainId as 100 | 10200 | 31337,
   });
@@ -86,7 +79,7 @@ function useDeposit() {
             "This JSON file isn't for the right network (" +
               deposits[0].fork_version +
               "). Upload a file generated for you current network: " +
-              account.chainId
+              chainId
           );
         }
 
@@ -166,7 +159,7 @@ function useDeposit() {
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [account, contractConfig, balance]
+    [address, contractConfig, balance]
   );
 
   const setDepositData = useCallback(
@@ -214,7 +207,7 @@ function useDeposit() {
             data += deposit.signature;
             data += deposit.deposit_data_root;
           });
-          await writeContract({
+          writeContract({
             address: contractConfig.addresses.token,
             abi: ERC677ABI,
             functionName: "transferAndCall",
@@ -257,7 +250,7 @@ function useDeposit() {
         );
       }
     }
-  }, [account, deposits, isBatch, refetchBalance]);
+  }, [address, deposits, isBatch, refetchBalance]);
 
   useEffect(() => {
     if (depositSuccess) {

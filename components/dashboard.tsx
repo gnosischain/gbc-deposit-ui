@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
+import { useDisconnect, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { truncateAddress } from "@/utils/truncateAddress";
 import {
@@ -17,20 +17,19 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import useDeposit from "@/hooks/use-deposit";
+import useContractConfig from "@/hooks/useContractConfig";
+import useBalance from "@/hooks/use-balance";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
 import Validator from "./validator";
-import useBalance from "@/hooks/use-balance";
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { chains, switchChain } = useSwitchChain();
-  const { balance } = useBalance();
-  const { isWrongNetwork } = useDeposit();
-  const account = useAccount();
+  const { account, contractConfig, isWrongNetwork } = useContractConfig();
+  const { balance } = useBalance(contractConfig, account.address);
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
   const [address, setAddress] = useState("");
