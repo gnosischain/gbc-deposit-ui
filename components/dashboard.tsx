@@ -19,6 +19,7 @@ import {
 } from "@headlessui/react";
 import useDeposit from "@/hooks/use-deposit";
 import Deposit from "./deposit";
+import DappnodeDeposit from "./dappnodeDeposit";
 import Withdrawal from "./withdrawal";
 import Validator from "./validator";
 import useBalance from "@/hooks/use-balance";
