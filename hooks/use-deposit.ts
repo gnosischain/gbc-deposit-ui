@@ -1,11 +1,9 @@
 import { useCallback, useState, useEffect } from "react";
 import {
-  useAccount,
-  useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
+import { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import { loadCachedDeposits } from "@/utils/deposit";
@@ -31,7 +29,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  // const { balance, refetchBalance } = useBalance();
+  const { balance, refetchBalance } = useBalance(contractConfig, address);
   const client = getPublicClient(config, {
     chainId: chainId as 100 | 10200 | 31337,
   });
@@ -77,9 +75,9 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         ) {
           throw Error(
             "This JSON file isn't for the right network (" +
-              deposits[0].fork_version +
-              "). Upload a file generated for you current network: " +
-              chainId
+            deposits[0].fork_version +
+            "). Upload a file generated for you current network: " +
+            chainId
           );
         }
 
@@ -151,8 +149,8 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         if (balance < totalDepositAmountBN) {
           throw Error(`
         Unsufficient balance. ${Number(
-          formatUnits(totalDepositAmountBN, 18)
-        )} GNO is required.
+            formatUnits(totalDepositAmountBN, 18)
+          )} GNO is required.
       `);
         }
       }
@@ -232,7 +230,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             data += deposit.deposit_data_root;
 
             try {
-              await writeContract({
+              writeContract({
                 address: contractConfig.addresses.token,
                 abi: ERC677ABI,
                 functionName: "transferAndCall",
@@ -265,7 +263,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
     depositData: { deposits, filename, hasDuplicates, isBatch },
     setDepositData,
     isWrongNetwork,
-    chainId,
   };
 }
 

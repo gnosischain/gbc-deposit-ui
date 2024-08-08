@@ -1,22 +1,15 @@
 import { useCallback, useEffect } from "react";
 import {
-  useAccount,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import { ContractNetwork } from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
 import useBalance from "@/hooks/use-balance";
 
-function useClaimBalance() {
-  const account = useAccount();
-  const { refetchBalance, refetchClaimBalance } = useBalance();
+function useClaimBalance(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined) {
+  const { refetchBalance, refetchClaimBalance } = useBalance(contractConfig, address);
 
-  const chainId =
-    process.env.NEXT_PUBLIC_TEST_ENV === "test"
-      ? 31337
-      : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
   const { data: claimHash, writeContract } = useWriteContract();
   const { isSuccess: claimSuccess } = useWaitForTransactionReceipt({
     hash: claimHash,
@@ -28,10 +21,10 @@ function useClaimBalance() {
         address: contractConfig.addresses.deposit,
         abi: depositABI,
         functionName: "claimWithdrawal",
-        args: [account.address || "0x0"],
+        args: [address || "0x0"],
       });
     }
-  }, [account, contractConfig, writeContract]);
+  }, [address, contractConfig, writeContract]);
 
   useEffect(() => {
     if (claimSuccess) {

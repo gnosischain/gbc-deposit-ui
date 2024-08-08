@@ -17,7 +17,7 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import useContractConfig from "@/hooks/useContractConfig";
+import useContractConfig from "@/hooks/use-contract-config";
 import useBalance from "@/hooks/use-balance";
 import Deposit from "./deposit";
 import Withdrawal from "./withdrawal";
@@ -28,7 +28,8 @@ export default function Dashboard() {
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { chains, switchChain } = useSwitchChain();
-  const { account, contractConfig, isWrongNetwork } = useContractConfig();
+  const { account, chainId, contractConfig, isWrongNetwork } =
+    useContractConfig();
   const { balance } = useBalance(contractConfig, account.address);
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
@@ -194,21 +195,32 @@ export default function Dashboard() {
             searchParams.get("state") === "deposit" ? "block" : "hidden"
           }`}
         >
-          <Deposit />
+          <Deposit
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
         </div>
         <div
           className={`w-full ${
             searchParams.get("state") === "withdrawal" ? "block" : "hidden"
           }`}
         >
-          <Withdrawal />
+          <Withdrawal
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
         </div>
         <div
           className={`w-full ${
             searchParams.get("state") === "validator" ? "block" : "hidden"
           }`}
         >
-          <Validator />
+          <Validator
+            contractConfig={contractConfig}
+            address={account.address}
+          />
         </div>
       </div>
     </div>

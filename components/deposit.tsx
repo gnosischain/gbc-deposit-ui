@@ -8,15 +8,19 @@ import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
 import Link from "next/link";
-import { Address } from "viem";
+import { ContractNetwork } from "@/utils/contracts";
 
+interface DepositProps {
+  contractConfig: ContractNetwork | undefined;
+  address: `0x${string}` | undefined;
+  chainId: number;
+}
 
-
-export default function Deposit() {
-  const { setDepositData, depositData, deposit, depositSuccess, depositHash, chainId } = useDeposit();
+export default function Deposit({contractConfig, address, chainId}: DepositProps) {
+  const { setDepositData, depositData, deposit, depositSuccess, depositHash } = useDeposit(contractConfig, address, chainId);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [tx, setTx] = useState<Address>("0x0");
+  const [tx, setTx] = useState<`0x${string}`>("0x0");
   const [step, setStep] = useState("deposit");
   const onDrop = useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
