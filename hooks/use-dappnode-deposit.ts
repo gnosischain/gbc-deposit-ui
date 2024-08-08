@@ -5,7 +5,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
@@ -29,25 +29,21 @@ export type DappnodeUser = [
   totalStakeAmount: bigint // uint256
 ];
 
-function useDappnodeDeposit() {
+function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const account = useAccount();
-
-  const chainId = account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
   const client = getPublicClient(config, { chainId: chainId as 100 });
 
   const { data: user }: { data: DappnodeUser | undefined } = useReadContract({
     abi: dappnodeIncentiveABI,
     address: contractConfig?.addresses.dappnodeIncentive,
     functionName: "users",
-    args: [account.address],
+    args: [address],
   });
 
-  const isWrongNetwork = account.chainId !== 100;
+  const isWrongNetwork = chainId !== 100;
   const { data: depositHash, writeContractAsync, isPending, isError } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
@@ -91,7 +87,7 @@ function useDappnodeDeposit() {
             "This JSON file isn't for the right network (" +
               deposits[0].fork_version +
               "). Upload a file generated for you current network: " +
-              account.chainId
+              chainId
           );
         }
                 
@@ -167,7 +163,7 @@ function useDappnodeDeposit() {
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [account, contractConfig, deposits]
+    [address, contractConfig, deposits]
   );
 
   const setDappnodeDepositData = useCallback(
@@ -223,7 +219,7 @@ function useDappnodeDeposit() {
         console.error(err);
       }
     }
-  }, [account, deposits]);
+  }, [address, deposits]);
 
   return {
     depositSuccess,
@@ -233,7 +229,6 @@ function useDappnodeDeposit() {
     setDappnodeDepositData,
     dappnodeDeposit,
     isWrongNetwork,
-    chainId,
     claimStatusPending: isPending,
     claimStatusError: isError,
   };

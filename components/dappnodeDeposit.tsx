@@ -16,6 +16,13 @@ import {
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Address } from "viem";
 import Loader from "./loader";
+import { ContractNetwork } from "@/utils/contracts";
+
+interface DappNodeDepositProps {
+  contractConfig: ContractNetwork | undefined;
+  address: `0x${string}` | undefined;
+  chainId: number;
+}
 
 export type DappnodeUser = {
   safe: string;
@@ -32,7 +39,7 @@ type Step =
   | "executed"
   | undefined;
 
-export default function DappnodeDeposit() {
+export default function DappnodeDeposit({contractConfig, address, chainId}: DappNodeDepositProps) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState<Step>();
   const [errorMessage, setErrorMessage] = useState("");
@@ -47,7 +54,7 @@ export default function DappnodeDeposit() {
     isWrongNetwork,
     claimStatusPending,
     claimStatusError,
-  } = useDappnodeDeposit();
+  } = useDappnodeDeposit(contractConfig, address, chainId);
 
   useEffect(() => {
     if (isWrongNetwork !== undefined) {

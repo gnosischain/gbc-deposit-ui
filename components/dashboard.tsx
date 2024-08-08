@@ -204,6 +204,17 @@ export default function Dashboard() {
         </div>
         <div
           className={`w-full ${
+            searchParams.get("state") === "dappnode" ? "block" : "hidden"
+          }`}
+        >
+          <DappnodeDeposit
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
+        </div>
+        <div
+          className={`w-full ${
             searchParams.get("state") === "withdrawal" ? "block" : "hidden"
           }`}
         >
