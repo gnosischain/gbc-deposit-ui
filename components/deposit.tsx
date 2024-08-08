@@ -10,6 +10,8 @@ import Loader from "./loader";
 import Link from "next/link";
 import { Address } from "viem";
 
+
+
 export default function Deposit() {
   const { setDepositData, depositData, deposit, depositSuccess, depositHash, chainId } = useDeposit();
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,6 +51,14 @@ export default function Deposit() {
     [setDepositData]
   );
 
+  useEffect(() => {
+    console.log("Deposit component mounted");
+
+    return () => {
+      console.log("Deposit component unmounted");
+    };
+  }, []);
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
 
   const onDeposit = useCallback(async () => {
@@ -70,26 +80,26 @@ export default function Deposit() {
   }, [depositHash]);
 
   return (
-    <div className="w-full bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col justify-center items-center rounded-2xl">
+    <div className="w-full h-full bg-[#FFFFFFB2] flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
         <>
           <Loader />
           <p className="mt-2">Loading...</p>
         </>
       ) : step === "deposit" ? (
-        <div className="w-full flex flex-col items-center hover:cursor-pointer" {...getRootProps()}>
-          <input {...getInputProps()} />
+        <div className="w-full h-full flex flex-col items-center justify-center hover:cursor-pointer" {...getRootProps()}>
+          <input id="dropzone" {...getInputProps()} />
           Upload deposit date file
           <div className="flex font-bold items-center">
             deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
           </div>
           <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8 rounded-full shadow-lg" />
           <div>Drag file to upload or browse</div>
-          {errorMessage && <p className="text-red-400 text-sm">{errorMessage.substring(0, 150)}</p>}
+          {errorMessage && <p className="text-red-400 text-sm" id="error">{errorMessage.substring(0, 150)}</p>}
         </div>
       ) : step === "validation" ? (
         <div className="w-full flex flex-col items-center">
-          {depositData.filename}
+          <div id="filename">{depositData.filename}</div>
           <div className="flex items-center mt-4">
             <CheckIcon className="h-5 w-5" /> Accepted
           </div>
@@ -102,15 +112,17 @@ export default function Deposit() {
           {depositData.isBatch ? (
             ""
           ) : (
-            <p className="text-orange-400 text-xs text-center">Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.</p>
+            <p className="text-orange-400 text-xs text-center">
+              Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.
+            </p>
           )}
-          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit}>
+          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit} id="depositButton">
             Deposit
           </button>
         </div>
       ) : step === "summary" ? (
         <div className="w-full flex flex-col items-center">
-          <div className="flex items-center">
+          <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
             <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
               here

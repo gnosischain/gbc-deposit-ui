@@ -1,19 +1,22 @@
-import { useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useCallback, useEffect } from "react";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import CONTRACTS from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
+import useBalance from "@/hooks/use-balance";
 
 function useClaimBalance() {
   const account = useAccount();
+  const { refetchBalance, refetchClaimBalance } = useBalance();
 
-  const chainId = account?.chainId || 100;
+  const chainId =
+    process.env.NEXT_PUBLIC_TEST_ENV === "test"
+      ? 31337
+      : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
-  const { data: claimBalance } = useReadContract({
-    abi: depositABI,
-    address: contractConfig?.addresses.deposit,
-    functionName: "withdrawableAmount",
-    args: [account.address || "0x0"],
-  });
   const { data: claimHash, writeContract } = useWriteContract();
   const { isSuccess: claimSuccess } = useWaitForTransactionReceipt({
     hash: claimHash,
@@ -21,11 +24,23 @@ function useClaimBalance() {
 
   const claim = useCallback(async () => {
     if (contractConfig) {
-      writeContract({ address: contractConfig.addresses.deposit, abi: depositABI, functionName: "claimWithdrawal", args: [account.address || "0x0"] });
+      writeContract({
+        address: contractConfig.addresses.deposit,
+        abi: depositABI,
+        functionName: "claimWithdrawal",
+        args: [account.address || "0x0"],
+      });
     }
-  }, [account]);
+  }, [account, contractConfig, writeContract]);
 
-  return { claim, claimBalance, claimSuccess, claimHash };
+  useEffect(() => {
+    if (claimSuccess) {
+      refetchBalance();
+      refetchClaimBalance();
+    }
+  }, [claimSuccess, refetchBalance, refetchClaimBalance]);
+
+  return { claim, claimSuccess, claimHash };
 }
 
 export default useClaimBalance;
