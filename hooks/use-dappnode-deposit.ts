@@ -1,20 +1,18 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import {
+  useAccount,
+  useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { ContractNetwork } from "@/utils/contracts";
-import ERC677ABI from "@/utils/abis/erc677";
-import { formatUnits, parseUnits } from "viem";
+import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
+import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
 import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchDeposit } from "@/utils/fetchEvents";
-import useBalance from "./use-balance";
 
-const depositAmountBN = parseUnits("1", 18);
-
-type DepositDataJson = {
+export type DepositDataJson = {
   pubkey: string;
   withdrawal_credentials: string;
   amount: bigint;
@@ -24,27 +22,39 @@ type DepositDataJson = {
   fork_version: string;
 };
 
-function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
+export type DappnodeUser = [
+  safe: string,
+  status: number,
+  expectedDepositCount: number, // uint16
+  totalStakeAmount: bigint // uint256
+];
+
+function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const { balance, refetchBalance } = useBalance(contractConfig, address);
-  const client = getPublicClient(config, {
-    chainId: chainId as 100 | 10200 | 31337,
+  const client = getPublicClient(config, { chainId: chainId as 100 });
+
+  const { data: user }: { data: DappnodeUser | undefined } = useReadContract({
+    abi: dappnodeIncentiveABI,
+    address: contractConfig?.addresses.dappnodeIncentive,
+    functionName: "users",
+    args: [address],
   });
-  const isWrongNetwork = contractConfig === undefined;
-  const { data: depositHash, writeContract } = useWriteContract();
+
+  const isWrongNetwork = chainId !== 100;
+  const { data: depositHash, writeContractAsync, isPending, isError } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
 
-  const validate = useCallback(
-    async (deposits: DepositDataJson[], balance: bigint) => {
+  const dappnodeValidate = useCallback(
+    async (deposits: DepositDataJson[]) => {
       let newDeposits = [];
       let hasDuplicates = false;
       let _isBatch = false;
-      if (contractConfig) {
+      if (contractConfig && user) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {
           return (
             depositDataJson.pubkey &&
@@ -75,15 +85,26 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         ) {
           throw Error(
             "This JSON file isn't for the right network (" +
-            deposits[0].fork_version +
-            "). Upload a file generated for you current network: " +
-            chainId
+              deposits[0].fork_version +
+              "). Upload a file generated for you current network: " +
+              chainId
+          );
+        }
+                
+        if (!deposits.every((d) => `0x`+d.withdrawal_credentials.substring(24).toLocaleLowerCase() === user[0].toLowerCase())) {
+          throw Error(
+            "Atleast one of the provided keys does not match your safe address as withdrawal credentials."
+          );
+        }
+        if (deposits.length !== user[2]) {
+          throw Error(
+            `Wrong number of keys. Expected claiming (${user[2]}) validator deposits to your safe.`
           );
         }
 
         const { deposits: existingDeposits, lastBlock: fromBlock } =
           await loadCachedDeposits(
-            chainId === 31337 ? 10200 : chainId,
+            chainId,
             contractConfig.depositStartBlockNumber
           );
 
@@ -138,29 +159,14 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         ) {
           throw Error("Duplicated public keys.");
         }
-
-        const totalDepositAmountBN =
-          depositAmountBN * BigInt(newDeposits.length);
-
-        if (balance === undefined) {
-          throw Error("Balance not loaded.");
-        }
-
-        if (balance < totalDepositAmountBN) {
-          throw Error(`
-        Unsufficient balance. ${Number(
-            formatUnits(totalDepositAmountBN, 18)
-          )} GNO is required.
-      `);
-        }
       }
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [address, contractConfig, balance]
+    [address, contractConfig, deposits]
   );
 
-  const setDepositData = useCallback(
+  const setDappnodeDepositData = useCallback(
     async (fileData: string, filename: string) => {
       setFilename(filename);
       if (fileData) {
@@ -172,11 +178,9 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, hasDuplicates, _isBatch } = await validate(
-          data,
-          balance || BigInt(0)
+        const { deposits, hasDuplicates, _isBatch } = await dappnodeValidate(
+          data
         );
-        console.log(_isBatch);
         setDeposits(deposits);
         setHasDuplicates(hasDuplicates);
         setIsBatch(_isBatch);
@@ -186,84 +190,48 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         setIsBatch(false);
       }
     },
-    [validate, balance]
+    [dappnodeValidate]
   );
 
-  const deposit = useCallback(async () => {
+  const dappnodeDeposit = useCallback(async () => {
     if (contractConfig) {
-      if (isBatch) {
-        try {
-          const totalDepositAmountBN =
-            depositAmountBN * BigInt(deposits.length);
-          console.log(
-            `Sending deposit transaction for ${deposits.length} deposits`
-          );
-          let data = "";
-          data += deposits[0].withdrawal_credentials;
-          deposits.forEach((deposit) => {
-            data += deposit.pubkey;
-            data += deposit.signature;
-            data += deposit.deposit_data_root;
-          });
-          writeContract({
-            address: contractConfig.addresses.token,
-            abi: ERC677ABI,
-            functionName: "transferAndCall",
-            args: [
-              contractConfig.addresses.deposit,
-              totalDepositAmountBN,
-              `0x${data}`,
-            ],
-          });
-          refetchBalance();
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        console.log("sending deposit transaction");
-        await Promise.all(
-          deposits.map(async (deposit) => {
-            let data = "";
-            data += deposit.withdrawal_credentials;
-            data += deposit.pubkey;
-            data += deposit.signature;
-            data += deposit.deposit_data_root;
+      try {
+        let data:{
+            pubkeys: string
+            signatures: string
+            deposit_data_roots: string[]
+        } = {pubkeys:'',signatures:'',deposit_data_roots:[]};
 
-            try {
-              writeContract({
-                address: contractConfig.addresses.token,
-                abi: ERC677ABI,
-                functionName: "transferAndCall",
-                args: [
-                  contractConfig.addresses.deposit,
-                  depositAmountBN,
-                  `0x${data}`,
-                ],
-              });
-              refetchBalance();
-            } catch (error) {
-              console.log(error);
-            }
-          })
-        );
+        deposits.forEach((deposit) => {
+          data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
+          data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+          data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
+        });
+
+        contractConfig.addresses.dappnodeIncentive &&
+        await  writeContractAsync({
+            abi: dappnodeIncentiveABI,
+            address: contractConfig.addresses.dappnodeIncentive,
+            functionName: "submitPendingDeposits",
+            args: [data.pubkeys, data.signatures, data.deposit_data_roots],
+          });
+      } catch (err) {
+        console.error(err);
       }
     }
-  }, [address, deposits, isBatch, refetchBalance]);
-
-  useEffect(() => {
-    if (depositSuccess) {
-      refetchBalance();
-    }
-  }, [depositSuccess, refetchBalance]);
+  }, [address, deposits]);
 
   return {
-    deposit,
     depositSuccess,
     depositHash,
     depositData: { deposits, filename, hasDuplicates, isBatch },
-    setDepositData,
+    user,
+    setDappnodeDepositData,
+    dappnodeDeposit,
     isWrongNetwork,
+    claimStatusPending: isPending,
+    claimStatusError: isError,
   };
 }
 
-export default useDeposit;
+export default useDappnodeDeposit;

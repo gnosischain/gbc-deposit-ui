@@ -8,6 +8,10 @@ on:
           required: true
           type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
     NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.PROD_WC_PROJECT_ID }}
 
@@ -17,11 +21,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Cancel Previous Runs
-              uses: styfle/cancel-workflow-action@0.8.0
-              with:
-                access_token: ${{ github.token }}
-
             - name: Remove broken apt repos [Ubuntu]
               if: ${{ matrix.os }} == 'ubuntu-latest'
               run: |
@@ -53,6 +52,17 @@ jobs:
 
             - name: Build App for release
               run: yarn update-deposits && yarn build
+
+            - name: Install Playwright Browsers
+              run: yarn playwright install
+
+            - name: Setup xvfb
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y xvfb
+
+            - name: Run tests
+              run: xvfb-run --auto-servernum --server-args='-screen 0, 1920x1080x24' yarn run-e2e-tests
 
             - name: Configure AWS Production credentials
               uses: aws-actions/configure-aws-credentials@v1

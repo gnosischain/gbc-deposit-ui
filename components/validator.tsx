@@ -7,9 +7,18 @@ import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
 import useValidators, { FileDepositData } from "@/hooks/use-validators";
+import { ContractNetwork } from "@/utils/contracts";
 
-export default function Validator() {
-  const { validateStatus, statuses } = useValidators();
+interface WithdrawalProps {
+  contractConfig: ContractNetwork | undefined;
+  address: `0x${string}` | undefined;
+}
+
+export default function Validator({
+  contractConfig,
+  address,
+}: WithdrawalProps) {
+  const { validateStatus, statuses } = useValidators(contractConfig, address);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("validation");
@@ -58,7 +67,7 @@ export default function Validator() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] } });
 
   return (
-    <div className="w-full bg-[#FFFFFFB2] h-[280px] p-6 flex flex-col justify-center items-center rounded-2xl">
+    <div className="w-full h-full bg-[#FFFFFFB2] p-6 flex flex-col justify-center items-center rounded-2xl">
       {loading ? (
         <>
           <Loader />

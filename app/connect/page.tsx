@@ -6,6 +6,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { Connector, useAccount, useConnect } from "wagmi";
 import Link from "next/link";
+import { gnosis, hardhat } from "viem/chains";
 
 export default function Page() {
   const account = useAccount();
@@ -38,7 +39,7 @@ export default function Page() {
         <div className="w-full flex flex-col divide-slate-700 divide-y mt-8 overflow-y-auto">
           {uniqueConnectors.map((connector, index) => {
             return (
-              <div className="flex w-full justify-between items-center text-black hover:bg-[#E8E1CF] py-4 p-2 first:rounded-t-lg last:rounded-b-lg" key={connector.uid} onClick={() => connect({ connector })}>
+              <div className="flex w-full justify-between items-center text-black hover:bg-[#E8E1CF] py-4 p-2 first:rounded-t-lg last:rounded-b-lg" key={connector.uid} id={connector.name === "MetaMask" ? "metamask" : ""} onClick={() => connect({ connector: connector, chainId: process.env.NEXT_PUBLIC_TEST_ENV === "test" ? hardhat.id : gnosis.id })}>
                 {connector.name} <Image src={"./" + connector.id + ".png"} alt={connector.id} width={48} height={24} />
               </div>
             );
