@@ -25,11 +25,9 @@ function useAutoclaim() {
           abi: claimRegistryABI,
           functionName: 'configs',
           args: [account.address as `0x${string}`],
-          // args: ["0xeEe660D2E32b3DBb9C5f037b7c1e8d78a34021e2"],
         }
       : undefined
   );
-  console.log(userConfig);
 
   // useEffect(() => {
   //   async function fetchEvents() {

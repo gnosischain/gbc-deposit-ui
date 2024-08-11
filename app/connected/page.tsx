@@ -27,7 +27,7 @@ export default function Page() {
                   alt='Gnosis Text'
                   width={100}
                   height={24}
-                  className='mb-1'
+                  className='mb-1 mt-0.5'
                 />
                 <p className='text-[6px] leading-[6px] sm:text-[8px] sm:leading-[8px] mt-1 '>
                   BEACON CHAIN DEPOSIT

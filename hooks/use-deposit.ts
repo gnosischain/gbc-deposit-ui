@@ -5,15 +5,16 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
 import CONTRACTS from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
-import { loadCachedDeposits } from "@/utils/deposit";
+// import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
-import { fetchDeposit } from "@/utils/fetchEvents";
+// import { fetchDeposit } from "@/utils/fetchEvents";
 import useBalance from "./use-balance";
+import { gql, useApolloClient } from '@apollo/client';
 
 const depositAmountBN = parseUnits("1", 18);
 
@@ -26,6 +27,27 @@ type DepositDataJson = {
   deposit_data_root: string;
   fork_version: string;
 };
+
+const GET_DEPOSIT_EVENTS = gql`
+  query MyQuery($pubkeys: [String!]) {
+    SBCDepositContract_DepositEvent(
+      limit: 10, 
+      where: { 
+        pubkey: { 
+          _in: $pubkeys
+        }
+      }
+    ) {
+      id
+      amount
+      db_write_timestamp
+      index
+      withdrawal_credentials
+      pubkey
+    }
+  }
+`;
+
 
 function useDeposit() {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
@@ -47,6 +69,8 @@ function useDeposit() {
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
+
+  const apolloClient = useApolloClient();
 
   const validate = useCallback(
     async (deposits: DepositDataJson[], balance: bigint) => {
@@ -90,26 +114,35 @@ function useDeposit() {
           );
         }
 
-        const { deposits: existingDeposits, lastBlock: fromBlock } =
-          await loadCachedDeposits(
-            chainId === 31337 ? 10200 : chainId,
-            contractConfig.depositStartBlockNumber
-          );
+        // const { deposits: existingDeposits, lastBlock: fromBlock } =
+        //   await loadCachedDeposits(
+        //     chainId === 31337 ? 10200 : chainId,
+        //     contractConfig.depositStartBlockNumber
+        //   );
 
-        const events = await fetchDeposit(
-          contractConfig.addresses.deposit,
-          fromBlock,
-          client
-        );
+        // const events = await fetchDeposit(
+        //   contractConfig.addresses.deposit,
+        //   fromBlock,
+        //   client
+        // );
 
-        let pks = events.map((e) => e.args.pubkey);
-        pks = pks.concat(existingDeposits);
-        console.log(pks);
-        console.log(`Found ${pks.length} existing deposits`);
+        // let pks = events.map((e) => e.args.pubkey);
+        // pks = pks.concat(existingDeposits);
+        // console.log(pks);
+        // console.log(`Found ${pks.length} existing deposits`);
+
+        const pksFromFile = deposits.map((d) => `0x${d.pubkey}`);
+        const { data } = await apolloClient.query({
+          query: GET_DEPOSIT_EVENTS,
+          variables: {
+            pubkeys: pksFromFile,
+          },
+        });
+        const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
         for (const deposit of deposits) {
-          if (!pks.includes(`0x${deposit.pubkey}`)) {
-            console.log("new deposit", deposit.pubkey);
+          if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
+            console.log('new deposit', deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
