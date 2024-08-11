@@ -128,7 +128,7 @@ export default function Dashboard() {
           ? "Check Validators Status"
           : "Gnosis Beacon Chain Deposit"}
       </p>
-      <div className="w-full flex flex-col-reverse lg:flex-row mt-4">
+      <div className="w-full h-full flex flex-col-reverse lg:flex-row mt-4">
         <div className="w-full lg:w-2/6 flex flex-col text-base">
           <div
             id="accounts"
@@ -191,21 +191,21 @@ export default function Dashboard() {
           </div>
         </div>
         <div
-          className={`w-full ${
+          className={`w-full h-full ${
             searchParams.get("state") === "deposit" ? "block" : "hidden"
           }`}
         >
           <Deposit />
         </div>
         <div
-          className={`w-full ${
+          className={`w-full h-full ${
             searchParams.get("state") === "withdrawal" ? "block" : "hidden"
           }`}
         >
           <Withdrawal />
         </div>
         <div
-          className={`w-full ${
+          className={`w-full h-full ${
             searchParams.get("state") === "validator" ? "block" : "hidden"
           }`}
         >

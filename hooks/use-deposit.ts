@@ -162,6 +162,8 @@ function useDeposit() {
         )} GNO is required.
       `);
         }
+      } else {
+        throw Error("Wrong network");
       }
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
