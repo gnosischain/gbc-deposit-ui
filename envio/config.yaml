@@ -1,0 +1,25 @@
+name: Deposit indexer
+networks:
+- id: 100
+  start_block: 19469077
+  contracts:
+  - name: SBCDepositContract
+    address:
+    - 0x0B98057eA310F4d31F2a452B414647007d1645d9
+    handler: src/EventHandlers.ts
+    events:
+    - event: DepositEvent(bytes pubkey, bytes withdrawal_credentials, bytes amount, bytes signature, bytes index)
+    - event: Paused(address account)
+    - event: Unpaused(address account)
+  - name: ClaimRegistryUpgradeable
+    address:
+    - 0xE4D0A119cc2546C1ec4945c04B04985d1e59cdbA
+    handler: src/EventHandlers.ts
+    events:
+    - event: ClaimBatch(address indexed caller, address[] withdrawalAddresses)
+    - event: Initialized(uint64 version)
+    - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+    - event: Register(address indexed user)
+    - event: Unregister(address indexed user)
+    - event: UpdateConfig(address indexed user, uint256 oldTime, uint256 newTime, uint256 oldAmount, uint256 newAmount)
+    - event: Upgraded(address indexed implementation)
