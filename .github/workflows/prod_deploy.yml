@@ -54,7 +54,9 @@ jobs:
               run: yarn update-deposits && yarn build
 
             - name: Install Playwright Browsers
-              run: yarn playwright install
+              run: |
+                yarn add playwright --dev
+                yarn playwright install
 
             - name: Setup xvfb
               run: |
