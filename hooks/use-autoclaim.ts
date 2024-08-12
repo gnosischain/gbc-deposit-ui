@@ -7,12 +7,15 @@ import { config } from "@/wagmi";
 // import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
 import { parseUnits } from "viem";
 
-function useAutoclaim() {
+function useAutoclaim(
+  contractConfig: ContractNetwork | undefined,
+  address: `0x${string}` | undefined,
+  chainId: number
+) {
   const account = useAccount();
-  // const [isRegister, setIsRegister] = useState(false);
-  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === "test" ? 31337 : account?.chainId || 100;
-  const contractConfig = CONTRACTS[chainId];
-  const client = getPublicClient(config, { chainId: chainId as 100 | 10200 | 31337 });
+  const client = getPublicClient(config, {
+    chainId: chainId as 100 | 10200 | 31337,
+  });
   const { data: autoclaimHash, writeContract } = useWriteContract();
   const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
     hash: autoclaimHash,
@@ -29,37 +32,20 @@ function useAutoclaim() {
       : undefined
   );
 
-  // useEffect(() => {
-  //   async function fetchEvents() {
-  //     if (contractConfig && account.address && account.address !== "0x0") {
-  //       const registerEvents = await fetchRegister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
-  //       const unregisterEvents = await fetchUnregister(contractConfig.addresses.claimRegistry, account.address, contractConfig.claimRegistryStartBlockNumber, client);
-
-  //       if (registerEvents.length == 0 && unregisterEvents.length == 0) {
-  //         setIsRegister(false);
-  //       } else if (registerEvents && unregisterEvents.length == 0) {
-  //         setIsRegister(true);
-  //       } else {
-  //         const lastRegisterEvent = registerEvents[registerEvents.length - 1].blockNumber;
-  //         const lastUnregisterEvent = unregisterEvents[unregisterEvents.length - 1].blockNumber;
-
-  //         if (lastRegisterEvent > lastUnregisterEvent) {
-  //           setIsRegister(true);
-  //         } else {
-  //           setIsRegister(false);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   fetchEvents();
-  // }, [account.address, contractConfig]);
-
   const register = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({
+          address: contractConfig.addresses.claimRegistry,
+          abi: claimRegistryABI,
+          functionName: 'register',
+          args: [
+            address || '0x0',
+            timeStamp,
+            parseUnits(amount.toString(), 18),
+          ],
+        });
       }
     },
     [address]
@@ -69,7 +55,16 @@ function useAutoclaim() {
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({
+          address: contractConfig.addresses.claimRegistry,
+          abi: claimRegistryABI,
+          functionName: 'updateConfig',
+          args: [
+            address || '0x0',
+            timeStamp,
+            parseUnits(amount.toString(), 18),
+          ],
+        });
       }
     },
     [address]
@@ -77,7 +72,12 @@ function useAutoclaim() {
 
   const unregister = useCallback(async () => {
     if (contractConfig) {
-      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [address || "0x0"] });
+      writeContract({
+        address: contractConfig.addresses.claimRegistry,
+        abi: claimRegistryABI,
+        functionName: 'unregister',
+        args: [address || '0x0'],
+      });
     }
   }, [address]);
 
