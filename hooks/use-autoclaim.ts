@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
-import CONTRACTS from "@/utils/contracts";
+import CONTRACTS, { ContractNetwork }  from "@/utils/contracts";
 import claimRegistryABI from "@/utils/abis/claimRegistry";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
@@ -59,27 +59,27 @@ function useAutoclaim() {
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
-    [account]
+    [address]
   );
 
   const updateConfig = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
         const timeStamp = BigInt(days * 86400000);
-        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [account.address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
+        writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
-    [account]
+    [address]
   );
 
   const unregister = useCallback(async () => {
     if (contractConfig) {
-      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [account.address || "0x0"] });
+      writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "unregister", args: [address || "0x0"] });
     }
-  }, [account]);
+  }, [address]);
 
   return {
     register,

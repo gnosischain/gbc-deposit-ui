@@ -7,9 +7,18 @@ import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
 import useValidators, { FileDepositData } from "@/hooks/use-validators";
+import { ContractNetwork } from "@/utils/contracts";
 
-export default function Validator() {
-  const { validateStatus, statuses } = useValidators();
+interface WithdrawalProps {
+  contractConfig: ContractNetwork | undefined;
+  address: `0x${string}` | undefined;
+}
+
+export default function Validator({
+  contractConfig,
+  address,
+}: WithdrawalProps) {
+  const { validateStatus, statuses } = useValidators(contractConfig, address);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("validation");

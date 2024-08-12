@@ -14,6 +14,7 @@ export default function Page() {
         <div className='w-full lg:w-[775px] bg-[#133629CC] h-full md:h-full lg:h-auto backdrop-blur-sm p-4 lg:rounded-2xl flex gap-y-6 flex-col justify-start items-center'>
           <div className='w-full gap-x-4 flex justify-between'>
             <NavigationTab value='deposit' />
+            <NavigationTab value='dappnode' />
             <NavigationTab value='withdrawal' />
             <NavigationTab value='validator' />
           </div>
