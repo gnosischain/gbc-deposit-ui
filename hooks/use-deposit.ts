@@ -24,7 +24,6 @@ type DepositDataJson = {
 const GET_DEPOSIT_EVENTS = gql`
   query MyQuery($pubkeys: [String!], $chainId: Int!) {
     SBCDepositContract_DepositEvent(
-      limit: 10, 
       where: { 
         pubkey: { 
           _in: $pubkeys
