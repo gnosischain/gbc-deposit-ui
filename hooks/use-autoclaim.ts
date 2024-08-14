@@ -1,10 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
-import CONTRACTS, { ContractNetwork }  from "@/utils/contracts";
+import { ContractNetwork }  from "@/utils/contracts";
 import claimRegistryABI from "@/utils/abis/claimRegistry";
-import { getPublicClient } from "wagmi/actions";
-import { config } from "@/wagmi";
-// import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
 import { parseUnits } from "viem";
 
 function useAutoclaim(
@@ -13,9 +10,6 @@ function useAutoclaim(
   chainId: number
 ) {
   const account = useAccount();
-  const client = getPublicClient(config, {
-    chainId: chainId as 100 | 10200 | 31337,
-  });
   const { data: autoclaimHash, writeContract } = useWriteContract();
   const { isSuccess: autoclaimSuccess } = useWaitForTransactionReceipt({
     hash: autoclaimHash,
@@ -48,7 +42,7 @@ function useAutoclaim(
         });
       }
     },
-    [address]
+    [address, contractConfig, writeContract]
   );
 
   const updateConfig = useCallback(
@@ -67,7 +61,7 @@ function useAutoclaim(
         });
       }
     },
-    [address]
+    [address, contractConfig, writeContract]
   );
 
   const unregister = useCallback(async () => {
@@ -79,7 +73,7 @@ function useAutoclaim(
         args: [address || '0x0'],
       });
     }
-  }, [address]);
+  }, [address, contractConfig, writeContract]);
 
   return {
     register,
