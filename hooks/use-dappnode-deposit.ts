@@ -163,7 +163,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [address, contractConfig, deposits]
+    [address, contractConfig, deposits, user]
   );
 
   const setDappnodeDepositData = useCallback(
@@ -202,9 +202,15 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
             deposit_data_roots: string[]
         } = {pubkeys:'',signatures:'',deposit_data_roots:[]};
 
-        deposits.forEach((deposit) => {
-          data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
-          data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+        deposits.forEach((deposit, i) => {
+          if (i === 0) {
+            data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
+            data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+          } else {
+            data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey.slice(2) : deposit.pubkey;
+            data.signatures += deposit.signature.startsWith('0x') ? deposit.signature.slice(2) : deposit.signature;
+          }
+          
           data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
         });
 
