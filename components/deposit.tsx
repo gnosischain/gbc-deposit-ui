@@ -3,7 +3,6 @@
 import useDeposit from "@/hooks/use-deposit";
 import {
   ArrowUturnLeftIcon,
-  InformationCircleIcon,
   CheckIcon,
 } from "@heroicons/react/20/solid";
 import Image from "next/image";

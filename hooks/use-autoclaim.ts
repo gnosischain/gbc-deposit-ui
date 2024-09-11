@@ -6,6 +6,7 @@ import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchRegister, fetchUnregister } from "@/utils/fetchEvents";
 import { parseUnits } from "viem";
+import { SECOND_IN_DAY } from "@/utils/constants";
 
 function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [isRegister, setIsRegister] = useState(false);
@@ -44,7 +45,7 @@ function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x$
   const register = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
-        const timeStamp = BigInt(days * 86400);
+        const timeStamp = BigInt(days * SECOND_IN_DAY);
         writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
@@ -54,7 +55,7 @@ function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x$
   const updateConfig = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
-        const timeStamp = BigInt(days * 86400);
+        const timeStamp = BigInt(days * SECOND_IN_DAY);
         writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
