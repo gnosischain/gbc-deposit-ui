@@ -1,7 +1,10 @@
 "use client";
 
 import useDeposit from "@/hooks/use-deposit";
-import { ArrowUturnLeftIcon, InformationCircleIcon, CheckIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowUturnLeftIcon,
+  CheckIcon,
+} from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -9,6 +12,7 @@ import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
 import Link from "next/link";
 import { ContractNetwork } from "@/utils/contracts";
+import ToolTip from "./tooltip";
 
 interface DepositProps {
   contractConfig: ContractNetwork | undefined;
@@ -16,8 +20,13 @@ interface DepositProps {
   chainId: number;
 }
 
-export default function Deposit({contractConfig, address, chainId}: DepositProps) {
-  const { setDepositData, depositData, deposit, depositSuccess, depositHash } = useDeposit(contractConfig, address, chainId);
+export default function Deposit({
+  contractConfig,
+  address,
+  chainId,
+}: DepositProps) {
+  const { setDepositData, depositData, deposit, depositSuccess, depositHash } =
+    useDeposit(contractConfig, address, chainId);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [tx, setTx] = useState<`0x${string}`>("0x0");
@@ -63,7 +72,11 @@ export default function Deposit({contractConfig, address, chainId}: DepositProps
     };
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { "application/json": [] }, maxFiles: 1 });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "application/json": [] },
+    maxFiles: 1,
+  });
 
   const onDeposit = useCallback(async () => {
     setLoading(true);
@@ -91,15 +104,39 @@ export default function Deposit({contractConfig, address, chainId}: DepositProps
           <p className="mt-2">Loading...</p>
         </>
       ) : step === "deposit" ? (
-        <div className="w-full h-full flex flex-col items-center justify-center hover:cursor-pointer" {...getRootProps()}>
+        <div
+          className="w-full h-full flex flex-col items-center justify-center hover:cursor-pointer"
+          {...getRootProps()}
+        >
           <input id="dropzone" {...getInputProps()} />
           Upload deposit date file
-          <div className="flex font-bold items-center">
-            deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
+          <div className="flex font-bold items-center gap-x-1">
+            deposit_data.json{" "}
+            <ToolTip
+              text={
+                <p>
+                  See{" "}
+                  <a href="https://docs.gnosischain.com/node/manual/validator/generate-keys/" className="underline">
+                    here
+                  </a>{" "}
+                  to learn how to generate the file.
+                </p>
+              }
+            />
           </div>
-          <Image src="/drop.svg" alt="Drop" width={80} height={24} className="my-8 rounded-full shadow-lg" />
+          <Image
+            src="/drop.svg"
+            alt="Drop"
+            width={80}
+            height={24}
+            className="my-8 rounded-full shadow-lg"
+          />
           <div>Drag file to upload or browse</div>
-          {errorMessage && <p className="text-red-400 text-sm" id="error">{errorMessage.substring(0, 150)}</p>}
+          {errorMessage && (
+            <p className="text-red-400 text-sm" id="error">
+              {errorMessage.substring(0, 150)}
+            </p>
+          )}
         </div>
       ) : step === "validation" ? (
         <div className="w-full flex flex-col items-center">
@@ -108,32 +145,53 @@ export default function Deposit({contractConfig, address, chainId}: DepositProps
             <CheckIcon className="h-5 w-5" /> Accepted
           </div>
           <div className="flex items-center">
-            <CheckIcon className="h-5 w-5" /> Validator deposits: {depositData.deposits.length}
+            <CheckIcon className="h-5 w-5" /> Validator deposits:{" "}
+            {depositData.deposits.length}
           </div>
           <div className="flex items-center">
-            <CheckIcon className="h-5 w-5" /> Total amount required: {depositData.deposits.length} GNO
+            <CheckIcon className="h-5 w-5" /> Total amount required:{" "}
+            {depositData.deposits.length} GNO
           </div>
           {depositData.isBatch ? (
             ""
           ) : (
             <p className="text-orange-400 text-xs text-center">
-              Your deposit file contains BLS credentials (starting with 0x00), you&apos;ll be asked to sign a transaction for each of them. Alternatively you can generate the keys again, make sure to specify an eth1 address for the withdrawal credentials.
+              Your deposit file contains BLS credentials (starting with 0x00),
+              you&apos;ll be asked to sign a transaction for each of them.
+              Alternatively you can generate the keys again, make sure to
+              specify an eth1 address for the withdrawal credentials.
             </p>
           )}
-          <button className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold" onClick={onDeposit} id="depositButton">
+          <button
+            className="bg-accent px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold"
+            onClick={onDeposit}
+            id="depositButton"
+          >
             Deposit
           </button>
         </div>
       ) : step === "summary" ? (
         <div className="w-full flex flex-col items-center">
           <div className="flex items-center" id="confirmation">
-            <CheckIcon className="h-5 w-5" /> Your transaction is completed ! View it
-            <Link href={chainId === 100 ? "https://gnosis.blockscout.com/tx/" + tx : "https://gnosis-chiado.blockscout.com/tx/" + tx} target="_blank" className="text-[#DD7143] underline ml-1">
+            <CheckIcon className="h-5 w-5" /> Your transaction is completed !
+            View it
+            <Link
+              href={
+                chainId === 100
+                  ? "https://gnosis.blockscout.com/tx/" + tx
+                  : "https://gnosis-chiado.blockscout.com/tx/" + tx
+              }
+              target="_blank"
+              className="text-accent underline ml-1"
+            >
               here
             </Link>
             .
           </div>
-          <button className="text-[#DD7143] flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold" onClick={() => setStep("deposit")}>
+          <button
+            className="text-accent flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold"
+            onClick={() => setStep("deposit")}
+          >
             Back <ArrowUturnLeftIcon className="h-4 w-4 ml-2" />
           </button>
         </div>
