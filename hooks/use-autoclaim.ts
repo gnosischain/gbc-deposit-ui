@@ -44,7 +44,7 @@ function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x$
   const register = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
-        const timeStamp = BigInt(days * 86400000);
+        const timeStamp = BigInt(days * 86400);
         writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "register", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },
@@ -54,7 +54,7 @@ function useAutoclaim(contractConfig: ContractNetwork | undefined, address: `0x$
   const updateConfig = useCallback(
     async (days: number, amount: number) => {
       if (contractConfig) {
-        const timeStamp = BigInt(days * 86400000);
+        const timeStamp = BigInt(days * 86400);
         writeContract({ address: contractConfig.addresses.claimRegistry, abi: claimRegistryABI, functionName: "updateConfig", args: [address || "0x0", timeStamp, parseUnits(amount.toString(), 18)] });
       }
     },

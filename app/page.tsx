@@ -11,7 +11,7 @@ export default function Page() {
         </div>
         <p className="text-xl">BEACON CHAIN DEPOSIT</p>
         <p className="text-xl my-8">Connect your wallet to get started:</p>
-        <Link href="/connect" className="bg-[#DD7143] px-8 py-4 rounded-full text-xl font-semibold outline outline-2 outline-transparent hover:outline-white/80 transition-all duration-300 ease-in-out">
+        <Link href="/connect" className="bg-accent px-8 py-4 rounded-full text-xl font-semibold outline outline-2 outline-transparent hover:outline-white/80 transition-all duration-300 ease-in-out">
           Connect Wallet
         </Link>
         <Link target="_blank" className="w-full flex justify-center mt-20 text-sm lg:text-base items-center underline hover:text-slate-200" href={"https://docs.gnosischain.com/node/"}>
