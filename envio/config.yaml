@@ -1,4 +1,5 @@
-name: Deposit indexer
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: deposit-indexer
 contracts:
 - name: SBCDepositContract
   handler: src/EventHandlers.ts
@@ -6,13 +7,13 @@ contracts:
   - event: DepositEvent(bytes pubkey, bytes withdrawal_credentials, bytes amount, bytes signature, bytes index)
 networks:
 - id: 100
-  start_block: 19469076
+  start_block: 0
   contracts:
   - name: SBCDepositContract
     address:
     - 0x0B98057eA310F4d31F2a452B414647007d1645d9
 - id: 10200
-  start_block: 155434
+  start_block: 0
   contracts:
   - name: SBCDepositContract
     address:
