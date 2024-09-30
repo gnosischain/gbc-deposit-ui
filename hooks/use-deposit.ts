@@ -6,11 +6,8 @@ import {
 import { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
-import { loadCachedDeposits } from "@/utils/deposit";
-import { getPublicClient } from "wagmi/actions";
-import { config } from "@/wagmi";
-import { fetchDeposit } from "@/utils/fetchEvents";
 import useBalance from "./use-balance";
+import { gql, useApolloClient } from '@apollo/client';
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 
 const depositAmountBN = parseUnits("1", 18);
@@ -25,20 +22,40 @@ type DepositDataJson = {
   fork_version: string;
 };
 
+const GET_DEPOSIT_EVENTS = gql`
+  query MyQuery($pubkeys: [String!], $chainId: Int!) {
+    SBCDepositContract_DepositEvent(
+      where: { 
+        pubkey: { 
+          _in: $pubkeys
+        },
+        chainId: {_eq: $chainId}
+      }
+    ) {
+      id
+      amount
+      db_write_timestamp
+      index
+      withdrawal_credentials
+      pubkey
+    }
+  }
+`;
+
+
 function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   const { balance, refetchBalance } = useBalance(contractConfig, address);
-  const client = getPublicClient(config, {
-    chainId: chainId as 100 | 10200 | 31337,
-  });
   const isWrongNetwork = contractConfig === undefined;
   const { data: depositHash, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
+
+  const apolloClient = useApolloClient();
 
   const validate = useCallback(
     async (deposits: DepositDataJson[], balance: bigint) => {
@@ -82,26 +99,19 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           );
         }
 
-        const { deposits: existingDeposits, lastBlock: fromBlock } =
-          await loadCachedDeposits(
-            chainId === 31337 ? 10200 : chainId,
-            contractConfig.depositStartBlockNumber
-          );
-
-        const events = await fetchDeposit(
-          contractConfig.addresses.deposit,
-          fromBlock,
-          client
-        );
-
-        let pks = events.map((e) => e.args.pubkey);
-        pks = pks.concat(existingDeposits);
-        console.log(pks);
-        console.log(`Found ${pks.length} existing deposits`);
+        const pksFromFile = deposits.map((d) => `0x${d.pubkey}`);
+        const { data } = await apolloClient.query({
+          query: GET_DEPOSIT_EVENTS,
+          variables: {
+            pubkeys: pksFromFile,
+            chainId: chainId,
+          },
+        });
+        const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
         for (const deposit of deposits) {
-          if (!pks.includes(`0x${deposit.pubkey}`)) {
-            console.log("new deposit", deposit.pubkey);
+          if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
+            console.log('new deposit', deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
@@ -154,11 +164,13 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           )} GNO is required.
       `);
         }
+      } else {
+        throw Error("Wrong network");
       }
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [address, contractConfig, balance]
+    [contractConfig, apolloClient, chainId]
   );
 
   const setDepositData = useCallback(
@@ -249,7 +261,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         );
       }
     }
-  }, [address, deposits, isBatch, refetchBalance]);
+  }, [contractConfig, deposits, isBatch, refetchBalance, writeContract]);
 
   useEffect(() => {
     if (depositSuccess) {
