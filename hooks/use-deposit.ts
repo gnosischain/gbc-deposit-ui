@@ -8,6 +8,7 @@ import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import useBalance from "./use-balance";
 import { gql, useApolloClient } from '@apollo/client';
+import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 
 const depositAmountBN = parseUnits("1", 18);
 
@@ -130,14 +131,14 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         // check if withdrawal credential start with 0x00
         _isBatch = !wc.startsWith("00");
 
-        if (_isBatch && newDeposits.length > 128) {
+        if (_isBatch && newDeposits.length > MAX_BATCH_DEPOSIT) {
           throw Error(
             "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
           );
         }
 
         if (
-          !newDeposits.every((d) => BigInt(d.amount) === BigInt(32000000000))
+          !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
         ) {
           throw Error("Amount should be exactly 32 tokens for deposits.");
         }

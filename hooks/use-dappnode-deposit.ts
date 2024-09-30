@@ -11,6 +11,7 @@ import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchDeposit } from "@/utils/fetchEvents";
+import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 
 export type DepositDataJson = {
   pubkey: string;
@@ -141,14 +142,14 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         // check if withdrawal credential start with 0x00
         _isBatch = !wc.startsWith("00");
 
-        if (_isBatch && newDeposits.length > 128) {
+        if (_isBatch && newDeposits.length > MAX_BATCH_DEPOSIT) {
           throw Error(
             "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
           );
         }
 
         if (
-          !newDeposits.every((d) => BigInt(d.amount) === BigInt(32000000000))
+          !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
         ) {
           throw Error("Amount should be exactly 32 tokens for deposits.");
         }
@@ -163,7 +164,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [address, contractConfig, deposits]
+    [address, contractConfig, deposits, user]
   );
 
   const setDappnodeDepositData = useCallback(
@@ -202,9 +203,15 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
             deposit_data_roots: string[]
         } = {pubkeys:'',signatures:'',deposit_data_roots:[]};
 
-        deposits.forEach((deposit) => {
-          data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
-          data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+        deposits.forEach((deposit, i) => {
+          if (i === 0) {
+            data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey : `0x${deposit.pubkey}`;
+            data.signatures += deposit.signature.startsWith('0x') ? deposit.signature : `0x${deposit.signature}`;
+          } else {
+            data.pubkeys += deposit.pubkey.startsWith('0x') ? deposit.pubkey.slice(2) : deposit.pubkey;
+            data.signatures += deposit.signature.startsWith('0x') ? deposit.signature.slice(2) : deposit.signature;
+          }
+          
           data.deposit_data_roots.push(deposit.deposit_data_root.startsWith('0x') ? deposit.deposit_data_root : `0x${deposit.deposit_data_root}`);
         });
 

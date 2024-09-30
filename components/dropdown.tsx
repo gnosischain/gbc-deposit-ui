@@ -55,20 +55,10 @@ export default function DropDown() {
                 </Link>
               </MenuItem>
               <MenuItem>
-                <Link
-                  target='_blank'
-                  className='text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm data-[focus]:bg-stone-100'
-                  href={'https://discord.com/invite/gnosischain'}
-                >
-                  <Image
-                    src={'/discord.svg'}
-                    alt={'discordIcon'}
-                    width={20}
-                    height={24}
-                    className='mr-2'
-                  />
-                  Gnosis Chain Discord
-                </Link>
+                  <Link target="_blank" className="text-gray-900 group flex w-full items-center rounded-md px-2 py-2 text-sm data-[focus]:bg-stone-100" href={"https://discord.gg/gnosis"}>
+                    <Image src={"/discord.svg"} alt={"discordIcon"} width={20} height={24} className="mr-2" />
+                    Gnosis Chain Discord
+                  </Link>
               </MenuItem>
             </div>
           </MenuItems>

@@ -288,7 +288,7 @@ function Validation({
         </p>
       )}
       <button
-        className="bg-[#DD7143] px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold"
+        className="bg-accent px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold"
         onClick={onDeposit}
         >
         Claim
@@ -310,7 +310,7 @@ function SubmittedStatus({ tx }: { tx: `0x${string}` }) {
         <Link
           href={"https://gnosis.blockscout.com/tx/" + tx}
           target="_blank"
-          className="text-[#DD7143] underline ml-1"
+          className="text-accent underline ml-1"
         >
           here.
         </Link>

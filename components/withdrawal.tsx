@@ -7,6 +7,8 @@ import { Address, formatEther } from "viem";
 import Link from "next/link";
 import useBalance from "@/hooks/use-balance";
 import { ContractNetwork } from "@/utils/contracts";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import ToolTip from "./tooltip";
 
 interface WithdrawalProps {
   contractConfig: ContractNetwork | undefined;
@@ -94,7 +96,15 @@ export default function Withdrawal({
       ) : step === "claim" ? (
         <>
           <div className="w-full text-sm flex justify-center">
-            Set up automated claim with your preferred frequency and threshold.
+            Set up automated claim with your preferred frequency and threshold.{" "}
+            <ToolTip
+              text={
+                <p>
+                  Address will become eligable for claim if one of thresholds
+                  reached.
+                </p>
+              }
+            />
           </div>
           <div className="py-4 md:py-0 flex h-full flex-col justify-center gap-y-4">
             <div className="flex flex-col">
@@ -113,7 +123,7 @@ export default function Withdrawal({
                     type="radio"
                     value={1}
                     name="inline-radio-group"
-                    className="w-4 h-4 accent-[#DD7143]"
+                    className="w-4 h-4 accent-accent"
                   />
                   <label
                     htmlFor="day"
@@ -129,7 +139,7 @@ export default function Withdrawal({
                     type="radio"
                     value={7}
                     name="inline-radio-group"
-                    className="w-4 h-4 accent-[#DD7143]"
+                    className="w-4 h-4 accent-accent"
                   />
                   <label
                     htmlFor="week"
@@ -145,7 +155,7 @@ export default function Withdrawal({
                     type="radio"
                     value={30}
                     name="inline-radio-group"
-                    className="w-4 h-4 accent-[#DD7143]"
+                    className="w-4 h-4 accent-accent"
                   />
                   <label
                     htmlFor="month"
@@ -172,7 +182,7 @@ export default function Withdrawal({
               />
             </div>
             <button
-              className="bg-[#DD7143] py-1 rounded-full text-white text-lg font-semibold"
+              className="bg-accent py-1 rounded-full text-white text-lg font-semibold"
               onClick={onAutoclaim}
               id="autoclaim"
             >
@@ -186,7 +196,7 @@ export default function Withdrawal({
                 {Number(formatEther(claimBalance || BigInt(0))).toFixed(3)} GNOS
               </div>
               <button
-                className="text-[#DD7143] underline hover:text-[#E07F55]"
+                className="text-accent underline hover:text-[#E07F55]"
                 onClick={onClaim}
               >
                 Manual claim
@@ -216,14 +226,14 @@ export default function Withdrawal({
                   : "https://gnosis-chiado.blockscout.com/tx/" + tx
               }
               target="_blank"
-              className="text-[#DD7143] underline ml-1"
+              className="text-accent underline ml-1"
             >
               here
             </Link>
             .
           </div>
           <button
-            className="text-[#DD7143] flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold"
+            className="text-accent flex items-center px-4 py-1 rounded-full mt-4 text-base font-semibold"
             onClick={() => setStep("claim")}
           >
             Back <ArrowUturnLeftIcon className="h-4 w-4 ml-2" />

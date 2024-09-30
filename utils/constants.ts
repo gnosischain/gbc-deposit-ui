@@ -1,0 +1,3 @@
+export const MAX_BATCH_DEPOSIT = 128;
+export const DEPOSIT_TOKEN_AMOUNT_OLD = 32000000000;
+export const SECOND_IN_DAY = 86400;
