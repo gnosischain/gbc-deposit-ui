@@ -1,5 +1,5 @@
 import assert from "assert";
-import { 
+import {
   TestHelpers,
   SBCDepositContract_DepositEvent
 } from "generated";
@@ -10,7 +10,7 @@ describe("SBCDepositContract contract DepositEvent event tests", () => {
   const mockDb = MockDb.createMockDb();
 
   // Creating mock for SBCDepositContract contract DepositEvent event
-  const event = SBCDepositContract.DepositEvent.createMockEvent({/* It mocks event fields with default values. You can overwrite them if you need */});
+  const event = SBCDepositContract.DepositEvent.createMockEvent({/* It mocks event fields with default values. You can overwrite them if you need */ });
 
   it("SBCDepositContract_DepositEvent is created correctly", async () => {
     // Processing the event
@@ -26,6 +26,7 @@ describe("SBCDepositContract contract DepositEvent event tests", () => {
 
     // Creating the expected entity
     const expectedSBCDepositContractDepositEvent: SBCDepositContract_DepositEvent = {
+      chainId: event.chainId,
       id: `${event.chainId}_${event.block.number}_${event.logIndex}`,
       pubkey: event.params.pubkey,
       withdrawal_credentials: event.params.withdrawal_credentials,
