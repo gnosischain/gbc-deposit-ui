@@ -23,12 +23,13 @@ type DepositDataJson = {
 };
 
 const GET_DEPOSIT_EVENTS = gql`
-  query MyQuery($pubkeys: [String!]) {
+  query MyQuery($pubkeys: [String!], $chainId: Int!) {
     SBCDepositContract_DepositEvent(
       where: { 
         pubkey: { 
           _in: $pubkeys
         },
+        chainId: {_eq: $chainId}
       }
     ) {
       id
@@ -103,8 +104,10 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           query: GET_DEPOSIT_EVENTS,
           variables: {
             pubkeys: pksFromFile,
+            chainId: chainId,
           },
         });
+        console.log(data);
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
         for (const deposit of deposits) {

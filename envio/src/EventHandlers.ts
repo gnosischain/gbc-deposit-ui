@@ -8,6 +8,7 @@ import {
 
 SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
   const entity: SBCDepositContract_DepositEvent = {
+    chainId: event.chainId,
     id: `${event.chainId}_${event.block.number}_${event.logIndex}`,
     pubkey: event.params.pubkey,
     withdrawal_credentials: event.params.withdrawal_credentials,
