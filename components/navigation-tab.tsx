@@ -21,7 +21,7 @@ export default function NavigationTab({ value }: NavigationTabProps) {
   const { replace } = useRouter();
 
   const handleClick = () => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set("state", value);
     replace(`${pathname}?${params.toString()}`);
   };
