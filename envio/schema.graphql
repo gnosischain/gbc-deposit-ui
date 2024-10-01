@@ -1,0 +1,10 @@
+type SBCDepositContract_DepositEvent {
+  chainId: Int!
+  id: ID!
+  pubkey: String!
+  withdrawal_credentials: String!
+  amount: String!
+  signature: String!
+  index: String!
+}
+
