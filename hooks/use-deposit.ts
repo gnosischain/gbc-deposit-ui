@@ -107,7 +107,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             chainId: chainId,
           },
         });
-        console.log(data);
+        
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
         for (const deposit of deposits) {
