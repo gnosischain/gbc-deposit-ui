@@ -12,6 +12,7 @@ import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
 import { fetchDeposit } from "@/utils/fetchEvents";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
+import { gql, useApolloClient } from "@apollo/client";
 
 export type DepositDataJson = {
   pubkey: string;
@@ -30,12 +31,34 @@ export type DappnodeUser = [
   totalStakeAmount: bigint // uint256
 ];
 
+const GET_DEPOSIT_EVENTS = gql`
+  query MyQuery($pubkeys: [String!], $chainId: Int!) {
+    SBCDepositContract_DepositEvent(
+      where: { 
+        pubkey: { 
+          _in: $pubkeys
+        },
+        chainId: {_eq: $chainId}
+      }
+    ) {
+      id
+      amount
+      db_write_timestamp
+      index
+      withdrawal_credentials
+      pubkey
+    }
+  }
+`;
+
 function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   const client = getPublicClient(config, { chainId: chainId as 100 });
+  
+  const apolloClient = useApolloClient();
 
   const { data: user }: { data: DappnodeUser | undefined } = useReadContract({
     abi: dappnodeIncentiveABI,
@@ -103,29 +126,48 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
           );
         }
 
-        const { deposits: existingDeposits, lastBlock: fromBlock } =
-          await loadCachedDeposits(
-            chainId,
-            contractConfig.depositStartBlockNumber
-          );
+        const pksFromFile = deposits.map((d) => `0x${d.pubkey}`);
+        const { data } = await apolloClient.query({
+          query: GET_DEPOSIT_EVENTS,
+          variables: {
+            pubkeys: pksFromFile,
+            chainId: chainId,
+          },
+        });
+        
+        const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
-        const events = await fetchDeposit(
-          contractConfig.addresses.deposit,
-          fromBlock,
-          client
-        );
+        // const { deposits: existingDeposits, lastBlock: fromBlock } =
+        //   await loadCachedDeposits(
+        //     chainId,
+        //     contractConfig.depositStartBlockNumber
+        //   );
 
-        let pks = events.map((e) => e.args.pubkey);
-        pks = pks.concat(existingDeposits);
-        console.log(pks);
-        console.log(`Found ${pks.length} existing deposits`);
+        // const events = await fetchDeposit(
+        //   contractConfig.addresses.deposit,
+        //   fromBlock,
+        //   client
+        // );
+
+        // let pks = events.map((e) => e.args.pubkey);
+        // pks = pks.concat(existingDeposits);
+        // console.log(pks);
+        // console.log(`Found ${pks.length} existing deposits`);
 
         for (const deposit of deposits) {
-          if (!pks.includes(`0x${deposit.pubkey}`)) {
-            console.log("new deposit", deposit.pubkey);
+          if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
+            console.log('new deposit', deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
+
+        // for (const deposit of deposits) {
+        //   if (!pks.includes(`0x${deposit.pubkey}`)) {
+        //     console.log("new deposit", deposit.pubkey);
+        //     newDeposits.push(deposit);
+        //   }
+        // }
+        
         hasDuplicates = newDeposits.length !== deposits.length;
 
         if (newDeposits.length === 0) {
