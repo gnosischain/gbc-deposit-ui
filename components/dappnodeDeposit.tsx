@@ -194,7 +194,7 @@ function PendingStatus({
         reader.readAsText(acceptedFiles[0]);
       }
     },
-    [setDappnodeDepositData, errorMessage]
+    [setErrorMessage, setLoading, setDappnodeDepositData, setStep]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -254,7 +254,7 @@ function Validation({
 }) {
   const onDeposit = useCallback(async () => {
     await dappnodeDeposit();
-  }, [depositData]);
+  }, [dappnodeDeposit]);
 
   return claimStatusPending ? (
     <div className="flex flex-col items-center gap-4">

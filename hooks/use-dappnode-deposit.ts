@@ -206,7 +206,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
 
       return { deposits: newDeposits, hasDuplicates, _isBatch };
     },
-    [address, contractConfig, deposits, user]
+    [apolloClient, chainId, contractConfig, user]
   );
 
   const setDappnodeDepositData = useCallback(
@@ -268,7 +268,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         console.error(err);
       }
     }
-  }, [address, deposits]);
+  }, [contractConfig, deposits, writeContractAsync]);
 
   return {
     depositSuccess,
