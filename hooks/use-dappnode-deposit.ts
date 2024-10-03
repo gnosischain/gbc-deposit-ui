@@ -1,16 +1,13 @@
 import { useCallback, useState } from "react";
 import {
-  useAccount,
   useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
+import { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
-import { loadCachedDeposits } from "@/utils/deposit";
 import { getPublicClient } from "wagmi/actions";
 import { config } from "@/wagmi";
-import { fetchDeposit } from "@/utils/fetchEvents";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 import { gql, useApolloClient } from "@apollo/client";
 
