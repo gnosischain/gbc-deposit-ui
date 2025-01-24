@@ -84,14 +84,16 @@ export default function Dashboard() {
   };
 
   const handleNetworkChange = (value: string) => {
+    chains.forEach((chain) => console.log(chain.name));
     const selectedChain = chains.find((chain) => chain.name === value);
+    console.log(selectedChain, value);
     if (selectedChain) {
       switchChain({ chainId: selectedChain.id });
     }
   };
 
   const renderNetworkOptions = () => {
-    const supportedChains = ["Gnosis", "Gnosis Chiado"];
+    const supportedChains = ["Gnosis", "Gnosis Chiado", "Devnet"];
     const currentNetwork = chains.find(
       (chain) => chain.id === account.chain?.id
     )?.name;
