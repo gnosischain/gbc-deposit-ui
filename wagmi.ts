@@ -5,7 +5,7 @@ import { devnet } from "./utils/devnet";
 
 export const config = createConfig({
   chains: [gnosis, gnosisChiado, hardhat, devnet],
-  connectors: [coinbaseWallet({ appName: "Gnosis Deposit" })],
+  connectors: [coinbaseWallet({ appName: "Gnosis Deposit" }), walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "" })],
   ssr: true,
   transports: {
     [gnosis.id]: http("https://rpc.gnosischain.com/"),
