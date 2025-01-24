@@ -8,7 +8,7 @@ import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import useBalance from "./use-balance";
 import { gql, useApolloClient } from '@apollo/client';
-import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
+import { DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 
 const depositAmountBN = parseUnits("1", 18);
 
@@ -75,15 +75,9 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           );
         };
 
-        if (!deposits.every) {
-          throw Error(
-            "Oops, something went wrong while parsing your json file. Please check the file and try again."
-          );
-        }
-
         if (
           deposits.length === 0 ||
-          !deposits.every((d) => checkJsonStructure(d))
+          !deposits.every(checkJsonStructure)
         ) {
           throw Error("This is not a valid file. Please try again.");
         }
@@ -107,7 +101,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             chainId: chainId,
           },
         });
-        
+
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
         for (const deposit of deposits) {
@@ -124,25 +118,26 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           );
         }
 
-        const wc = newDeposits[0].withdrawal_credentials;
-
-        // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
-        _isBatch = newDeposits.every((d) => d.withdrawal_credentials === wc);
-
-        // check if withdrawal credential start with 0x00
-        _isBatch = !wc.startsWith("00");
-
-        if (_isBatch && newDeposits.length > MAX_BATCH_DEPOSIT) {
-          throw Error(
-            "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
-          );
+        const credentialType = getCredentialType(deposits[0].withdrawal_credentials);
+        if (!credentialType) {
+          throw Error("Invalid withdrawal credential type.");
         }
 
-        // if (
-        //   !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
-        // ) {
-        //   throw Error("Amount should be exactly 32 tokens for deposits.");
-        // }
+        if (credentialType === "0x01") {
+          // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
+          _isBatch = newDeposits.every((d) => d.withdrawal_credentials === credentialType);
+          if (_isBatch && newDeposits.length > MAX_BATCH_DEPOSIT) {
+            throw Error(
+              "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
+            );
+          }
+        }
+
+        if (
+          !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
+        ) {
+          throw Error("Amount should be exactly 32 tokens for deposits.");
+        }
 
         const pubKeys = newDeposits.map((d) => d.pubkey);
         if (
