@@ -9,18 +9,9 @@ import { formatUnits, parseUnits } from "viem";
 import useBalance from "./use-balance";
 import { gql, useApolloClient } from '@apollo/client';
 import { DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
+import { DepositDataJson, generateDepositData } from "@/utils/deposit";
 
 const depositAmountBN = parseUnits("1", 18);
-
-type DepositDataJson = {
-  pubkey: string;
-  withdrawal_credentials: string;
-  amount: bigint;
-  signature: string;
-  deposit_message_root: string;
-  deposit_data_root: string;
-  fork_version: string;
-};
 
 const GET_DEPOSIT_EVENTS = gql`
   query MyQuery($pubkeys: [String!], $chainId: Int!) {
@@ -106,7 +97,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
         for (const deposit of deposits) {
           if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
-            console.log('new deposit', deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
@@ -200,63 +190,19 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
   const deposit = useCallback(async () => {
     if (contractConfig) {
-      if (isBatch) {
-        try {
-          const totalDepositAmountBN =
-            depositAmountBN * BigInt(deposits.length);
-          console.log(
-            `Sending deposit transaction for ${deposits.length} deposits`
-          );
-          let data = "";
-          data += deposits[0].withdrawal_credentials;
-          deposits.forEach((deposit) => {
-            data += deposit.pubkey;
-            data += deposit.signature;
-            data += deposit.deposit_data_root;
-          });
-          writeContract({
-            address: contractConfig.addresses.token,
-            abi: ERC677ABI,
-            functionName: "transferAndCall",
-            args: [
-              contractConfig.addresses.deposit,
-              totalDepositAmountBN,
-              `0x${data}`,
-            ],
-          });
-          console.log(error);
-          refetchBalance();
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        console.log("sending deposit transaction");
-        await Promise.all(
-          deposits.map(async (deposit) => {
-            let data = "";
-            data += deposit.withdrawal_credentials;
-            data += deposit.pubkey;
-            data += deposit.signature;
-            data += deposit.deposit_data_root;
+      const data = generateDepositData(deposits, isBatch);
+      writeContract({
+        address: contractConfig.addresses.token,
+        abi: ERC677ABI,
+        functionName: "transferAndCall",
+        args: [
+          contractConfig.addresses.deposit,
+          isBatch ? depositAmountBN * BigInt(deposits.length) : depositAmountBN,
+          `0x${data}`,
+        ],
+      });
 
-            try {
-              writeContract({
-                address: contractConfig.addresses.token,
-                abi: ERC677ABI,
-                functionName: "transferAndCall",
-                args: [
-                  contractConfig.addresses.deposit,
-                  depositAmountBN,
-                  `0x${data}`,
-                ],
-              });
-              refetchBalance();
-            } catch (error) {
-              console.log(error);
-            }
-          })
-        );
-      }
+      refetchBalance();
     }
   }, [contractConfig, deposits, isBatch, refetchBalance, writeContract]);
 

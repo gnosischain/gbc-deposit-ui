@@ -64,14 +64,6 @@ export default function Deposit({
     [setDepositData]
   );
 
-  useEffect(() => {
-    console.log("Deposit component mounted");
-
-    return () => {
-      console.log("Deposit component unmounted");
-    };
-  }, []);
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "application/json": [] },

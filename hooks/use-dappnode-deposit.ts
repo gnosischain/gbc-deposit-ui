@@ -6,20 +6,9 @@ import {
 } from "wagmi";
 import { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
-import { getPublicClient } from "wagmi/actions";
-import { config } from "@/wagmi";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 import { gql, useApolloClient } from "@apollo/client";
-
-export type DepositDataJson = {
-  pubkey: string;
-  withdrawal_credentials: string;
-  amount: bigint;
-  signature: string;
-  deposit_message_root: string;
-  deposit_data_root: string;
-  fork_version: string;
-};
+import { DepositDataJson } from "@/utils/deposit";
 
 export type DappnodeUser = [
   safe: string,
@@ -53,7 +42,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
   const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const client = getPublicClient(config, { chainId: chainId as 100 });
   
   const apolloClient = useApolloClient();
 
@@ -134,36 +122,12 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
-        // const { deposits: existingDeposits, lastBlock: fromBlock } =
-        //   await loadCachedDeposits(
-        //     chainId,
-        //     contractConfig.depositStartBlockNumber
-        //   );
-
-        // const events = await fetchDeposit(
-        //   contractConfig.addresses.deposit,
-        //   fromBlock,
-        //   client
-        // );
-
-        // let pks = events.map((e) => e.args.pubkey);
-        // pks = pks.concat(existingDeposits);
-        // console.log(pks);
-        // console.log(`Found ${pks.length} existing deposits`);
-
         for (const deposit of deposits) {
           if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
             console.log('new deposit', deposit.pubkey);
             newDeposits.push(deposit);
           }
         }
-
-        // for (const deposit of deposits) {
-        //   if (!pks.includes(`0x${deposit.pubkey}`)) {
-        //     console.log("new deposit", deposit.pubkey);
-        //     newDeposits.push(deposit);
-        //   }
-        // }
         
         hasDuplicates = newDeposits.length !== deposits.length;
 
