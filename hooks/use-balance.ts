@@ -1,7 +1,7 @@
-import { useAccount, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 import ERC677ABI from "@/utils/abis/erc677";
 import { useQueryClient } from "@tanstack/react-query";
-import CONTRACTS, { ContractNetwork } from "@/utils/contracts";
+import { ContractNetwork } from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
 
 function useBalance(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined) {

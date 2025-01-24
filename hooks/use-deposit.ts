@@ -50,7 +50,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const [filename, setFilename] = useState("");
   const { balance, refetchBalance } = useBalance(contractConfig, address);
   const isWrongNetwork = contractConfig === undefined;
-  const { data: depositHash, writeContract } = useWriteContract();
+  const { data: depositHash, error, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
@@ -138,11 +138,11 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           );
         }
 
-        if (
-          !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
-        ) {
-          throw Error("Amount should be exactly 32 tokens for deposits.");
-        }
+        // if (
+        //   !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
+        // ) {
+        //   throw Error("Amount should be exactly 32 tokens for deposits.");
+        // }
 
         const pubKeys = newDeposits.map((d) => d.pubkey);
         if (
@@ -229,6 +229,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
               `0x${data}`,
             ],
           });
+          console.log(error);
           refetchBalance();
         } catch (err) {
           console.log(err);
