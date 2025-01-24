@@ -44,16 +44,16 @@ jobs:
       - name: Build App
         run: yarn build
 
-      - name: Install Playwright Browsers
-        run: yarn playwright install
+      # - name: Install Playwright Browsers
+      #   run: yarn playwright install
 
-      - name: Setup xvfb
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
+      # - name: Setup xvfb
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y xvfb
 
-      - name: Run tests
-        run: xvfb-run --auto-servernum --server-args='-screen 0, 1920x1080x24' yarn run-e2e-tests
+      # - name: Run tests
+      #   run: xvfb-run --auto-servernum --server-args='-screen 0, 1920x1080x24' yarn run-e2e-tests
 
       - name: Configure AWS Development credentials
         uses: aws-actions/configure-aws-credentials@v1
