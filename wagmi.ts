@@ -11,7 +11,7 @@ export const config = createConfig({
     [gnosis.id]: http("https://rpc.gnosischain.com/"),
     [gnosisChiado.id]: http("https://rpc.chiadochain.net"),
     [hardhat.id]: http("http://127.0.0.1:8545"),
-    [devnet.id]: http("http://172.105.149.51:8545"),
+    [devnet.id]: http("https://gnosis-devnet.nethermind.dev/execution"),
   },
 });
 

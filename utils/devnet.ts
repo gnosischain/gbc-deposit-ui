@@ -5,7 +5,7 @@ export const devnet = {
   name: 'Devnet',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ['http://172.105.149.51:8545'] },
+    default: { http: ['https://gnosis-devnet.nethermind.dev/execution'] },
   },
   blockExplorers: {
     default: { name: 'Blockscout', url: 'http://192.155.94.248:8082' },
