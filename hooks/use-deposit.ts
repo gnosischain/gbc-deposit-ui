@@ -7,32 +7,11 @@ import { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import useBalance from "./use-balance";
-import { gql, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
-import { DepositDataJson, generateDepositData } from "@/utils/deposit";
+import { DepositDataJson, generateDepositData, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
 
 const depositAmountBN = parseUnits("1", 18);
-
-const GET_DEPOSIT_EVENTS = gql`
-  query MyQuery($pubkeys: [String!], $chainId: Int!) {
-    SBCDepositContract_DepositEvent(
-      where: { 
-        pubkey: { 
-          _in: $pubkeys
-        },
-        chainId: {_eq: $chainId}
-      }
-    ) {
-      id
-      amount
-      db_write_timestamp
-      index
-      withdrawal_credentials
-      pubkey
-    }
-  }
-`;
-
 
 function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);

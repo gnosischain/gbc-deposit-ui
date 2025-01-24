@@ -1,6 +1,7 @@
 // NOTE: Ideally this should use { assert: { type: 'json' } },
 // but this would require significant changes in the build process
 
+import { gql } from "@apollo/client";
 import { Address } from "viem";
 
 type DepositData = {
@@ -54,3 +55,23 @@ export const generateDepositData = (deposits: DepositDataJson[], isBatch: boolea
   }
   return data;
 };
+
+export const GET_DEPOSIT_EVENTS = gql`
+query MyQuery($pubkeys: [String!], $chainId: Int!) {
+  SBCDepositContract_DepositEvent(
+    where: { 
+      pubkey: { 
+        _in: $pubkeys
+      },
+      chainId: {_eq: $chainId}
+    }
+  ) {
+    id
+    amount
+    db_write_timestamp
+    index
+    withdrawal_credentials
+    pubkey
+  }
+}
+`;

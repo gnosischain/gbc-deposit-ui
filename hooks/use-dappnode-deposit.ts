@@ -7,8 +7,8 @@ import {
 import { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
-import { gql, useApolloClient } from "@apollo/client";
-import { DepositDataJson } from "@/utils/deposit";
+import { useApolloClient } from "@apollo/client";
+import { DepositDataJson, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
 
 export type DappnodeUser = [
   safe: string,
@@ -16,26 +16,6 @@ export type DappnodeUser = [
   expectedDepositCount: number, // uint16
   totalStakeAmount: bigint // uint256
 ];
-
-const GET_DEPOSIT_EVENTS = gql`
-  query MyQuery($pubkeys: [String!], $chainId: Int!) {
-    SBCDepositContract_DepositEvent(
-      where: { 
-        pubkey: { 
-          _in: $pubkeys
-        },
-        chainId: {_eq: $chainId}
-      }
-    ) {
-      id
-      amount
-      db_write_timestamp
-      index
-      withdrawal_credentials
-      pubkey
-    }
-  }
-`;
 
 function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
