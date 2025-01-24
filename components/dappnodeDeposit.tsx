@@ -1,8 +1,6 @@
 "use client";
 
-import useDappnodeDeposit, {
-  DepositDataJson,
-} from "@/hooks/use-dappnode-deposit";
+import useDappnodeDeposit from "@/hooks/use-dappnode-deposit";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +15,7 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { Address } from "viem";
 import Loader from "./loader";
 import { ContractNetwork } from "@/utils/contracts";
+import { DepositDataJson } from "@/utils/deposit";
 
 interface DappNodeDepositProps {
   contractConfig: ContractNetwork | undefined;
@@ -245,7 +244,6 @@ function Validation({
   depositData: {
     deposits: DepositDataJson[];
     filename: string;
-    hasDuplicates: boolean;
     isBatch: boolean;
   };
   dappnodeDeposit: () => Promise<void>;

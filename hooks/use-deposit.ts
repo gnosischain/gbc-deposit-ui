@@ -36,7 +36,6 @@ const GET_DEPOSIT_EVENTS = gql`
 
 function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
-  const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   const { balance, refetchBalance } = useBalance(contractConfig, address);
@@ -51,7 +50,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const validate = useCallback(
     async (deposits: DepositDataJson[], balance: bigint) => {
       let newDeposits = [];
-      let hasDuplicates = false;
       let _isBatch = false;
       if (contractConfig) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {
@@ -100,11 +98,16 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             newDeposits.push(deposit);
           }
         }
-        hasDuplicates = newDeposits.length !== deposits.length;
 
         if (newDeposits.length === 0) {
           throw Error(
             "Deposits have already been made to all validators in this file."
+          );
+        }
+
+        if(newDeposits.length !== deposits.length){
+          throw Error(
+            "Some of the deposits have already been made to the validators in this file."
           );
         }
 
@@ -154,7 +157,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         throw Error("Wrong network");
       }
 
-      return { deposits: newDeposits, hasDuplicates, _isBatch };
+      return { deposits: newDeposits, _isBatch };
     },
     [contractConfig, apolloClient, chainId]
   );
@@ -171,17 +174,15 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, hasDuplicates, _isBatch } = await validate(
+        const { deposits, _isBatch } = await validate(
           data,
           balance || BigInt(0)
         );
         console.log(_isBatch);
         setDeposits(deposits);
-        setHasDuplicates(hasDuplicates);
         setIsBatch(_isBatch);
       } else {
         setDeposits([]);
-        setHasDuplicates(false);
         setIsBatch(false);
       }
     },
@@ -216,7 +217,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
     deposit,
     depositSuccess,
     depositHash,
-    depositData: { deposits, filename, hasDuplicates, isBatch },
+    depositData: { deposits, filename, isBatch },
     setDepositData,
     isWrongNetwork,
   };

@@ -39,7 +39,6 @@ const GET_DEPOSIT_EVENTS = gql`
 
 function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
-  const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   
@@ -128,12 +127,16 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
             newDeposits.push(deposit);
           }
         }
-        
-        hasDuplicates = newDeposits.length !== deposits.length;
 
         if (newDeposits.length === 0) {
           throw Error(
             "Deposits have already been made to all validators in this file."
+          );
+        }
+
+        if(newDeposits.length !== deposits.length){
+          throw Error(
+            "Some of the deposits have already been made to the validators in this file."
           );
         }
 
@@ -165,7 +168,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         }
       }
 
-      return { deposits: newDeposits, hasDuplicates, _isBatch };
+      return { deposits: newDeposits, _isBatch };
     },
     [apolloClient, chainId, contractConfig, user]
   );
@@ -182,15 +185,13 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, hasDuplicates, _isBatch } = await dappnodeValidate(
+        const { deposits, _isBatch } = await dappnodeValidate(
           data
         );
         setDeposits(deposits);
-        setHasDuplicates(hasDuplicates);
         setIsBatch(_isBatch);
       } else {
         setDeposits([]);
-        setHasDuplicates(false);
         setIsBatch(false);
       }
     },
@@ -234,7 +235,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
   return {
     depositSuccess,
     depositHash,
-    depositData: { deposits, filename, hasDuplicates, isBatch },
+    depositData: { deposits, filename, isBatch },
     user,
     setDappnodeDepositData,
     dappnodeDeposit,
