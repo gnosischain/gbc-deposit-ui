@@ -8,14 +8,14 @@ import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
 import useBalance from "./use-balance";
 import { useApolloClient } from '@apollo/client';
-import { DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
+import { CredentialType, DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 import { DepositDataJson, generateDepositData, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
 
 const depositAmountBN = parseUnits("1", 18);
 
 function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
-  const [isBatch, setIsBatch] = useState(false);
+  const [credentialType, setCredentialType] = useState<CredentialType>();
   const [filename, setFilename] = useState("");
   const { balance, refetchBalance } = useBalance(contractConfig, address);
   const { data: depositHash, error, writeContract } = useWriteContract();
@@ -28,7 +28,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const validate = useCallback(
     async (deposits: DepositDataJson[], balance: bigint) => {
       let newDeposits = [];
-      let _isBatch = false;
+      let _credentialType: CredentialType | undefined;
       if (contractConfig) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {
           return (
@@ -83,21 +83,25 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
           );
         }
 
-        if(newDeposits.length !== deposits.length){
+        if (newDeposits.length !== deposits.length) {
           throw Error(
             "Some of the deposits have already been made to the validators in this file."
           );
         }
 
-        const credentialType = getCredentialType(deposits[0].withdrawal_credentials);
+        _credentialType = getCredentialType(deposits[0].withdrawal_credentials);
         if (!credentialType) {
           throw Error("Invalid withdrawal credential type.");
         }
 
-        if (credentialType === "0x01") {
+        if (_credentialType === "0x01") {
           // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
-          _isBatch = newDeposits.every((d) => d.withdrawal_credentials === credentialType);
-          if (_isBatch && newDeposits.length > MAX_BATCH_DEPOSIT) {
+          let _isBatch = newDeposits.every((d) => d.withdrawal_credentials === credentialType);
+          if (!_isBatch) {
+            throw Error(
+              "All validators in the file must have the same withdrawal credentials of type 0x01."
+            );
+          } else if (newDeposits.length > MAX_BATCH_DEPOSIT) {
             throw Error(
               "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
             );
@@ -135,9 +139,9 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         throw Error("Wrong network");
       }
 
-      return { deposits: newDeposits, _isBatch };
+      return { deposits: newDeposits, _credentialType };
     },
-    [contractConfig, apolloClient, chainId]
+    [contractConfig, apolloClient, chainId, credentialType]
   );
 
   const setDepositData = useCallback(
@@ -152,16 +156,12 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, _isBatch } = await validate(
+        const { deposits, _credentialType } = await validate(
           data,
           balance || BigInt(0)
         );
-        console.log(_isBatch);
         setDeposits(deposits);
-        setIsBatch(_isBatch);
-      } else {
-        setDeposits([]);
-        setIsBatch(false);
+        setCredentialType(_credentialType);
       }
     },
     [validate, balance]
@@ -169,21 +169,22 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
   const deposit = useCallback(async () => {
     if (contractConfig) {
-      const data = generateDepositData(deposits, isBatch);
+      const data = generateDepositData(deposits, credentialType === "0x01");
       writeContract({
         address: contractConfig.addresses.token,
         abi: ERC677ABI,
         functionName: "transferAndCall",
         args: [
           contractConfig.addresses.deposit,
-          isBatch ? depositAmountBN * BigInt(deposits.length) : depositAmountBN,
+          //TODO: depositAmount should be fetch from amount field for 0x02 type
+          credentialType === '0x02' ? depositAmountBN : credentialType === "0x01"  ? depositAmountBN * BigInt(deposits.length) : depositAmountBN,
           `0x${data}`,
         ],
       });
 
       refetchBalance();
     }
-  }, [contractConfig, deposits, isBatch, refetchBalance, writeContract]);
+  }, [contractConfig, credentialType, deposits, refetchBalance, writeContract]);
 
   useEffect(() => {
     if (depositSuccess) {
@@ -195,7 +196,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
     deposit,
     depositSuccess,
     depositHash,
-    depositData: { deposits, filename, isBatch },
+    depositData: { deposits, filename, credentialType },
     setDepositData,
   };
 }

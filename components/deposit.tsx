@@ -144,7 +144,7 @@ export default function Deposit({
             <CheckIcon className="h-5 w-5" /> Total amount required:{" "}
             {depositData.deposits.length} GNO
           </div>
-          {depositData.isBatch ? (
+          {depositData.credentialType !== "0x02" ? (
             ""
           ) : (
             <p className="text-orange-400 text-xs text-center">
