@@ -17,6 +17,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [credentialType, setCredentialType] = useState<CredentialType>();
   const [filename, setFilename] = useState("");
+  const [totalDepositAmountBN, setTotalDepositAmountBN] = useState(BigInt(0));
   const { balance, refetchBalance } = useBalance(contractConfig, address);
   const { data: depositHash, error, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
@@ -27,121 +28,72 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
   const validate = useCallback(
     async (deposits: DepositDataJson[], balance: bigint) => {
-      let newDeposits = [];
       let _credentialType: CredentialType | undefined;
-      if (contractConfig) {
-        const checkJsonStructure = (depositDataJson: DepositDataJson) => {
-          return (
-            depositDataJson.pubkey &&
-            depositDataJson.withdrawal_credentials &&
-            depositDataJson.amount &&
-            depositDataJson.signature &&
-            depositDataJson.deposit_message_root &&
-            depositDataJson.deposit_data_root &&
-            depositDataJson.fork_version
-          );
-        };
 
-        if (
-          deposits.length === 0 ||
-          !deposits.every(checkJsonStructure)
-        ) {
-          throw Error("This is not a valid file. Please try again.");
-        }
+      if (!contractConfig) throw Error("Invalid network configuration.");
 
-        if (
-          !deposits.every((d) => d.fork_version === contractConfig.forkVersion)
-        ) {
-          throw Error(
-            "This JSON file isn't for the right network (" +
-            deposits[0].fork_version +
-            "). Upload a file generated for you current network: " +
-            chainId
-          );
-        }
+      const isValidJson = deposits.every((d) =>
+        ["pubkey", "withdrawal_credentials", "amount", "signature", "deposit_message_root", "deposit_data_root", "fork_version"].every((key) => key in d)
+      );
+      if (!isValidJson) throw Error("Invalid JSON structure.");
 
-        const pksFromFile = deposits.map((d) => `0x${d.pubkey}`);
-        const { data } = await apolloClient.query({
-          query: GET_DEPOSIT_EVENTS,
-          variables: {
-            pubkeys: pksFromFile,
-            chainId: chainId,
-          },
-        });
-
-        const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
-
-        for (const deposit of deposits) {
-          if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
-            newDeposits.push(deposit);
-          }
-        }
-
-        if (newDeposits.length === 0) {
-          throw Error(
-            "Deposits have already been made to all validators in this file."
-          );
-        }
-
-        if (newDeposits.length !== deposits.length) {
-          throw Error(
-            "Some of the deposits have already been made to the validators in this file."
-          );
-        }
-
-        _credentialType = getCredentialType(deposits[0].withdrawal_credentials);
-        if (!credentialType) {
-          throw Error("Invalid withdrawal credential type.");
-        }
-
-        if (_credentialType === "0x01") {
-          // batch processing necessary for both single deposit and batch deposit for same withdrawal_credentials
-          let _isBatch = newDeposits.every((d) => d.withdrawal_credentials === credentialType);
-          if (!_isBatch) {
-            throw Error(
-              "All validators in the file must have the same withdrawal credentials of type 0x01."
-            );
-          } else if (newDeposits.length > MAX_BATCH_DEPOSIT) {
-            throw Error(
-              "Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators."
-            );
-          }
-        }
-
-        if (
-          !newDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))
-        ) {
-          throw Error("Amount should be exactly 32 tokens for deposits.");
-        }
-
-        const pubKeys = newDeposits.map((d) => d.pubkey);
-        if (
-          pubKeys.some((pubkey, index) => pubKeys.indexOf(pubkey) !== index)
-        ) {
-          throw Error("Duplicated public keys.");
-        }
-
-        const totalDepositAmountBN =
-          depositAmountBN * BigInt(newDeposits.length);
-
-        if (balance === undefined) {
-          throw Error("Balance not loaded.");
-        }
-
-        if (balance < totalDepositAmountBN) {
-          throw Error(`
-        Unsufficient balance. ${Number(
-            formatUnits(totalDepositAmountBN, 18)
-          )} GNO is required.
-      `);
-        }
-      } else {
-        throw Error("Wrong network");
+      if (!deposits.every((d) => d.fork_version === contractConfig.forkVersion)) {
+        throw Error(`File is for the wrong network. Expected: ${chainId}`);
       }
 
-      return { deposits: newDeposits, _credentialType };
+      const pubkeys = deposits.map((d) => `0x${d.pubkey}`);
+      const { data } = await apolloClient.query({
+        query: GET_DEPOSIT_EVENTS,
+        variables: {
+          pubkeys: pubkeys,
+          chainId: chainId,
+        },
+      });
+
+      const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
+
+      const validDeposits = deposits.filter((d) => !existingDeposits.has(d.pubkey));
+
+      if (validDeposits.length === 0) throw Error("Deposits have already been made to all validators in this file.");
+
+      if (validDeposits.length !== deposits.length) {
+        throw Error(
+          "Some of the deposits have already been made to the validators in this file."
+        );
+      }
+
+      const uniquePubkeys = new Set(validDeposits.map((d) => d.pubkey));
+      if (uniquePubkeys.size !== validDeposits.length) {
+        throw Error("Duplicated public keys detected in the deposit file.");
+      }
+
+      _credentialType = getCredentialType(deposits[0].withdrawal_credentials);
+      if (!_credentialType) {
+        throw Error("Invalid withdrawal credential type.");
+      }
+
+      if (!validDeposits.every((d) => d.withdrawal_credentials === _credentialType)) {
+        throw Error(`All validators in the file must have the same withdrawal credentials of type ${_credentialType}`);
+      }
+
+      if (validDeposits.length > MAX_BATCH_DEPOSIT) {
+        throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
+      }
+
+      if ((_credentialType === "0x00" || _credentialType === "0x01") && !validDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))) {
+        throw Error("Amount should be exactly 32 tokens for deposits.");
+      }
+
+      const _totalDepositAmountBN = validDeposits.reduce((sum, d) => sum + BigInt(d.amount), BigInt(0)) / BigInt(DEPOSIT_TOKEN_AMOUNT_OLD);
+
+      if (balance < _totalDepositAmountBN) {
+        throw Error(`Unsufficient balance. ${Number(formatUnits(_totalDepositAmountBN, 18))} GNO is required.
+      `);
+      }
+
+      return { deposits: validDeposits, _credentialType, _totalDepositAmountBN };
     },
-    [contractConfig, apolloClient, chainId, credentialType]
+    [contractConfig, apolloClient, chainId]
   );
 
   const setDepositData = useCallback(
@@ -156,12 +108,16 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, _credentialType } = await validate(
+        if (balance === undefined) {
+          throw Error("Balance not loaded correctly.");
+        }
+        const { deposits, _credentialType, _totalDepositAmountBN } = await validate(
           data,
-          balance || BigInt(0)
+          balance
         );
         setDeposits(deposits);
         setCredentialType(_credentialType);
+        setTotalDepositAmountBN(_totalDepositAmountBN);
       }
     },
     [validate, balance]
@@ -176,15 +132,14 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         functionName: "transferAndCall",
         args: [
           contractConfig.addresses.deposit,
-          //TODO: depositAmount should be fetch from amount field for 0x02 type
-          credentialType === '0x02' ? depositAmountBN : credentialType === "0x01"  ? depositAmountBN * BigInt(deposits.length) : depositAmountBN,
+          credentialType === '0x02' || credentialType === "0x01" ? totalDepositAmountBN : depositAmountBN,
           `0x${data}`,
         ],
       });
 
       refetchBalance();
     }
-  }, [contractConfig, credentialType, deposits, refetchBalance, writeContract]);
+  }, [contractConfig, credentialType, deposits, refetchBalance, totalDepositAmountBN, writeContract]);
 
   useEffect(() => {
     if (depositSuccess) {
@@ -196,7 +151,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
     deposit,
     depositSuccess,
     depositHash,
-    depositData: { deposits, filename, credentialType },
+    depositData: { deposits, filename, credentialType, totalDepositAmountBN },
     setDepositData,
   };
 }
