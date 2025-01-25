@@ -8,6 +8,7 @@ import Dashboard from "@/components/dashboard";
 import { Suspense } from "react";
 import { WrongNetwork } from "@/components/wrongNetwork";
 import useContractConfig from "@/hooks/use-contract-config";
+import { ToastContainer } from "react-toastify";
 
 export default function Page() {
   const { isWrongNetwork } =
@@ -57,6 +58,7 @@ export default function Page() {
           </div>
         </div>
       </main>
+      <ToastContainer position="bottom-right" autoClose={5000} />
     </Suspense>
   );
 }

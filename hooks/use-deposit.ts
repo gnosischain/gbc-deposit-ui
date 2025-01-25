@@ -126,6 +126,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const deposit = useCallback(async () => {
     if (contractConfig) {
       const data = generateDepositData(deposits, credentialType === "0x01");
+      //TODO: add back promise all in case of 0x00
       writeContract({
         address: contractConfig.addresses.token,
         abi: ERC677ABI,
