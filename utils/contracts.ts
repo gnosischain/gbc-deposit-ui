@@ -11,6 +11,7 @@ export type ContractNetwork = {
   };
   depositStartBlockNumber: bigint;
   claimRegistryStartBlockNumber: bigint;
+  blockExplorerUrl?: string;
 };
 
 type Contracts = {
@@ -29,6 +30,7 @@ const CONTRACTS: Contracts = {
     },
     depositStartBlockNumber: BigInt(19475089),
     claimRegistryStartBlockNumber: BigInt(33473327),
+    blockExplorerUrl: 'https://gnosis.blockscout.com/'
   },
   10200: {
     forkVersion: "0000006f",
@@ -40,6 +42,7 @@ const CONTRACTS: Contracts = {
     },
     depositStartBlockNumber: BigInt(155530),
     claimRegistryStartBlockNumber: BigInt(9311142),
+    blockExplorerUrl: 'https://gnosis-chiado.blockscout.com/'
   },
   31337: {
     forkVersion: "0000006f",
@@ -52,7 +55,7 @@ const CONTRACTS: Contracts = {
     depositStartBlockNumber: BigInt(155530),
     claimRegistryStartBlockNumber: BigInt(9311142),
   },
-  
+
   10209: {
     forkVersion: "0000006f",
     beaconExplorerUrl: 'https://beacon.chiadochain.net',
@@ -63,6 +66,7 @@ const CONTRACTS: Contracts = {
     },
     depositStartBlockNumber: BigInt(0),
     claimRegistryStartBlockNumber: BigInt(9311142),
+    blockExplorerUrl: 'ttp://192.155.94.248:8082/'
   },
 };
 

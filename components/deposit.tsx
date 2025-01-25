@@ -168,11 +168,7 @@ export default function Deposit({
             <CheckIcon className="h-5 w-5" /> Your transaction is completed !
             View it
             <Link
-              href={
-                chainId === 100
-                  ? "https://gnosis.blockscout.com/tx/" + tx
-                  : "https://gnosis-chiado.blockscout.com/tx/" + tx
-              }
+              href={contractConfig?.blockExplorerUrl + "tx/" + tx} 
               target="_blank"
               className="text-accent underline ml-1"
             >

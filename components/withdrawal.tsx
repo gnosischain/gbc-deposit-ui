@@ -218,13 +218,8 @@ export default function Withdrawal({
           <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed !
             View it
-            {/* TODO: add block explorer within contract config to avoid using chainId in here */}
             <Link
-              href={
-                chainId === 100
-                  ? "https://gnosis.blockscout.com/tx/" + tx
-                  : "https://gnosis-chiado.blockscout.com/tx/" + tx
-              }
+              href={contractConfig?.blockExplorerUrl + "tx/" + tx} 
               target="_blank"
               className="text-accent underline ml-1"
             >
