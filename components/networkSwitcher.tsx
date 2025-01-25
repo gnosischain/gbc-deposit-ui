@@ -26,7 +26,7 @@ export function NetworkSwitcher({ currentChainId }: NetworkSwitcherProps) {
   }, [currentChainId]);
 
   return (
-    <div className='relative w-36'>
+    <div className='w-36'>
       {selectedChain === undefined ? (
         <div className='mt-1 text-black'>
           Loading Network

@@ -17,22 +17,16 @@ import DappnodeDeposit from './dappnodeDeposit';
 import Withdrawal from './withdrawal';
 import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
-import { WrongNetwork } from './wrongNetwork';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { disconnect } = useDisconnect();
-  const { account, chainId, contractConfig, isWrongNetwork } =
+  const { account, chainId, contractConfig } =
     useContractConfig();
   const { balance } = useBalance(contractConfig, account.address);
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
-  const [address, setAddress] = useState('');
-
-  useEffect(() => {
-    if (account.address) setAddress(account.address);
-  }, [account.address]);
 
   useEffect(() => {
     if (account.isConnecting) {
@@ -55,8 +49,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className='w-full relative h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between p-4'>
-      {isWrongNetwork && <WrongNetwork />}
+    <div className='w-full h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between p-4'>
       <p className='font-bold text-xl lg:text-2xl'>
         {searchParams.get('state') === 'validator'
           ? 'Check Validators Status'
@@ -69,7 +62,7 @@ export default function Dashboard() {
             className='w-min bg-[#133629] hidden lg:flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer hover:bg-[#2a4a3e]'
             onClick={handleCopyAddress}
           >
-            {truncateAddress(address)}
+            {truncateAddress(account.address || '')}
             {isCopied ? (
               <CheckIcon className='ml-2 h-5 w-5' />
             ) : (

@@ -1,4 +1,4 @@
-"use client"; //TODO move down suspense into components
+"use client";
 
 import Image from "next/image";
 import DropDown from "@/components/dropdown";
@@ -6,11 +6,17 @@ import NavigationTab from "@/components/navigation-tab";
 import Link from "next/link";
 import Dashboard from "@/components/dashboard";
 import { Suspense } from "react";
+import { WrongNetwork } from "@/components/wrongNetwork";
+import useContractConfig from "@/hooks/use-contract-config";
 
 export default function Page() {
+  const { isWrongNetwork } =
+    useContractConfig();
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <main className='flex min-h-screen lg:h-screen flex-col items-center justify-center'>
+      
+      {isWrongNetwork && <WrongNetwork />}
+      <main className='flex min-h-screen h-screen flex-col items-center justify-center'>
         <div className='w-full lg:w-[775px] bg-[#133629CC] h-full md:h-full lg:h-auto backdrop-blur-sm p-4 lg:rounded-2xl flex gap-y-6 flex-col justify-start items-center'>
           <div className='w-full gap-x-4 flex justify-between'>
             <NavigationTab value='deposit' />
