@@ -30,7 +30,7 @@ export function ValidationStep({
         <CheckIcon className='h-5 w-5' /> Total amount required:{' '}
         {depositData.deposits.length} GNO
       </div>
-      {depositData.credentialType !== '0x02' ? (
+      {depositData.credentialType !== '02' ? (
         ''
       ) : (
         <p className='text-orange-400 text-xs text-center'>

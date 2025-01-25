@@ -3,11 +3,11 @@ import ToolTip from './tooltip';
 import { DropzoneInputProps, DropzoneRootProps } from 'react-dropzone';
 
 interface DepositStepProps {
-    getRootProps: <T extends DropzoneRootProps>(props?: T) => T;
-    getInputProps: <T extends DropzoneInputProps>(props?: T) => T;
+  getRootProps: <T extends DropzoneRootProps>(props?: T) => T;
+  getInputProps: <T extends DropzoneInputProps>(props?: T) => T;
 }
 
-export function DepositStep( { getRootProps, getInputProps }: DepositStepProps ) {
+export function DepositStep({ getRootProps, getInputProps }: DepositStepProps) {
   return (
     <div
       className='w-full h-full flex flex-col items-center justify-center hover:cursor-pointer'
