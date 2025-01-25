@@ -3,9 +3,9 @@ export const DEPOSIT_TOKEN_AMOUNT_OLD = 32000000000;
 export const SECOND_IN_DAY = 86400;
 
 export enum CredentialType {
-    BLS = "0x00",
-    Withdrawal = "0x01",
-    Compound = "0x02",
+    BLS = "00",
+    Withdrawal = "01",
+    Compound = "02",
 }
 
 export const getCredentialType = (withdrawalCredential: string): CredentialType | undefined => {

@@ -50,7 +50,9 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         },
       });
 
-      const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
+      const existingDeposits = new Set(
+        data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey)
+      );
 
       const validDeposits = deposits.filter((d) => !existingDeposits.has(d.pubkey));
 
@@ -69,10 +71,11 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
       _credentialType = getCredentialType(deposits[0].withdrawal_credentials);
       if (!_credentialType) {
+        console.log(deposits[0].withdrawal_credentials);
         throw Error("Invalid withdrawal credential type.");
       }
 
-      if (!validDeposits.every((d) => d.withdrawal_credentials === _credentialType)) {
+      if (!validDeposits.every((d) => d.withdrawal_credentials.startsWith(_credentialType))) {
         throw Error(`All validators in the file must have the same withdrawal credentials of type ${_credentialType}`);
       }
 
@@ -80,7 +83,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         throw Error("Number of validators exceeds the maximum batch size of 128. Please upload a file with 128 or fewer validators.");
       }
 
-      if ((_credentialType === "0x00" || _credentialType === "0x01") && !validDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))) {
+      if ((_credentialType === "00" || _credentialType === "01") && !validDeposits.every((d) => BigInt(d.amount) === BigInt(DEPOSIT_TOKEN_AMOUNT_OLD))) {
         throw Error("Amount should be exactly 32 tokens for deposits.");
       }
 
@@ -125,7 +128,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
   const deposit = useCallback(async () => {
     if (contractConfig) {
-      const data = generateDepositData(deposits, credentialType === "0x01");
+      const data = generateDepositData(deposits, credentialType === "01");
       //TODO: add back promise all in case of 0x00
       writeContract({
         address: contractConfig.addresses.token,
@@ -133,7 +136,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         functionName: "transferAndCall",
         args: [
           contractConfig.addresses.deposit,
-          credentialType === '0x02' || credentialType === "0x01" ? totalDepositAmountBN : depositAmountBN,
+          credentialType === '02' || credentialType === "01" ? totalDepositAmountBN : depositAmountBN,
           `0x${data}`,
         ],
       });
