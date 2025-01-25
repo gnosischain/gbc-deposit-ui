@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDisconnect, useSwitchChain } from 'wagmi';
+import { useDisconnect } from 'wagmi';
 import { formatEther } from 'viem';
 import { truncateAddress } from '@/utils/truncateAddress';
 import {
@@ -17,6 +17,7 @@ import DappnodeDeposit from './dappnodeDeposit';
 import Withdrawal from './withdrawal';
 import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
+import { WrongNetwork } from './wrongNetwork';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -28,17 +29,10 @@ export default function Dashboard() {
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
   const [address, setAddress] = useState('');
-  const [networkMessage, setNetworkMessage] = useState('');
 
   useEffect(() => {
     if (account.address) setAddress(account.address);
   }, [account.address]);
-
-  useEffect(() => {
-    setNetworkMessage(
-      isWrongNetwork ? 'Wrong Network. Please connect to Gnosis Chain' : ''
-    );
-  }, [isWrongNetwork]);
 
   useEffect(() => {
     if (account.isConnecting) {
@@ -62,9 +56,7 @@ export default function Dashboard() {
 
   return (
     <div className='w-full relative h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between p-4'>
-      <p className='text-red-400 text-sm font-bold rounded-md absolute z-20 top-1'>
-        {networkMessage}
-      </p>
+      {isWrongNetwork && <WrongNetwork />}
       <p className='font-bold text-xl lg:text-2xl'>
         {searchParams.get('state') === 'validator'
           ? 'Check Validators Status'
