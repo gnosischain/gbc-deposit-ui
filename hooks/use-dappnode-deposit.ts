@@ -40,7 +40,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
   const dappnodeValidate = useCallback(
     async (deposits: DepositDataJson[]) => {
       let newDeposits = [];
-      let hasDuplicates = false;
       let _isBatch = false;
       if (contractConfig && user) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {

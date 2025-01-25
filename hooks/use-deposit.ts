@@ -18,7 +18,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   const { balance, refetchBalance } = useBalance(contractConfig, address);
-  const isWrongNetwork = contractConfig === undefined;
   const { data: depositHash, error, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
@@ -198,7 +197,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
     depositHash,
     depositData: { deposits, filename, isBatch },
     setDepositData,
-    isWrongNetwork,
   };
 }
 
