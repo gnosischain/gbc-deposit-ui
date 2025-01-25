@@ -1,9 +1,10 @@
 import { useAccount } from "wagmi";
 import CONTRACTS from "@/utils/contracts";
+import { isTestEnv } from "@/wagmi";
 
 const useContractConfig = () => {
   const account = useAccount();
-  const chainId = process.env.NEXT_PUBLIC_TEST_ENV === "test" ? 31337 : account?.chainId || 100;
+  const chainId = isTestEnv ? 31337 : account?.chainId || 100;
   const contractConfig = CONTRACTS[chainId];
   const isWrongNetwork = !contractConfig;
 
