@@ -16,6 +16,7 @@ export function ValidationStep({
   depositData,
   onDeposit,
 }: ValidationStepProps) {
+
   return (
     <div className='w-full flex flex-col items-center'>
       <div id='filename'>{depositData.filename}</div>
@@ -30,7 +31,7 @@ export function ValidationStep({
         <CheckIcon className='h-5 w-5' /> Total amount required:{' '}
         {depositData.deposits.length} GNO
       </div>
-      {depositData.credentialType !== '02' ? (
+      {depositData.credentialType === '02' ? (
         ''
       ) : (
         <p className='text-orange-400 text-xs text-center'>

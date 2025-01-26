@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { DepositStep } from './depositStep';
 import { ValidationStep } from './validationStep';
 import { SummaryStep } from './summaryStep';
+import { BaseError } from 'wagmi';
 
 interface DepositProps {
   contractConfig: ContractNetwork | undefined;
@@ -28,7 +29,7 @@ export default function Deposit({
   address,
   chainId,
 }: DepositProps) {
-  const { setDepositData, depositData, deposit, depositSuccess, depositHash } =
+  const { setDepositData, depositData, deposit, depositSuccess, contractError, txError, depositHash } =
     useDeposit(contractConfig, address, chainId);
   const [state, setState] = useState<{
     step: Steps;
@@ -39,6 +40,22 @@ export default function Deposit({
     loading: false,
     tx: '0x0',
   });
+
+  useEffect(() => {
+    if (contractError) {
+      toast.error(
+        (contractError as BaseError)?.shortMessage || contractError.message || 'Contract error occurred.'
+      );
+      setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
+    }
+
+    if (txError) {
+      toast.error(
+        (txError as BaseError)?.shortMessage || txError.message || 'Transaction error occurred.'
+      );
+      setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
+    }
+  }, [contractError, txError]);
   const onDrop = useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (rejectedFiles.length > 0) {
@@ -60,6 +77,7 @@ export default function Deposit({
               toast.error(error.message || 'An error occurred.');
               setState((prev) => ({
                 ...prev,
+                step: Steps.DEPOSIT,
                 loading: false,
               }));
             }

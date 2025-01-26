@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
 import {
   useWriteContract,
-  useWaitForTransactionReceipt
+  useWaitForTransactionReceipt,
 } from "wagmi";
 import { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
@@ -19,8 +19,6 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   const [filename, setFilename] = useState("");
   const [totalDepositAmountBN, setTotalDepositAmountBN] = useState(BigInt(0));
   const { balance, refetchBalance } = useBalance(contractConfig, address);
-
-  //TODO: throw toast error + reset state on contract/tx errors
   const { data: depositHash, error: contractError, writeContract } = useWriteContract();
   const { isSuccess: depositSuccess, error: txError } = useWaitForTransactionReceipt({
     hash: depositHash,
@@ -156,6 +154,8 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
   return {
     deposit,
     depositSuccess,
+    contractError,
+    txError,
     depositHash,
     depositData: { deposits, filename, credentialType, totalDepositAmountBN },
     setDepositData,
