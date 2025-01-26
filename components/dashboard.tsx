@@ -17,6 +17,7 @@ import DappnodeDeposit from './dappnodeDeposit';
 import Withdrawal from './withdrawal';
 import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
+import Consolidate from './consolidate';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -110,6 +111,17 @@ export default function Dashboard() {
           }`}
         >
           <DappnodeDeposit
+            contractConfig={contractConfig}
+            address={account.address}
+            chainId={chainId}
+          />
+        </div>
+        <div
+          className={`w-full ${
+            searchParams.get('state') === 'consolidate' ? 'block' : 'hidden'
+          }`}
+        >
+          <Consolidate
             contractConfig={contractConfig}
             address={account.address}
             chainId={chainId}
