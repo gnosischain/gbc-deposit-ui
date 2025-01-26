@@ -1,16 +1,13 @@
 'use client';
 
 import useDeposit from '@/hooks/use-deposit';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
 import { toast } from 'react-toastify';
-import { ValidationStep } from './validationStep';
-import { SummaryStep } from './summaryStep';
-import { BaseError } from 'wagmi';
-import { WarningStep } from './warningStep';
 import { ConsolidateInfo } from './consolidateInfo';
 import { fetchValidators, Validator } from '@/hooks/use-consolidate';
+import { ConsolidateSelect } from './consolidateSelect';
 
 interface ConsolidateProps {
   contractConfig: ContractNetwork | undefined;
@@ -20,9 +17,8 @@ interface ConsolidateProps {
 
 enum Steps {
   INFO = 'info',
-  VALIDATION = 'validation',
+  SELECT = 'select',
   SUMMARY = 'summary',
-  WARNING = 'warning',
 }
 
 export default function Consolidate({
@@ -30,11 +26,11 @@ export default function Consolidate({
   address,
   chainId,
 }: ConsolidateProps) {
-  const {
-    depositData,
-    depositSuccess,
-    depositHash,
-  } = useDeposit(contractConfig, address, chainId);
+  const { depositSuccess, depositHash } = useDeposit(
+    contractConfig,
+    address,
+    chainId
+  );
   const [validators, setValidators] = useState<Validator[]>([]);
   const [state, setState] = useState<{
     step: Steps;
@@ -88,19 +84,12 @@ export default function Consolidate({
           <ConsolidateInfo
             pubkeysAmount={validators.length}
             goToStep={() =>
-              setState((prev) => ({ ...prev, step: Steps.VALIDATION }))
+              setState((prev) => ({ ...prev, step: Steps.SELECT }))
             }
           />
         );
-      case Steps.WARNING:
-        return (
-          <WarningStep
-            goToStep={() =>
-              setState((prev) => ({ ...prev, step: Steps.VALIDATION }))
-            }
-            credentialType={depositData.credentialType!}
-          />
-        );
+      case Steps.SELECT:
+        return <ConsolidateSelect validators={validators} />;
     }
   };
 

@@ -42,7 +42,7 @@ export function NetworkSwitcher({ currentChainId }: NetworkSwitcherProps) {
             <option
               key={chain.id}
               value={chain.id}
-              className='rounded-xl mt-1 text-black bg-[#e6e1d3] p-1 shadow-md focus:outline-none transition duration-100 ease-in'
+              className='rounded-xl mt-1 text-black bg-[#e6e1d3] p-1 shadow-md focus:outline-none'
             >
               {chain.name}
             </option>
