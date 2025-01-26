@@ -11,7 +11,7 @@ import { useApolloClient } from '@apollo/client';
 import { CredentialType, DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 import { DepositDataJson, generateDepositData, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
 
-const depositAmountBN = parseUnits("1", 18);
+export const depositAmountBN = parseUnits("1", 18);
 
 function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
@@ -87,7 +87,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         throw Error("Amount should be exactly 32 tokens for deposits.");
       }
 
-      const _totalDepositAmountBN = validDeposits.reduce((sum, d) => sum + BigInt(d.amount), BigInt(0)) / BigInt(DEPOSIT_TOKEN_AMOUNT_OLD);
+      const _totalDepositAmountBN = validDeposits.reduce((sum, d) => sum + BigInt(d.amount), BigInt(0)) / BigInt(DEPOSIT_TOKEN_AMOUNT_OLD)  * depositAmountBN;
 
       if (balance < _totalDepositAmountBN) {
         throw Error(`Unsufficient balance. ${Number(formatUnits(_totalDepositAmountBN, 18))} GNO is required.
@@ -128,7 +128,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
 
   const deposit = useCallback(async () => {
     if (contractConfig) {
-      const data = generateDepositData(deposits, credentialType === "01");
+      const data = generateDepositData(deposits, credentialType === "01" || credentialType === "02");
       //TODO: add back promise all in case of 0x00
       writeContract({
         address: contractConfig.addresses.token,
