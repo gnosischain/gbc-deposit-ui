@@ -80,6 +80,7 @@ export default function Deposit({
           if (result) {
             try {
               setState((prev) => ({ ...prev, loading: true }));
+              //TODO: better implementation for handling credential type
               const credentialType = await setDepositData(
                 result,
                 acceptedFiles[0].name
