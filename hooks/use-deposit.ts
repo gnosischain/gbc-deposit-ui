@@ -121,6 +121,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         setDeposits(deposits);
         setCredentialType(_credentialType);
         setTotalDepositAmountBN(_totalDepositAmountBN);
+        return _credentialType;
       }
     },
     [validate, balance]

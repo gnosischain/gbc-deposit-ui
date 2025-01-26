@@ -11,6 +11,7 @@ import { DepositStep } from './depositStep';
 import { ValidationStep } from './validationStep';
 import { SummaryStep } from './summaryStep';
 import { BaseError } from 'wagmi';
+import { WarningStep } from './warningStep';
 
 interface DepositProps {
   contractConfig: ContractNetwork | undefined;
@@ -22,6 +23,7 @@ enum Steps {
   DEPOSIT = 'deposit',
   VALIDATION = 'validation',
   SUMMARY = 'summary',
+  WARNING = 'warning',
 }
 
 export default function Deposit({
@@ -29,8 +31,15 @@ export default function Deposit({
   address,
   chainId,
 }: DepositProps) {
-  const { setDepositData, depositData, deposit, depositSuccess, contractError, txError, depositHash } =
-    useDeposit(contractConfig, address, chainId);
+  const {
+    setDepositData,
+    depositData,
+    deposit,
+    depositSuccess,
+    contractError,
+    txError,
+    depositHash,
+  } = useDeposit(contractConfig, address, chainId);
   const [state, setState] = useState<{
     step: Steps;
     loading: boolean;
@@ -44,14 +53,18 @@ export default function Deposit({
   useEffect(() => {
     if (contractError) {
       toast.error(
-        (contractError as BaseError)?.shortMessage || contractError.message || 'Contract error occurred.'
+        (contractError as BaseError)?.shortMessage ||
+          contractError.message ||
+          'Contract error occurred.'
       );
       setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
     }
 
     if (txError) {
       toast.error(
-        (txError as BaseError)?.shortMessage || txError.message || 'Transaction error occurred.'
+        (txError as BaseError)?.shortMessage ||
+          txError.message ||
+          'Transaction error occurred.'
       );
       setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
     }
@@ -67,10 +80,14 @@ export default function Deposit({
           if (result) {
             try {
               setState((prev) => ({ ...prev, loading: true }));
-              await setDepositData(result, acceptedFiles[0].name);
+              const credentialType = await setDepositData(
+                result,
+                acceptedFiles[0].name
+              );
               setState((prev) => ({
                 ...prev,
-                step: Steps.VALIDATION,
+                step:
+                  credentialType === '02' ? Steps.VALIDATION : Steps.WARNING,
                 loading: false,
               }));
             } catch (error: any) {
@@ -119,6 +136,15 @@ export default function Deposit({
           <DepositStep
             getRootProps={getRootProps}
             getInputProps={getInputProps}
+          />
+        );
+      case Steps.WARNING:
+        return (
+          <WarningStep
+            goToStep={() =>
+              setState((prev) => ({ ...prev, step: Steps.VALIDATION }))
+            }
+            credentialType={depositData.credentialType!}
           />
         );
       case Steps.VALIDATION:
