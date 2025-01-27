@@ -16,7 +16,7 @@ export function ConsolidateSelect({ validators }: ConsolidateSelectProps) {
   const [selectedPubkeys, setSelectedPubkeys] = useState<string[]>([]);
   const [consolidateTarget, setConsolidateTarget] = useState<string>(validators[0].publickey);
   return (
-    <div className='w-full flex flex-col items-center justify-center gap-y-2'>
+    <div className='w-full flex flex-col items-center justify-center gap-y-2 p-2'>
       <p className='text-xs'>This is a preview of the consolidate feature. Please select the validators you would like to consolidate and the target validator to consolidate to. (no design yet)</p>
       <div className='w-full flex justify-between items-center gap-x-4'>
         <Listbox value={selectedPubkeys} onChange={setSelectedPubkeys} multiple>

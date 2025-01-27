@@ -57,7 +57,7 @@ const CONTRACTS: Contracts = {
   },
 
   10209: {
-    forkVersion: "0000006f",
+    forkVersion: "00000072",
     beaconExplorerUrl: 'https://beacon.chiadochain.net',
     addresses: {
       token: "0xBabe2bEd00000000000000000000000000000002",
