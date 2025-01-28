@@ -5,7 +5,7 @@ import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
 import { toast } from 'react-toastify';
 import { ConsolidateInfo } from './consolidateInfo';
-import { fetchValidators, useConsolidateValidators, Validator } from '@/hooks/use-consolidate';
+import { fetchValidators, useConsolidateValidators, Validator } from '@/hooks/useConsolidate';
 import { ConsolidateSelect } from './consolidateSelect';
 
 interface ConsolidateProps {

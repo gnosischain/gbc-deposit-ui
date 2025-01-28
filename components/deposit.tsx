@@ -1,6 +1,6 @@
 'use client';
 
-import useDeposit from '@/hooks/use-deposit';
+import useDeposit from '@/hooks/useDeposit';
 import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FileRejection } from 'react-dropzone';

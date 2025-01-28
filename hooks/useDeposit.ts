@@ -6,7 +6,7 @@ import {
 import { ContractNetwork } from "@/utils/contracts";
 import ERC677ABI from "@/utils/abis/erc677";
 import { formatUnits, parseUnits } from "viem";
-import useBalance from "./use-balance";
+import useBalance from "./useBalance";
 import { useApolloClient } from '@apollo/client';
 import { CredentialType, DEPOSIT_TOKEN_AMOUNT_OLD, getCredentialType, MAX_BATCH_DEPOSIT } from "@/utils/constants";
 import { DepositDataJson, generateDepositData, GET_DEPOSIT_EVENTS } from "@/utils/deposit";

@@ -1,7 +1,7 @@
 import { CheckIcon } from '@heroicons/react/16/solid';
 import { DepositDataJson } from '@/utils/deposit';
 import { CredentialType } from '@/utils/constants';
-import { depositAmountBN } from '@/hooks/use-deposit';
+import { depositAmountBN } from '@/hooks/useDeposit';
 
 interface ValidationStepProps {
   depositData: {

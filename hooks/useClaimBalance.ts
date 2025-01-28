@@ -5,7 +5,7 @@ import {
 } from "wagmi";
 import { ContractNetwork } from "@/utils/contracts";
 import depositABI from "@/utils/abis/deposit";
-import useBalance from "@/hooks/use-balance";
+import useBalance from "@/hooks/useBalance";
 
 function useClaimBalance(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined) {
   const { refetchBalance, refetchClaimBalance } = useBalance(contractConfig, address);

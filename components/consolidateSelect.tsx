@@ -1,4 +1,4 @@
-import { Validator } from '@/hooks/use-consolidate';
+import { Validator } from '@/hooks/useConsolidate';
 import { truncateAddress } from '@/utils/truncateAddress';
 import {
   Listbox,

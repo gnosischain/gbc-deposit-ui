@@ -1,11 +1,11 @@
-import useAutoclaim from "@/hooks/use-autoclaim";
-import useClaimBalance from "@/hooks/use-claim-balance";
+import useAutoclaim from "@/hooks/useAutoclaim";
+import useClaimBalance from "@/hooks/useClaimBalance";
 import { ArrowUturnLeftIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useState } from "react";
 import Loader from "./loader";
 import { Address, formatEther } from "viem";
 import Link from "next/link";
-import useBalance from "@/hooks/use-balance";
+import useBalance from "@/hooks/useBalance";
 import { ContractNetwork } from "@/utils/contracts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import ToolTip from "./tooltip";

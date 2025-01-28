@@ -1,6 +1,6 @@
 "use client";
 
-import useDappnodeDeposit from "@/hooks/use-dappnode-deposit";
+import useDappnodeDeposit from "@/hooks/useDappnodeDeposit";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
