@@ -8,6 +8,7 @@ export type ContractNetwork = {
     deposit: Address;
     claimRegistry: Address;
     dappnodeIncentive?: Address; // SC only avaliable in gnosis chain
+    consolidate?: Address; // SC only avaliable in devnet
   };
   depositStartBlockNumber: bigint;
   claimRegistryStartBlockNumber: bigint;
@@ -26,7 +27,8 @@ const CONTRACTS: Contracts = {
       token: "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb",
       deposit: "0x0B98057eA310F4d31F2a452B414647007d1645d9",
       claimRegistry: "0xe4d0a119cc2546c1ec4945c04b04985d1e59cdba",
-      dappnodeIncentive: "0x485c6Be503D32511c1282b68dD99E85f250572c3"
+      dappnodeIncentive: "0x485c6Be503D32511c1282b68dD99E85f250572c3",
+      consolidate: "0x00431F263cE400f4455c2dCf564e53007Ca4bbBb"
     },
     depositStartBlockNumber: BigInt(19475089),
     claimRegistryStartBlockNumber: BigInt(33473327),
@@ -58,11 +60,12 @@ const CONTRACTS: Contracts = {
 
   10209: {
     forkVersion: "00000072",
-    beaconExplorerUrl: 'https://beacon.chiadochain.net',
+    beaconExplorerUrl: 'https://gnosischa.in',
     addresses: {
       token: "0xBabe2bEd00000000000000000000000000000002",
       deposit: "0xbabe2bed00000000000000000000000000000003",
       claimRegistry: "0x28f1ba1f2Db9Aa0ca4b3B7cD9Ae327f6E872867D",
+      consolidate: "0x1014405f622fd8aB9bEBeb2EFe475579F92f6b65"
     },
     depositStartBlockNumber: BigInt(0),
     claimRegistryStartBlockNumber: BigInt(9311142),

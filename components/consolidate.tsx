@@ -1,12 +1,11 @@
 'use client';
 
-import useDeposit from '@/hooks/use-deposit';
 import { useEffect, useState } from 'react';
 import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
 import { toast } from 'react-toastify';
 import { ConsolidateInfo } from './consolidateInfo';
-import { fetchValidators, Validator } from '@/hooks/use-consolidate';
+import { fetchValidators, useConsolidateValidators, Validator } from '@/hooks/use-consolidate';
 import { ConsolidateSelect } from './consolidateSelect';
 
 interface ConsolidateProps {
@@ -26,11 +25,8 @@ export default function Consolidate({
   address,
   chainId,
 }: ConsolidateProps) {
-  const { depositSuccess, depositHash } = useDeposit(
-    contractConfig,
-    address,
-    chainId
-  );
+  const { consolidateValidators, loading, error } = useConsolidateValidators(contractConfig);
+
   const [validators, setValidators] = useState<Validator[]>([]);
   const [state, setState] = useState<{
     step: Steps;
@@ -65,18 +61,6 @@ export default function Consolidate({
     fetchValidatorData();
   }, [address, contractConfig?.beaconExplorerUrl]);
 
-  useEffect(() => {
-    if (depositSuccess) {
-      setState((prev) => ({ ...prev, step: Steps.SUMMARY, loading: false }));
-    }
-  }, [depositSuccess]);
-
-  useEffect(() => {
-    if (depositHash) {
-      setState((prev) => ({ ...prev, tx: depositHash }));
-    }
-  }, [depositHash]);
-
   const renderStep = () => {
     switch (state.step) {
       case Steps.INFO:
@@ -89,7 +73,7 @@ export default function Consolidate({
           />
         );
       case Steps.SELECT:
-        return <ConsolidateSelect validators={validators} />;
+        return <ConsolidateSelect validators={validators} consolidateValidators={consolidateValidators} />;
     }
   };
 

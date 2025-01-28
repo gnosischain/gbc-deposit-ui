@@ -32,7 +32,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-toastify": "^11.0.3",
-    "viem": "^2.22.13",
+    "viem": "^2.22.16",
     "wagmi": "^2.14.9"
   },
   "devDependencies": {

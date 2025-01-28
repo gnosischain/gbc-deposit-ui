@@ -10,11 +10,17 @@ import { useState } from 'react';
 
 interface ConsolidateSelectProps {
   validators: Validator[];
+  consolidateValidators: (selectedPubkeys: `0x{string}`[], target: string) => void;
 }
 
-export function ConsolidateSelect({ validators }: ConsolidateSelectProps) {
-  const [selectedPubkeys, setSelectedPubkeys] = useState<string[]>([]);
+export function ConsolidateSelect({ validators, consolidateValidators }: ConsolidateSelectProps) {
+  const [selectedPubkeys, setSelectedPubkeys] = useState<`0x{string}`[]>([]);
   const [consolidateTarget, setConsolidateTarget] = useState<string>(validators[0].publickey);
+
+  const handleConsolidate = () => {
+    consolidateValidators(selectedPubkeys, consolidateTarget);
+  };
+  
   return (
     <div className='w-full flex flex-col items-center justify-center gap-y-2 p-2'>
       <p className='text-xs'>This is a preview of the consolidate feature. Please select the validators you would like to consolidate and the target validator to consolidate to. (no design yet)</p>
@@ -53,6 +59,7 @@ export function ConsolidateSelect({ validators }: ConsolidateSelectProps) {
             ))}
           </ListboxOptions>
         </Listbox>
+        <button onClick={handleConsolidate} className='bg-[#e6e1d3] p-2 rounded-lg font-bold text-black'>Consolidate</button>
       </div>
     </div>
   );

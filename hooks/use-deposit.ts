@@ -142,6 +142,7 @@ function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${s
         ],
       });
 
+      // should move refetchBalance to onDeposit function ?
       refetchBalance();
     }
   }, [contractConfig, credentialType, deposits, refetchBalance, totalDepositAmountBN, writeContract]);
