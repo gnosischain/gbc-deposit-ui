@@ -30,8 +30,6 @@ function useDeposit(contractConfig: ContractNetwork, address: `0x${string}`, cha
     async (deposits: DepositDataJson[], balance: bigint) => {
       let _credentialType: CredentialType | undefined;
 
-      if (!contractConfig) throw Error("Invalid network configuration.");
-
       const isValidJson = deposits.every((d) =>
         ["pubkey", "withdrawal_credentials", "amount", "signature", "deposit_message_root", "deposit_data_root", "fork_version"].every((key) => key in d)
       );

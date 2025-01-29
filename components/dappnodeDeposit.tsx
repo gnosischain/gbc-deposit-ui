@@ -18,8 +18,8 @@ import { ContractNetwork } from "@/utils/contracts";
 import { DepositDataJson } from "@/utils/deposit";
 
 interface DappNodeDepositProps {
-  contractConfig: ContractNetwork | undefined;
-  address: `0x${string}` | undefined;
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
   chainId: number;
 }
 
@@ -50,16 +50,9 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
     depositHash,
     user,
     dappnodeDeposit,
-    isWrongNetwork,
     claimStatusPending,
     claimStatusError,
   } = useDappnodeDeposit(contractConfig, address, chainId);
-
-  useEffect(() => {
-    if (isWrongNetwork !== undefined) {
-      setLoading(false);
-    }
-  }, [isWrongNetwork]);
 
   const [tx, setTx] = useState<Address>("0x0");
 
@@ -99,11 +92,6 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
           <Loader />
           <p className="mt-2">Loading...</p>
         </>
-      ) : isWrongNetwork ? (
-        <div className="flex flex-col w-full h-full justify-evenly text-center text-red-400 font-bold text-lg">
-          To claim Dappnode&apos;s GNO Incentive Programm connect your wallet
-          provider to Gnosis Chain!
-        </div>
       ) : step === "notIncluded" ? (
         <AddressNotIncluded />
       ) : step === "pending" ? (

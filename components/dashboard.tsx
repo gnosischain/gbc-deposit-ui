@@ -108,7 +108,7 @@ export default function Dashboard() {
           >
             <DappnodeDeposit
               contractConfig={contractConfig}
-              address={account.address}
+              address={account.address || '0x0'}
               chainId={chainId}
             />
           </div>

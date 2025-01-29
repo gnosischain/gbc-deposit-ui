@@ -17,7 +17,7 @@ export type DappnodeUser = [
   totalStakeAmount: bigint // uint256
 ];
 
-function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
+function useDappnodeDeposit(contractConfig: ContractNetwork, address: `0x${string}`, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
@@ -31,7 +31,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
     args: [address],
   });
 
-  const isWrongNetwork = chainId !== 100;
   const { data: depositHash, writeContractAsync, isPending, isError } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
@@ -218,7 +217,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
     user,
     setDappnodeDepositData,
     dappnodeDeposit,
-    isWrongNetwork,
     claimStatusPending: isPending,
     claimStatusError: isError,
   };
