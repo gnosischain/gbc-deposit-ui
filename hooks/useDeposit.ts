@@ -13,7 +13,7 @@ import { DepositDataJson, generateDepositData, GET_DEPOSIT_EVENTS } from "@/util
 
 export const depositAmountBN = parseUnits("1", 18);
 
-function useDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
+function useDeposit(contractConfig: ContractNetwork, address: `0x${string}`, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
   const [credentialType, setCredentialType] = useState<CredentialType>();
   const [filename, setFilename] = useState("");

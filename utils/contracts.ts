@@ -16,7 +16,7 @@ export type ContractNetwork = {
 };
 
 type Contracts = {
-  [key: number]: ContractNetwork | undefined;
+  [key: number]: ContractNetwork;
 };
 
 const CONTRACTS: Contracts = {

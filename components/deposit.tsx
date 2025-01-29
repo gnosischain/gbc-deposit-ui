@@ -14,8 +14,8 @@ import { BaseError } from 'wagmi';
 import { WarningStep } from './warningStep';
 
 interface DepositProps {
-  contractConfig: ContractNetwork | undefined;
-  address: `0x${string}` | undefined;
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
   chainId: number;
 }
 

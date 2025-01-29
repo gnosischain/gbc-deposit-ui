@@ -24,7 +24,7 @@ export default function Dashboard() {
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { account, chainId, contractConfig } = useContractConfig();
-  const { balance } = useBalance(contractConfig, account.address);
+  const { balance } = useBalance(contractConfig, account.address || '0x0');
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
 
@@ -101,7 +101,7 @@ export default function Dashboard() {
           >
             <Deposit
               contractConfig={contractConfig}
-              address={account.address}
+              address={account.address || '0x0'}
               chainId={chainId}
             />
           </div>
@@ -134,7 +134,7 @@ export default function Dashboard() {
           >
             <Withdrawal
               contractConfig={contractConfig}
-              address={account.address}
+              address={account.address || '0x0'}
               chainId={chainId}
             />
           </div>
