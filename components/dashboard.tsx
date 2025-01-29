@@ -17,6 +17,7 @@ import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
 import Consolidate from './consolidate';
 import { Balance } from './balance';
+import { Switch } from '@headlessui/react';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const { account, chainId, contractConfig } = useContractConfig();
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
+  const [dappNode, setDappNode] = useState(false);
 
   useEffect(() => {
     if (account.isConnecting) {
@@ -46,6 +48,12 @@ export default function Dashboard() {
     }
   };
 
+  useEffect(() => {
+    if (chainId !== 100) {
+      setDappNode(false);
+    }
+  }, [chainId]);
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Balance
@@ -60,6 +68,18 @@ export default function Dashboard() {
         </p>
         <div className='w-full h-full flex flex-col-reverse lg:flex-row mt-4'>
           <div className='w-full lg:w-2/6 flex flex-col text-base'>
+            {chainId === 100 && searchParams.get('state') === 'deposit' ? (
+              <div className='flex'>
+                DappNode deposit
+                <Switch
+                  checked={dappNode}
+                  onChange={setDappNode}
+                  className='group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600'
+                >
+                  <span className='size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6' />
+                </Switch>
+              </div>
+            ) : null}
             <div
               id='accounts'
               className='w-min bg-[#133629] hidden lg:flex items-center rounded-full mt-4 mb-2 lg:mb-7 text-white p-2 hover:cursor-pointer hover:bg-[#2a4a3e]'
@@ -95,22 +115,19 @@ export default function Dashboard() {
               searchParams.get('state') === 'deposit' ? 'block' : 'hidden'
             }`}
           >
-            <Deposit
-              contractConfig={contractConfig}
-              address={account.address || '0x0'}
-              chainId={chainId}
-            />
-          </div>
-          <div
-            className={`w-full ${
-              searchParams.get('state') === 'dappnode' ? 'block' : 'hidden'
-            }`}
-          >
-            <DappnodeDeposit
-              contractConfig={contractConfig}
-              address={account.address || '0x0'}
-              chainId={chainId}
-            />
+            {dappNode ? (
+              <DappnodeDeposit
+                contractConfig={contractConfig}
+                address={account.address || '0x0'}
+                chainId={chainId}
+              />
+            ) : (
+              <Deposit
+                contractConfig={contractConfig}
+                address={account.address || '0x0'}
+                chainId={chainId}
+              />
+            )}
           </div>
           <div
             className={`w-full ${

@@ -27,12 +27,17 @@ enum Steps {
   WARNING = 'warning',
 }
 
+export type state = {
+  step: Steps;
+  loading: boolean;
+  tx: `0x${string}`;
+};
+
 export default function Deposit({
   contractConfig,
   address,
   chainId,
 }: DepositProps) {
-  const [dappNode, setDappNode] = useState(false);
   const {
     setDepositData,
     depositData,
@@ -42,11 +47,7 @@ export default function Deposit({
     txError,
     depositHash,
   } = useDeposit(contractConfig, address, chainId);
-  const [state, setState] = useState<{
-    step: Steps;
-    loading: boolean;
-    tx: `0x${string}`;
-  }>({
+  const [state, setState] = useState<state>({
     step: Steps.DEPOSIT,
     loading: false,
     tx: '0x0',
@@ -132,12 +133,6 @@ export default function Deposit({
     }
   }, [depositHash]);
 
-  useEffect(() => {
-    if (chainId !== 100) {
-      setDappNode(false);
-    }
-  }, [chainId])
-
   const renderStep = () => {
     switch (state.step) {
       case Steps.DEPOSIT:
@@ -181,22 +176,7 @@ export default function Deposit({
           <p className='mt-2'>Loading...</p>
         </>
       ) : (
-        <>
-          {chainId === 100 ? (
-            <div className='flex'>
-              DappNode deposit
-              <Switch
-                checked={dappNode}
-                onChange={setDappNode}
-                className='group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600'
-              >
-                <span className='size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6' />
-              </Switch>
-            </div>
-          ) : null}
-
-          {renderStep()}
-        </>
+        renderStep()
       )}
     </div>
   );

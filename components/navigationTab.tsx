@@ -7,11 +7,10 @@ interface NavigationTabProps {
   value: ActionKey;
 }
 
-type ActionKey = 'deposit' | 'dappnode' | 'withdrawal' | 'validator';
+type ActionKey = 'deposit' | 'withdrawal' | 'validator';
 
 const texts: Record<ActionKey, string> = {
   deposit: 'Deposit',
-  dappnode: 'Dappnode Deposit',
   withdrawal: 'Autoclaim Rewards',
   validator: 'Validator Status',
 };
