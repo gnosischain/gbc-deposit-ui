@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 interface ConsolidateSelectProps {
   validators: Validator[];
-  consolidateValidators: (selectedPubkeys: `0x{string}`[], target: string) => void;
+  consolidateValidators?: (selectedPubkeys: `0x{string}`[], target: string) => void;
 }
 
 export function ConsolidateSelect({ validators, consolidateValidators }: ConsolidateSelectProps) {
@@ -18,7 +18,7 @@ export function ConsolidateSelect({ validators, consolidateValidators }: Consoli
   const [consolidateTarget, setConsolidateTarget] = useState<string>(validators[0].publickey);
 
   const handleConsolidate = () => {
-    consolidateValidators(selectedPubkeys, consolidateTarget);
+    // consolidateValidators(selectedPubkeys, consolidateTarget);
   };
   
   return (

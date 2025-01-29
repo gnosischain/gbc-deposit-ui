@@ -1,20 +1,32 @@
+import useBalance from '@/hooks/useBalance';
+import { ContractNetwork } from '@/utils/contracts';
 import { Button } from '@headlessui/react';
+import { formatEther } from 'viem';
 
-export function Balance() {
+interface BalanceProps {
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
+}
+
+export function Balance({ contractConfig, address }: BalanceProps) {
+  const { balance, claimBalance, claim } = useBalance(contractConfig, address);
 
   return (
-    <div className='flex items-center justify-center'>
-      <div className='bg-white p-8 rounded-lg'>
-        <h1 className='text-2xl font-bold'>Wrong Network</h1>
-        <p className='mt-4'>
-          Please switch to the correct network to continue.
+    <div className='flex items-center justify-center rounded-lg divide-x divide-gray-300'>
+      <div className='flex flex-col'>
+        <p>GNO Balance</p>
+        <p className='text-2xl font-bold'>
+          {Number(formatEther(balance)).toFixed(2)}
         </p>
-        <Button
-          onClick={() => {}}
-          className='mt-4 bg-accent text-white rounded-lg px-4 py-2'
-        >
-          Switch to Gnosis Chain
-        </Button>
+      </div>
+      <div className='flex flex-col'>
+        <p>Ready to claim</p>
+        <div className='flex'>
+          <p className='text-2xl font-bold'>
+            {Number(formatEther(claimBalance)).toFixed(2)}
+          </p>
+          <Button onClick={claim}>Claim</Button>
+        </div>
       </div>
     </div>
   );

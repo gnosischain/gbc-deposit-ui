@@ -49,7 +49,7 @@ function useBalance(contractConfig: ContractNetwork, address: `0x${string}`) {
     }
   }, [claimSuccess, refetchBalance, refetchClaimBalance]);
 
-  return { balance, claimBalance, refetchBalance, refetchClaimBalance, claim, claimSuccess, claimHash };
+  return { balance: balance || BigInt(0), claimBalance: claimBalance || BigInt(0), refetchBalance, refetchClaimBalance, claim, claimSuccess, claimHash };
 }
 
 export default useBalance;

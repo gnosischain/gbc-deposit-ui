@@ -25,7 +25,7 @@ export default function Consolidate({
   address,
   chainId,
 }: ConsolidateProps) {
-  const { consolidateValidators, loading, error } = useConsolidateValidators(contractConfig);
+  // const { consolidateValidators, loading, error } = useConsolidateValidators(contractConfig);
 
   const [validators, setValidators] = useState<Validator[]>([]);
   const [state, setState] = useState<{
@@ -73,7 +73,7 @@ export default function Consolidate({
           />
         );
       case Steps.SELECT:
-        return <ConsolidateSelect validators={validators} consolidateValidators={consolidateValidators} />;
+        return <ConsolidateSelect validators={validators} />;
     }
   };
 

@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDisconnect } from 'wagmi';
-import { formatEther } from 'viem';
 import { truncateAddress } from '@/utils/truncateAddress';
 import {
   ArrowRightStartOnRectangleIcon,
@@ -17,14 +16,13 @@ import Withdrawal from './withdrawal';
 import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
 import Consolidate from './consolidate';
-import useBalance from '@/hooks/useBalance';
+import { Balance } from './balance';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { disconnect } = useDisconnect();
   const { account, chainId, contractConfig } = useContractConfig();
-  const { balance } = useBalance(contractConfig, account.address || '0x0');
   const [isCopied, setIsCopied] = useState(false);
   const [connectionAttempted, setConnectionAttempted] = useState(false);
 
@@ -50,6 +48,10 @@ export default function Dashboard() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
+      <Balance
+        contractConfig={contractConfig}
+        address={account.address || '0x0'}
+      />
       <div className='w-full h-[590px] lg:h-[375px] bg-[#F0EBDE] flex flex-col text-black rounded-2xl items-center justify-between p-4'>
         <p className='font-bold text-xl lg:text-2xl'>
           {searchParams.get('state') === 'validator'
@@ -71,12 +73,6 @@ export default function Dashboard() {
               )}
             </div>
             <div className='flex flex-col gap-y-4 justify-between items-start mt-4 lg:mt-0'>
-              <div>
-                Balance:
-                <p className='font-bold text-xl lg:text-2xl'>
-                  {Number(formatEther(balance || BigInt(0))).toFixed(3)} GNO
-                </p>
-              </div>
               <div className='w-full'>
                 Network:
                 <NetworkSwitcher currentChainId={account.chainId} />
