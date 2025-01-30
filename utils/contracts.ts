@@ -65,7 +65,7 @@ const CONTRACTS: Contracts = {
       token: "0xBabe2bEd00000000000000000000000000000002",
       deposit: "0xbabe2bed00000000000000000000000000000003",
       claimRegistry: "0x28f1ba1f2Db9Aa0ca4b3B7cD9Ae327f6E872867D",
-      consolidate: "0x1014405f622fd8aB9bEBeb2EFe475579F92f6b65"
+      consolidate: "0x01aBEa29659e5e97C95107F20bb753cD3e09bBBb"
     },
     depositStartBlockNumber: BigInt(0),
     claimRegistryStartBlockNumber: BigInt(9311142),

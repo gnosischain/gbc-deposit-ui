@@ -10,20 +10,32 @@ import { useState } from 'react';
 
 interface ConsolidateSelectProps {
   validators: Validator[];
-  consolidateValidators?: (selectedPubkeys: `0x{string}`[], target: string) => void;
+  consolidateValidators: (
+    selectedPubkeys: `0x${string}`[],
+    target: `0x${string}`
+  ) => Promise<void>;
 }
 
-export function ConsolidateSelect({ validators, consolidateValidators }: ConsolidateSelectProps) {
-  const [selectedPubkeys, setSelectedPubkeys] = useState<`0x{string}`[]>([]);
-  const [consolidateTarget, setConsolidateTarget] = useState<string>(validators[0].publickey);
+export function ConsolidateSelect({
+  validators,
+  consolidateValidators,
+}: ConsolidateSelectProps) {
+  const [selectedPubkeys, setSelectedPubkeys] = useState<`0x${string}`[]>([]);
+  const [consolidateTarget, setConsolidateTarget] = useState<`0x${string}`>(
+    validators[0].publickey
+  );
 
   const handleConsolidate = () => {
-    // consolidateValidators(selectedPubkeys, consolidateTarget);
+    consolidateValidators(selectedPubkeys, consolidateTarget);
   };
-  
+
   return (
     <div className='w-full flex flex-col items-center justify-center gap-y-2 p-2'>
-      <p className='text-xs'>This is a preview of the consolidate feature. Please select the validators you would like to consolidate and the target validator to consolidate to. (no design yet)</p>
+      <p className='text-xs'>
+        This is a preview of the consolidate feature. Please select the
+        validators you would like to consolidate and the target validator to
+        consolidate to. (no design yet)
+      </p>
       <div className='w-full flex justify-between items-center gap-x-4'>
         <Listbox value={selectedPubkeys} onChange={setSelectedPubkeys} multiple>
           <ListboxButton className='flex items-center justify-between w-full rounded-lg bg-[#e6e1d3] p-2 font-bold text-black'>
@@ -33,7 +45,7 @@ export function ConsolidateSelect({ validators, consolidateValidators }: Consoli
           </ListboxButton>
           <ListboxOptions anchor='bottom'>
             {validators.map((validator) => (
-              <ListboxOption 
+              <ListboxOption
                 key={validator.publickey}
                 value={validator.publickey}
                 className='rounded-xl mt-1 text-black bg-[#e6e1d3] p-1 shadow-md focus:outline-none'
@@ -49,7 +61,7 @@ export function ConsolidateSelect({ validators, consolidateValidators }: Consoli
           </ListboxButton>
           <ListboxOptions anchor='bottom'>
             {validators.map((validator) => (
-              <ListboxOption 
+              <ListboxOption
                 key={validator.publickey}
                 value={validator.publickey}
                 className='rounded-xl mt-1 text-black bg-[#e6e1d3] p-1 shadow-md focus:outline-none'
@@ -59,7 +71,12 @@ export function ConsolidateSelect({ validators, consolidateValidators }: Consoli
             ))}
           </ListboxOptions>
         </Listbox>
-        <button onClick={handleConsolidate} className='bg-[#e6e1d3] p-2 rounded-lg font-bold text-black'>Consolidate</button>
+        <button
+          onClick={handleConsolidate}
+          className='bg-[#e6e1d3] p-2 rounded-lg font-bold text-black'
+        >
+          Consolidate
+        </button>
       </div>
     </div>
   );

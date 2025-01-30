@@ -5,12 +5,16 @@ import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
 import { toast } from 'react-toastify';
 import { ConsolidateInfo } from './consolidateInfo';
-import { fetchValidators, useConsolidateValidators, Validator } from '@/hooks/useConsolidate';
+import {
+  fetchValidators,
+  useConsolidateValidators,
+  Validator,
+} from '@/hooks/useConsolidate';
 import { ConsolidateSelect } from './consolidateSelect';
 
 interface ConsolidateProps {
-  contractConfig: ContractNetwork | undefined;
-  address: `0x${string}` | undefined;
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
   chainId: number;
 }
 
@@ -25,7 +29,7 @@ export default function Consolidate({
   address,
   chainId,
 }: ConsolidateProps) {
-  // const { consolidateValidators, loading, error } = useConsolidateValidators(contractConfig);
+  const { consolidateValidators } = useConsolidateValidators(contractConfig, address);
 
   const [validators, setValidators] = useState<Validator[]>([]);
   const [state, setState] = useState<{
@@ -73,7 +77,12 @@ export default function Consolidate({
           />
         );
       case Steps.SELECT:
-        return <ConsolidateSelect validators={validators} />;
+        return (
+          <ConsolidateSelect
+            validators={validators}
+            consolidateValidators={consolidateValidators}
+          />
+        );
     }
   };
 
