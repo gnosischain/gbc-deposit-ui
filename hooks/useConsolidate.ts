@@ -2,6 +2,7 @@ import { ContractNetwork } from "@/utils/contracts";
 import { useCallback } from "react";
 import { useSendTransaction } from "wagmi";
 import { concat, parseEther, parseGwei } from "viem";
+import { useCreateWalletClient } from "./useCreateWalletClient";
 
 export type Validator = {
   publickey: `0x${string}`;
@@ -48,6 +49,47 @@ export function useConsolidateValidators(contractConfig: ContractNetwork, addres
       }
     },
     [contractConfig.addresses.consolidate, sendTransaction]
+  );
+
+  return { consolidateValidators };
+}
+
+export function useConsolidateValidatorsEIP7702(contractConfig: ContractNetwork | undefined) {
+  const walletClient = useCreateWalletClient();
+
+  const consolidateValidators = useCallback(
+    async (selectedPubkeys: `0x{string}`[], target: string) => {
+
+      try {
+        if (!walletClient) {
+          throw new Error("Wallet client creation failed");
+        }
+
+        if (!contractConfig || !contractConfig.addresses.consolidate) {
+          throw new Error("Consolidation contract address is not configured");
+        }
+
+        const authorization = await walletClient.signAuthorization({
+          contractAddress: contractConfig.addresses.consolidate,
+          account: walletClient.account!,
+        });
+
+        console.log("Authorization:", authorization);
+
+        const hash = await walletClient.sendTransaction({
+          to: contractConfig.addresses.consolidate,
+          data: selectedPubkeys[0],
+          account: walletClient.account!,
+          authorizationList: [authorization],
+        });
+
+        // console.log("Transaction hash:", hash);
+      } catch (err) {
+        console.error("Error consolidating validators:", err);
+      } finally {
+      }
+    },
+    [contractConfig, walletClient]
   );
 
   return { consolidateValidators };
