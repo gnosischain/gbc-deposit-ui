@@ -69,7 +69,7 @@ const CONTRACTS: Contracts = {
     },
     depositStartBlockNumber: BigInt(0),
     claimRegistryStartBlockNumber: BigInt(9311142),
-    blockExplorerUrl: 'ttp://192.155.94.248:8082/'
+    blockExplorerUrl: 'http://192.155.94.248:8082/'
   },
 };
 
