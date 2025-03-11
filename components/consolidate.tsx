@@ -29,7 +29,10 @@ export default function Consolidate({
   address,
   chainId,
 }: ConsolidateProps) {
-  const { consolidateValidators } = useConsolidateValidators(contractConfig, address);
+  const { consolidateValidators } = useConsolidateValidators(
+    contractConfig,
+    address
+  );
 
   const [validators, setValidators] = useState<Validator[]>([]);
   const [state, setState] = useState<{
@@ -47,9 +50,10 @@ export default function Consolidate({
       setState((prev) => ({ ...prev, loading: true }));
       try {
         if (contractConfig?.beaconExplorerUrl && address) {
+          console.log('Fetching validators:', address, contractConfig?.beaconExplorerUrl);
           const data = await fetchValidators(
             contractConfig.beaconExplorerUrl,
-            '0x78E87757861185Ec5e8C0EF6BF0C69Fa7832df6C'
+            address
           );
           setValidators(data);
         } else {

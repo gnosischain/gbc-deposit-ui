@@ -11,11 +11,11 @@ import { ToastContainer } from 'react-toastify';
 import { Suspense } from 'react';
 
 export default function Page() {
-  const { isWrongNetwork } = useContractConfig();
+  const { isWrongNetwork, chainId } = useContractConfig();
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        {isWrongNetwork && <WrongNetwork />}
+        {isWrongNetwork && chainId && <WrongNetwork />}
         <main className='flex min-h-screen h-screen flex-col items-center justify-center'>
           <div className='w-full lg:w-[775px] bg-[#133629CC] h-full md:h-full lg:h-auto backdrop-blur-sm p-4 lg:rounded-2xl flex gap-y-6 flex-col justify-start items-center'>
             <div className='w-full gap-x-4 flex justify-between'>
