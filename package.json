@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "npm-run-all build:*",
     "build:hardhat": "cd hardhat && npm install",
+    "build:envio": "cd envio && npm run codegen",
     "build:root": "next build",
     "start": "next start",
     "lint": "next lint",
