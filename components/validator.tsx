@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FileRejection } from "react-dropzone";
 import Loader from "./loader";
-import useValidators, { FileDepositData } from "@/hooks/use-validators";
+import useValidators, { FileDepositData } from "@/hooks/useValidators";
 import { ContractNetwork } from "@/utils/contracts";
 
 interface WithdrawalProps {

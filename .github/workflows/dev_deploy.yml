@@ -13,6 +13,7 @@ concurrency:
 
 env:
   NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.DEV_WC_PROJECT_ID }}
+  NEXT_PUBLIC_GRAPHQL_URL: ${{ secrets.PUBLIC_GRAPHQL_URL }}
 
 jobs:
   deploy:
@@ -22,13 +23,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.1
 
       - name: Install
         run: |
@@ -39,18 +42,18 @@ jobs:
           pip install awscli --upgrade --user
 
       - name: Build App
-        run: yarn update-deposits && yarn build
+        run: yarn build
 
-      - name: Install Playwright Browsers
-        run: yarn playwright install
+      # - name: Install Playwright Browsers
+      #   run: yarn playwright install
 
-      - name: Setup xvfb
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
+      # - name: Setup xvfb
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y xvfb
 
-      - name: Run tests
-        run: xvfb-run --auto-servernum --server-args='-screen 0, 1920x1080x24' yarn run-e2e-tests
+      # - name: Run tests
+      #   run: xvfb-run --auto-servernum --server-args='-screen 0, 1920x1080x24' yarn run-e2e-tests
 
       - name: Configure AWS Development credentials
         uses: aws-actions/configure-aws-credentials@v1

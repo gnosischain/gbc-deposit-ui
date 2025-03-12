@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "chai": "4.3.10",
-    "envio": "^2.9.1",
+    "envio": "2.12.0",
     "ethers": "6.8.0"
   },
   "optionalDependencies": {

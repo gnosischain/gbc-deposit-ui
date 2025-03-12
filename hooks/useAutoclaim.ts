@@ -6,8 +6,8 @@ import { parseUnits } from "viem";
 import { SECOND_IN_DAY } from "@/utils/constants";
 
 function useAutoclaim(
-  contractConfig: ContractNetwork | undefined,
-  address: `0x${string}` | undefined,
+  contractConfig: ContractNetwork,
+  address: `0x${string}`,
   chainId: number
 ) {
   const account = useAccount();
