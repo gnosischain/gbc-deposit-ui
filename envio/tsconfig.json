@@ -13,9 +13,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "module": "CommonJS",
-    "paths": {
-      "generated": ["./generated"]
-    }
   },
   "include": [
     "src",
