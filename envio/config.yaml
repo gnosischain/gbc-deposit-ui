@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: deposit-indexer
+rollback_on_reorg: false
 contracts:
 - name: SBCDepositContract
   handler: src/EventHandlers.ts
