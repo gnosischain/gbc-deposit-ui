@@ -60,7 +60,7 @@ export function useConsolidateValidators(contractConfig: ContractNetwork, addres
         sendTransaction({
           to: contractConfig.addresses.consolidate,
           data,
-          value: parseEther('0.1'),
+          value: parseEther('0.01'),
         });
 
       } catch (err) {
