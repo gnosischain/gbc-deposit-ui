@@ -12,7 +12,10 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "paths": {
+      "generated": ["./generated"]
+    }
   },
   "include": [
     "src",
