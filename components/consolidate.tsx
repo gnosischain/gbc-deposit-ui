@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
-import { toast } from 'react-toastify';
 import { ConsolidateInfo } from './consolidateInfo';
 import {
+  fetchChiadoValidators,
   fetchValidators,
   useConsolidateValidators,
   Validator,
@@ -50,10 +50,9 @@ export default function Consolidate({
       setState((prev) => ({ ...prev, loading: true }));
       try {
         if (contractConfig?.beaconExplorerUrl && address) {
-          console.log('Fetching validators:', address, contractConfig?.beaconExplorerUrl);
-          const data = await fetchValidators(
+          const data = chainId === 10200 ? await fetchChiadoValidators(address) : await fetchValidators(
             contractConfig.beaconExplorerUrl,
-            address
+            '0x78E87757861185Ec5e8C0EF6BF0C69Fa7832df6C'
           );
           setValidators(data);
         } else {
@@ -67,7 +66,7 @@ export default function Consolidate({
     };
 
     fetchValidatorData();
-  }, [address, contractConfig?.beaconExplorerUrl]);
+  }, [address, chainId, contractConfig.beaconExplorerUrl]);
 
   const renderStep = () => {
     switch (state.step) {

@@ -1,13 +1,14 @@
 import { ContractNetwork } from "@/utils/contracts";
 import { useCallback } from "react";
 import { useSendTransaction } from "wagmi";
-import { concat, parseEther, parseGwei } from "viem";
+import { concat, parseEther } from "viem";
 import { useCreateWalletClient } from "./useCreateWalletClient";
 
 export type Validator = {
   publickey: `0x${string}`;
   valid_signature: boolean;
   validatorindex: number;
+  withdrawal_credentials: `0x${string}`;
 };
 
 
@@ -20,6 +21,24 @@ export async function fetchValidators(beaconExplorerUrl: string, address: string
 
     const data = await response.json();
     return data.data || [];
+  } catch (error) {
+    console.error("Error fetching validator statuses:", error);
+    throw error;
+  }
+}
+
+export async function fetchChiadoValidators(address: string): Promise<Validator[]> {
+  try {
+    const response = await fetch("https://rpc-gbc.chiadochain.net/eth/v1/beacon/states/finalized/validators?status=active");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Chiado Validators - status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data.filter((v: any) => v.validator.withdrawal_credentials.includes(address.toLowerCase().slice(2))).map((v: any) => {
+      const { pubkey, ...rest } = v.validator;
+      return { ...rest, publickey: pubkey };
+    }) || [];
   } catch (error) {
     console.error("Error fetching validator statuses:", error);
     throw error;
