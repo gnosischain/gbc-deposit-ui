@@ -15,7 +15,7 @@ import DappnodeDeposit from './dappnodeDeposit';
 import Withdrawal from './withdrawal';
 import Validator from './validator';
 import { NetworkSwitcher } from './networkSwitcher';
-import Consolidate from './consolidate';
+// import Consolidate from './consolidate';
 import { Balance } from './balance';
 import { Switch } from '@headlessui/react';
 import Loader from './loader';
@@ -132,7 +132,7 @@ export default function Dashboard() {
                   />
                 )}
               </div>
-              <div
+              {/* <div
                 className={`w-full ${
                   searchParams.get('state') === 'consolidate'
                     ? 'block'
@@ -144,7 +144,7 @@ export default function Dashboard() {
                   address={account.address || '0x0'}
                   chainId={chainId}
                 />
-              </div>
+              </div> */}
               <div
                 className={`w-full h-full ${
                   searchParams.get('state') === 'withdrawal'
