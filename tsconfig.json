@@ -25,7 +25,8 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "target": "ES2021"
   },
   "include": [
     "next-env.d.ts",
@@ -36,6 +37,7 @@
     "build/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "envio"
   ]
 }
