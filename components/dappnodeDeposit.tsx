@@ -1,48 +1,60 @@
-"use client";
+'use client';
 
-import useDappnodeDeposit, {
-  DepositDataJson,
-} from "@/hooks/use-dappnode-deposit";
-import { CheckIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import Image from "next/image";
-import Link from "next/link";
+import useDappnodeDeposit from '@/hooks/useDappnodeDeposit';
+import { CheckIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   Dispatch,
   SetStateAction,
   useCallback,
   useEffect,
   useState,
-} from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
-import { Address } from "viem";
-import Loader from "./loader";
-import { ContractNetwork } from "@/utils/contracts";
+} from 'react';
+import { FileRejection, useDropzone } from 'react-dropzone';
+import { Address } from 'viem';
+import Loader from './loader';
+import { ContractNetwork } from '@/utils/contracts';
+import { DepositDataJson } from '@/utils/deposit';
+import { toast } from 'react-toastify';
 
 interface DappNodeDepositProps {
-  contractConfig: ContractNetwork | undefined;
-  address: `0x${string}` | undefined;
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
   chainId: number;
 }
 
 export type DappnodeUser = {
   safe: string;
-  status: Step;
+  status: Steps;
   expectedDepositCount: number;
   totalStakeAmount: number;
 };
 
-type Step =
-  | "notIncluded"
-  | "pending"
-  | "submitted"
-  | "validation"
-  | "executed"
-  | undefined;
+enum Steps {
+  NOT_INCLUDED = 'notIncluded',
+  PENDING = 'pending',
+  SUBMITTED = 'submitted',
+  VALIDATION = 'validation',
+  EXECUTED = 'executed',
+}
 
-export default function DappnodeDeposit({contractConfig, address, chainId}: DappNodeDepositProps) {
-  const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState<Step>();
-  const [errorMessage, setErrorMessage] = useState("");
+type state = {
+  step: Steps;
+  loading: boolean;
+  tx: `0x${string}`;
+};
+
+export default function DappnodeDeposit({
+  contractConfig,
+  address,
+  chainId,
+}: DappNodeDepositProps) {
+  const [state, setState] = useState<state>({
+    step: Steps.NOT_INCLUDED,
+    loading: false,
+    tx: '0x0',
+  });
 
   const {
     setDappnodeDepositData,
@@ -51,30 +63,23 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
     depositHash,
     user,
     dappnodeDeposit,
-    isWrongNetwork,
     claimStatusPending,
     claimStatusError,
   } = useDappnodeDeposit(contractConfig, address, chainId);
 
-  useEffect(() => {
-    if (isWrongNetwork !== undefined) {
-      setLoading(false);
-    }
-  }, [isWrongNetwork]);
-
-  const [tx, setTx] = useState<Address>("0x0");
+  const [tx, setTx] = useState<Address>('0x0');
 
   useEffect(() => {
     if (user) {
-      if (user[0] === "0x0000000000000000000000000000000000000000") {
-        setStep("notIncluded");
+      if (user[0] === '0x0000000000000000000000000000000000000000') {
+        setState((prev) => ({ ...prev, step: Steps.NOT_INCLUDED }));
       } else {
         if (user[1] === 0) {
-          setStep("pending");
+          setState((prev) => ({ ...prev, step: Steps.PENDING }));
         } else if (user[1] === 1) {
-          setStep("submitted");
+          setState((prev) => ({ ...prev, step: Steps.SUBMITTED }));
         } else if (user[1] === 2) {
-          setStep("executed");
+          setState((prev) => ({ ...prev, step: Steps.EXECUTED }));
         }
       }
     }
@@ -82,8 +87,7 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
 
   useEffect(() => {
     if (depositSuccess) {
-      setLoading(false);
-      setStep("submitted");
+      setState((prev) => ({ ...prev, loading: false, step: Steps.SUBMITTED }));
     }
   }, [depositSuccess]);
 
@@ -94,41 +98,33 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
   }, [depositHash]);
 
   return (
-    <div className="w-full bg-[#FFFFFFB2] p-3 flex flex-col justify-center items-center rounded-2xl">
-      {loading ? (
+    <div className='w-full bg-[#FFFFFFB2] p-3 flex flex-col justify-center items-center rounded-2xl'>
+      {state.loading ? (
         <>
           <Loader />
-          <p className="mt-2">Loading...</p>
+          <p className='mt-2'>Loading...</p>
         </>
-      ) : isWrongNetwork ? (
-        <div className="flex flex-col w-full h-full justify-evenly text-center text-red-400 font-bold text-lg">
-          To claim Dappnode&apos;s GNO Incentive Programm connect your wallet
-          provider to Gnosis Chain!
-        </div>
-      ) : step === "notIncluded" ? (
+      ) : state.step === 'notIncluded' ? (
         <AddressNotIncluded />
-      ) : step === "pending" ? (
+      ) : state.step === 'pending' ? (
         <PendingStatus
-          safeAddress={user ? user[0] : ""}
-          setLoading={setLoading}
-          setStep={setStep}
-          errorMessage={errorMessage}
-          setErrorMessage={setErrorMessage}
+          safeAddress={user ? user[0] : ''}
+          setState={setState}
           setDappnodeDepositData={setDappnodeDepositData}
         />
-      ) : step === "validation" ? (
+      ) : state.step === 'validation' ? (
         <Validation
           depositData={depositData}
           dappnodeDeposit={dappnodeDeposit}
           claimStatusPending={claimStatusPending}
           claimStatusError={claimStatusError}
         />
-      ) : step === "submitted" ? (
+      ) : state.step === 'submitted' ? (
         <SubmittedStatus tx={tx} />
-      ) : step === "executed" ? (
-        <ExecutedStatus safeAddress={user ? user[0] : ""} />
+      ) : state.step === 'executed' ? (
+        <ExecutedStatus safeAddress={user ? user[0] : ''} />
       ) : (
-        ""
+        ''
       )}
     </div>
   );
@@ -136,101 +132,85 @@ export default function DappnodeDeposit({contractConfig, address, chainId}: Dapp
 
 function AddressNotIncluded() {
   return (
-    <div className="flex flex-col w-full h-full justify-evenly   text-center">
-      {" "}
-      <p className="text-red-400 font-bold text-lg">
+    <div className='flex flex-col w-full h-full justify-evenly   text-center'>
+      {' '}
+      <p className='text-red-400 font-bold text-lg'>
         The wallet address provided is not included in Dappnode&apos;s GNO
         Incentive Program!
-      </p>{" "}
+      </p>{' '}
       <p>Please, ensure you have connected with the correct address</p>
     </div>
   );
 }
 
 function PendingStatus({
-  setLoading,
-  setStep,
+  setState,
   safeAddress,
-  errorMessage,
-  setErrorMessage,
   setDappnodeDepositData,
 }: {
   safeAddress: string;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-  setStep: Dispatch<SetStateAction<Step>>;
-  errorMessage: string;
-  setErrorMessage: Dispatch<SetStateAction<string>>;
+  setState: Dispatch<SetStateAction<state>>;
   setDappnodeDepositData: (fileData: string, filename: string) => Promise<void>;
 }) {
-  let formattedSafe = "0x" + safeAddress.slice(-40);
+  let formattedSafe = '0x' + safeAddress.slice(-40);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (rejectedFiles.length > 0) {
-        setErrorMessage("Please upload a valid JSON file.");
       } else if (acceptedFiles.length > 0) {
         const reader = new FileReader();
         reader.onload = async (event) => {
           const result = event.target?.result as string;
           if (result) {
             try {
-              setLoading(true);
+              setState((prev) => ({ ...prev, loading: true }));
               await setDappnodeDepositData(result, acceptedFiles[0].name);
-              setStep("validation");
-              setLoading(false);
-              setErrorMessage("");
-            } catch (error: unknown) {
-              console.log(error);
-              setLoading(false);
-              if (error instanceof Error) {
-                console.log(error);
-                setErrorMessage(error.message);
-              } else {
-                setErrorMessage("An unexpected error occurred.");
-              }
+              setState((prev) => ({ ...prev, loading: false, step: Steps.VALIDATION }));
+            } catch (error: any) {
+              toast.error(error.message || 'An error occurred.');
+              setState((prev) => ({
+                ...prev,
+                step: Steps.NOT_INCLUDED,
+                loading: false,
+              }));
             }
           }
         };
         reader.readAsText(acceptedFiles[0]);
       }
     },
-    [setErrorMessage, setLoading, setDappnodeDepositData, setStep]
+    [setDappnodeDepositData, setState]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: { "application/json": [] },
+    accept: { 'application/json': [] },
     maxFiles: 1,
   });
   return (
-    <div className="w-full h-full flex flex-col items-center justify-evenly">
-      <span className="text-sm">
-        {" "}
-        Your Safe address is{" "}
-        <span className="text-green text-xs">{formattedSafe}</span>
+    <div className='w-full h-full flex flex-col items-center justify-evenly'>
+      <span className='text-sm'>
+        {' '}
+        Your Safe address is{' '}
+        <span className='text-green text-xs'>{formattedSafe}</span>
       </span>
       <div
-        className="w-full flex flex-col items-center hover:cursor-pointer"
+        className='w-full flex flex-col items-center hover:cursor-pointer'
         {...getRootProps()}
       >
         <input {...getInputProps()} />
         Upload deposit date file
-        <div className="flex font-bold items-center">
-          deposit_data.json <InformationCircleIcon className="ml-px h-5 w-5" />
+        <div className='flex font-bold items-center'>
+          deposit_data.json <InformationCircleIcon className='ml-px h-5 w-5' />
         </div>
         <Image
-          src="/drop.svg"
-          alt="Drop"
+          src='/drop.svg'
+          alt='Drop'
           width={80}
           height={24}
-          className="my-8 rounded-full shadow-lg"
+          className='my-8 rounded-full shadow-lg'
         />
         <div>Drag file to upload or browse</div>
-        {errorMessage && (
-          <p className="text-red-400 text-sm text-center">
-            {errorMessage.substring(0, 150)}
-          </p>
-        )}
       </div>
     </div>
   );
@@ -245,7 +225,6 @@ function Validation({
   depositData: {
     deposits: DepositDataJson[];
     filename: string;
-    hasDuplicates: boolean;
     isBatch: boolean;
   };
   dappnodeDeposit: () => Promise<void>;
@@ -257,60 +236,65 @@ function Validation({
   }, [dappnodeDeposit]);
 
   return claimStatusPending ? (
-    <div className="flex flex-col items-center gap-4">
+    <div className='flex flex-col items-center gap-4'>
       <Loader />
       <p>Check your wallet provider to continue!</p>
     </div>
   ) : (
-    <div className="w-full flex flex-col items-center">
+    <div className='w-full flex flex-col items-center'>
       {depositData.filename}
-      <div className="flex items-center mt-4">
-        <CheckIcon className="h-5 w-5" /> File accepted
+      <div className='flex items-center mt-4'>
+        <CheckIcon className='h-5 w-5' /> File accepted
       </div>
-      <div className="flex items-center">
-        <CheckIcon className="h-5 w-5" /> Safe address as Withdrawal
+      <div className='flex items-center'>
+        <CheckIcon className='h-5 w-5' /> Safe address as Withdrawal
       </div>
-      <div className="flex items-center">
-        <CheckIcon className="h-5 w-5" /> Validator deposits:{" "}
+      <div className='flex items-center'>
+        <CheckIcon className='h-5 w-5' /> Validator deposits:{' '}
         {depositData.deposits.length}
       </div>
-      <div className="flex items-center">
-        <CheckIcon className="h-5 w-5" /> Total amount requested:{" "}
+      <div className='flex items-center'>
+        <CheckIcon className='h-5 w-5' /> Total amount requested:{' '}
         {depositData.deposits.length} GNO
       </div>
       {depositData.isBatch ? (
-        ""
+        ''
       ) : (
-        <p className="text-orange-400 text-xs text-center">
+        <p className='text-orange-400 text-xs text-center'>
           Your deposit file contains BLS credentials (starting with 0x00). You
           can generate the keys again, specifying the safe that we provided to
           you as withdrawal credentials.
         </p>
       )}
       <button
-        className="bg-accent px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold"
+        className='bg-accent px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold'
         onClick={onDeposit}
-        >
+      >
         Claim
       </button>
-        {claimStatusError && <p className="text-red-500 text-center text-sm mt-5">Error when submitting the transaction. <br/>Check the console for more details!</p>}
+      {claimStatusError && (
+        <p className='text-red-500 text-center text-sm mt-5'>
+          Error when submitting the transaction. <br />
+          Check the console for more details!
+        </p>
+      )}
     </div>
   );
 }
 
 function SubmittedStatus({ tx }: { tx: `0x${string}` }) {
   return (
-    <div className="flex flex-col justify-evenly text-center h-full">
-      <div className="text-lg font-bold text-green">
+    <div className='flex flex-col justify-evenly text-center h-full'>
+      <div className='text-lg font-bold text-green'>
         Your claim has been submitted!
       </div>
       <div>
-        {" "}
+        {' '}
         Check the transaction
         <Link
-          href={"https://gnosis.blockscout.com/tx/" + tx}
-          target="_blank"
-          className="text-accent underline ml-1"
+          href={'https://gnosis.blockscout.com/tx/' + tx}
+          target='_blank'
+          className='text-accent underline ml-1'
         >
           here.
         </Link>
@@ -326,18 +310,18 @@ function SubmittedStatus({ tx }: { tx: `0x${string}` }) {
 }
 
 function ExecutedStatus({ safeAddress }: { safeAddress: string }) {
-  let formattedSafe = "0x" + safeAddress.slice(-40);
+  let formattedSafe = '0x' + safeAddress.slice(-40);
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="flex items-center flex-col gap-5 text-center">
-        <div className="text-lg font-bold text-green">
+    <div className='w-full flex flex-col items-center'>
+      <div className='flex items-center flex-col gap-5 text-center'>
+        <div className='text-lg font-bold text-green'>
           Your deposit has been executed!
         </div>
-        <span className="t">
-          {" "}
-          Your Safe address is{" "}
-          <span className="text-green text-xs">{formattedSafe}</span>
+        <span className='t'>
+          {' '}
+          Your Safe address is{' '}
+          <span className='text-green text-xs'>{formattedSafe}</span>
         </span>
         <div>
           Ensure you keystores are already in your Dappnode to start validating.

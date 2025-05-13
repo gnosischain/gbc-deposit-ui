@@ -6,20 +6,9 @@ import {
 } from "wagmi";
 import { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
-import { getPublicClient } from "wagmi/actions";
-import { config } from "@/wagmi";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
-import { gql, useApolloClient } from "@apollo/client";
-
-export type DepositDataJson = {
-  pubkey: string;
-  withdrawal_credentials: string;
-  amount: bigint;
-  signature: string;
-  deposit_message_root: string;
-  deposit_data_root: string;
-  fork_version: string;
-};
+import { useApolloClient } from "@apollo/client";
+import { DepositDataJson, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
 
 export type DappnodeUser = [
   safe: string,
@@ -28,32 +17,10 @@ export type DappnodeUser = [
   totalStakeAmount: bigint // uint256
 ];
 
-const GET_DEPOSIT_EVENTS = gql`
-  query MyQuery($pubkeys: [String!], $chainId: Int!) {
-    SBCDepositContract_DepositEvent(
-      where: { 
-        pubkey: { 
-          _in: $pubkeys
-        },
-        chainId: {_eq: $chainId}
-      }
-    ) {
-      id
-      amount
-      db_write_timestamp
-      index
-      withdrawal_credentials
-      pubkey
-    }
-  }
-`;
-
-function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address: `0x${string}` | undefined, chainId: number) {
+function useDappnodeDeposit(contractConfig: ContractNetwork, address: `0x${string}`, chainId: number) {
   const [deposits, setDeposits] = useState<DepositDataJson[]>([]);
-  const [hasDuplicates, setHasDuplicates] = useState(false);
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
-  const client = getPublicClient(config, { chainId: chainId as 100 });
   
   const apolloClient = useApolloClient();
 
@@ -64,7 +31,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
     args: [address],
   });
 
-  const isWrongNetwork = chainId !== 100;
   const { data: depositHash, writeContractAsync, isPending, isError } = useWriteContract();
   const { isSuccess: depositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
@@ -73,7 +39,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
   const dappnodeValidate = useCallback(
     async (deposits: DepositDataJson[]) => {
       let newDeposits = [];
-      let hasDuplicates = false;
       let _isBatch = false;
       if (contractConfig && user) {
         const checkJsonStructure = (depositDataJson: DepositDataJson) => {
@@ -134,23 +99,6 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
 
-        // const { deposits: existingDeposits, lastBlock: fromBlock } =
-        //   await loadCachedDeposits(
-        //     chainId,
-        //     contractConfig.depositStartBlockNumber
-        //   );
-
-        // const events = await fetchDeposit(
-        //   contractConfig.addresses.deposit,
-        //   fromBlock,
-        //   client
-        // );
-
-        // let pks = events.map((e) => e.args.pubkey);
-        // pks = pks.concat(existingDeposits);
-        // console.log(pks);
-        // console.log(`Found ${pks.length} existing deposits`);
-
         for (const deposit of deposits) {
           if (!existingDeposits.includes(`0x${deposit.pubkey}`)) {
             console.log('new deposit', deposit.pubkey);
@@ -158,18 +106,15 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
           }
         }
 
-        // for (const deposit of deposits) {
-        //   if (!pks.includes(`0x${deposit.pubkey}`)) {
-        //     console.log("new deposit", deposit.pubkey);
-        //     newDeposits.push(deposit);
-        //   }
-        // }
-        
-        hasDuplicates = newDeposits.length !== deposits.length;
-
         if (newDeposits.length === 0) {
           throw Error(
             "Deposits have already been made to all validators in this file."
+          );
+        }
+
+        if(newDeposits.length !== deposits.length){
+          throw Error(
+            "Some of the deposits have already been made to the validators in this file."
           );
         }
 
@@ -201,7 +146,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
         }
       }
 
-      return { deposits: newDeposits, hasDuplicates, _isBatch };
+      return { deposits: newDeposits, _isBatch };
     },
     [apolloClient, chainId, contractConfig, user]
   );
@@ -218,15 +163,13 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
             "Oops, something went wrong while parsing your json file. Please check the file and try again."
           );
         }
-        const { deposits, hasDuplicates, _isBatch } = await dappnodeValidate(
+        const { deposits, _isBatch } = await dappnodeValidate(
           data
         );
         setDeposits(deposits);
-        setHasDuplicates(hasDuplicates);
         setIsBatch(_isBatch);
       } else {
         setDeposits([]);
-        setHasDuplicates(false);
         setIsBatch(false);
       }
     },
@@ -270,11 +213,10 @@ function useDappnodeDeposit(contractConfig: ContractNetwork | undefined, address
   return {
     depositSuccess,
     depositHash,
-    depositData: { deposits, filename, hasDuplicates, isBatch },
+    depositData: { deposits, filename, isBatch },
     user,
     setDappnodeDepositData,
     dappnodeDeposit,
-    isWrongNetwork,
     claimStatusPending: isPending,
     claimStatusError: isError,
   };
