@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { DisclaimerBanner } from "@/components/disclaimer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="bg-[url('../public/background.jpg')] bg-cover bg-center w-full h-full text-white">
           <Providers>{children}</Providers>
+          <DisclaimerBanner />
         </div>
       </body>
     </html>
