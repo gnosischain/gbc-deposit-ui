@@ -52,7 +52,10 @@ jobs:
                 pip install awscli --upgrade --user
 
             - name: Build App for release
-              run: yarn update-deposits && yarn build
+              run: yarn build
+
+            # - name: Build App for release
+            #   run: yarn update-deposits && yarn build
 
             # - name: Install Playwright Browsers
             #   run: |
