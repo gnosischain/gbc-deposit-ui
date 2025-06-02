@@ -1,7 +1,7 @@
 import { CheckIcon } from '@heroicons/react/16/solid';
 import { DepositDataJson } from '@/utils/deposit';
 import { CredentialType } from '@/utils/constants';
-import { depositAmountBN } from '@/hooks/useDeposit';
+import { formatUnits } from 'viem';
 
 interface ValidationStepProps {
   depositData: {
@@ -30,7 +30,7 @@ export function ValidationStep({
       </div>
       <div className='flex items-center'>
         <CheckIcon className='h-5 w-5' /> Total amount required:{' '}
-        {depositData.totalDepositAmountBN / depositAmountBN} GNO
+        {Number(formatUnits(depositData.totalDepositAmountBN, 18))} GNO
       </div>
       <button
         className='bg-accent px-4 py-1 rounded-full text-white mt-4 text-lg font-semibold'

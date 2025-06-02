@@ -85,7 +85,7 @@ function useDeposit(contractConfig: ContractNetwork, address: `0x${string}`, cha
         throw Error("Amount should be exactly 32 tokens for deposits.");
       }
 
-      const _totalDepositAmountBN = validDeposits.reduce((sum, d) => sum + BigInt(d.amount), BigInt(0)) / BigInt(DEPOSIT_TOKEN_AMOUNT_OLD) * depositAmountBN;
+      const _totalDepositAmountBN = validDeposits.reduce((sum, d) => sum + BigInt(d.amount), BigInt(0)) * depositAmountBN / BigInt(DEPOSIT_TOKEN_AMOUNT_OLD);
 
       if (balance < _totalDepositAmountBN) {
         throw Error(`Unsufficient balance. ${Number(formatUnits(_totalDepositAmountBN, 18))} GNO is required.
