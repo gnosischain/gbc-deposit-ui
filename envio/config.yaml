@@ -14,6 +14,8 @@ networks:
     address:
     - 0x0B98057eA310F4d31F2a452B414647007d1645d9
 - id: 10200
+  rpc_config:
+    url: https://rpc.chiadochain.net
   start_block: 155434
   contracts:
   - name: SBCDepositContract
