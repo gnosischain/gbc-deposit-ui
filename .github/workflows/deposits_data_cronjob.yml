@@ -1,10 +1,10 @@
 name: Update deposits data
 
 on:
-    schedule:
+    # schedule:
         # https://crontab.guru/#0_9_*_*_*
         # Every day at 9am UTC
-        - cron: "0 9 * * *"
+        # - cron: "0 9 * * *"
 
     workflow_dispatch:
 

@@ -1,18 +1,16 @@
-import useAutoclaim from "@/hooks/use-autoclaim";
-import useClaimBalance from "@/hooks/use-claim-balance";
+import useAutoclaim from "@/hooks/useAutoclaim";
 import { ArrowUturnLeftIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useState } from "react";
 import Loader from "./loader";
 import { Address, formatEther } from "viem";
 import Link from "next/link";
-import useBalance from "@/hooks/use-balance";
+import useBalance from "@/hooks/useBalance";
 import { ContractNetwork } from "@/utils/contracts";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import ToolTip from "./tooltip";
 
 interface WithdrawalProps {
-  contractConfig: ContractNetwork | undefined;
-  address: `0x${string}` | undefined;
+  contractConfig: ContractNetwork;
+  address: `0x${string}`;
   chainId: number;
 }
 
@@ -21,7 +19,7 @@ export default function Withdrawal({
   address,
   chainId,
 }: WithdrawalProps) {
-  const { claim, claimSuccess, claimHash } = useClaimBalance(
+  const { claim, claimSuccess, claimHash } = useBalance(
     contractConfig,
     address
   );
@@ -218,13 +216,8 @@ export default function Withdrawal({
           <div className="flex items-center" id="confirmation">
             <CheckIcon className="h-5 w-5" /> Your transaction is completed !
             View it
-            {/* TODO: add block explorer within contract config to avoid using chainId in here */}
             <Link
-              href={
-                chainId === 100
-                  ? "https://gnosis.blockscout.com/tx/" + tx
-                  : "https://gnosis-chiado.blockscout.com/tx/" + tx
-              }
+              href={contractConfig?.blockExplorerUrl + "tx/" + tx} 
               target="_blank"
               className="text-accent underline ml-1"
             >
