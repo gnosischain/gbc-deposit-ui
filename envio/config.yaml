@@ -8,14 +8,18 @@ contracts:
   - event: DepositEvent(bytes pubkey, bytes withdrawal_credentials, bytes amount, bytes signature, bytes index)
 networks:
 - id: 100
+  rpc:
+    - url: https://rpc.gnosischain.com/
+      for: fallback
   start_block: 19469076
   contracts:
   - name: SBCDepositContract
     address:
     - 0x0B98057eA310F4d31F2a452B414647007d1645d9
 - id: 10200
-  rpc_config:
-    url: https://rpc.chiadochain.net
+  rpc:
+    - url: https://rpc.chiadochain.net
+      for: fallback
   start_block: 155434
   contracts:
   - name: SBCDepositContract
