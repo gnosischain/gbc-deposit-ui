@@ -1,0 +1,1 @@
+export type CredentialType = 0 | 1 | 2;

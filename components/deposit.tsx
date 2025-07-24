@@ -12,7 +12,8 @@ import { ValidationStep } from './validationStep';
 import { SummaryStep } from './summaryStep';
 import { BaseError } from 'wagmi';
 import { WarningStep } from './warningStep';
-import { Switch } from '@headlessui/react';
+import { parseGwei } from 'viem';
+import { CredentialType } from '@/types/validators';
 
 interface DepositProps {
   contractConfig: ContractNetwork;
@@ -38,27 +39,33 @@ export default function Deposit({
   address,
   chainId,
 }: DepositProps) {
-  const {
-    setDepositData,
-    depositData,
-    deposit,
-    depositSuccess,
-    contractError,
-    txError,
+  const { 
+    setDepositData, 
+    depositData, 
+    approve, 
+    isApproved, 
+    deposit, 
+    depositSuccess, 
+    approveSuccess,
+    contractError, 
+    txError, 
     depositHash,
+    resetDepositState
   } = useDeposit(contractConfig, address, chainId);
   const [state, setState] = useState<state>({
     step: Steps.DEPOSIT,
     loading: false,
     tx: '0x0',
   });
+  const [file, setFile] = useState<File | null>(null);
+  const [credentialType, setCredentialType] = useState<CredentialType | undefined>(undefined);
 
   useEffect(() => {
     if (contractError) {
       toast.error(
         (contractError as BaseError)?.shortMessage ||
-          contractError.message ||
-          'Contract error occurred.'
+        contractError.message ||
+        'Contract error occurred.'
       );
       setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
     }
@@ -66,8 +73,8 @@ export default function Deposit({
     if (txError) {
       toast.error(
         (txError as BaseError)?.shortMessage ||
-          txError.message ||
-          'Transaction error occurred.'
+        txError.message ||
+        'Transaction error occurred.'
       );
       setState((prev) => ({ ...prev, step: Steps.DEPOSIT, loading: false }));
     }
@@ -84,14 +91,15 @@ export default function Deposit({
             try {
               setState((prev) => ({ ...prev, loading: true }));
               //TODO: better implementation for handling credential type
+              setFile(acceptedFiles[0]);
               const credentialType = await setDepositData(
-                result,
-                acceptedFiles[0].name
+                acceptedFiles[0],
               );
+              setCredentialType(credentialType);
               setState((prev) => ({
                 ...prev,
                 step:
-                  credentialType === '02' ? Steps.VALIDATION : Steps.WARNING,
+                  credentialType === 2 ? Steps.VALIDATION : Steps.WARNING,
                 loading: false,
               }));
             } catch (error: any) {
@@ -116,10 +124,21 @@ export default function Deposit({
     maxFiles: 1,
   });
 
-  const onDeposit = useCallback(async () => {
+  const handleApprove = useCallback(async (amount: bigint) => {
+    setState((prev) => ({ ...prev, loading: true }));
+    await approve(amount);
+  }, [approve]);
+
+  const handleDeposit = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true }));
     await deposit();
   }, [deposit]);
+
+  useEffect(() => {
+    if (approveSuccess) {
+      setState((prev) => ({ ...prev, loading: false }));
+    }
+  }, [approveSuccess]);
 
   useEffect(() => {
     if (depositSuccess) {
@@ -148,21 +167,30 @@ export default function Deposit({
             goToStep={() =>
               setState((prev) => ({ ...prev, step: Steps.VALIDATION }))
             }
-            credentialType={depositData.credentialType!}
+            credentialType={credentialType!}
           />
         );
       case Steps.VALIDATION:
         return (
-          <ValidationStep depositData={depositData} onDeposit={onDeposit} />
+          <ValidationStep 
+            depositData={depositData} 
+            onApprove={handleApprove}
+            onDeposit={handleDeposit}
+            filename={file?.name || ''} 
+            isApproved={isApproved} 
+          />
         );
       case Steps.SUMMARY:
         return (
           <SummaryStep
             explorerUrl={contractConfig?.blockExplorerUrl || ''}
             tx={state.tx}
-            goToStep={() =>
-              setState((prev) => ({ ...prev, step: Steps.DEPOSIT }))
-            }
+            goToStep={() => {
+              resetDepositState();
+              setFile(null);
+              setCredentialType(undefined);
+              setState((prev) => ({ ...prev, step: Steps.DEPOSIT }));
+            }}
           />
         );
     }
