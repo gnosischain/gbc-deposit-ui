@@ -7,8 +7,9 @@ import {
 import { ContractNetwork } from "@/utils/contracts";
 import dappnodeIncentiveABI from "@/utils/abis/dappnodeIncentive";
 import { DEPOSIT_TOKEN_AMOUNT_OLD, MAX_BATCH_DEPOSIT } from "@/utils/constants";
-import { useApolloClient } from "@apollo/client";
-import { DepositDataJson, GET_DEPOSIT_EVENTS } from "@/utils/deposit";
+import { GET_DEPOSIT_EVENTS } from "@/utils/deposit";
+import { DepositDataJson } from "@/types/deposit";
+import { useClient } from "urql";
 
 export type DappnodeUser = [
   safe: string,
@@ -22,7 +23,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork, address: `0x${strin
   const [isBatch, setIsBatch] = useState(false);
   const [filename, setFilename] = useState("");
   
-  const apolloClient = useApolloClient();
+  const client = useClient();
 
   const { data: user }: { data: DappnodeUser | undefined } = useReadContract({
     abi: dappnodeIncentiveABI,
@@ -89,12 +90,9 @@ function useDappnodeDeposit(contractConfig: ContractNetwork, address: `0x${strin
         }
 
         const pksFromFile = deposits.map((d) => `0x${d.pubkey}`);
-        const { data } = await apolloClient.query({
-          query: GET_DEPOSIT_EVENTS,
-          variables: {
-            pubkeys: pksFromFile,
-            chainId: chainId,
-          },
+        const { data } = await client.query(GET_DEPOSIT_EVENTS, {
+          pubkeys: pksFromFile,
+          chainId: chainId,
         });
         
         const existingDeposits = data.SBCDepositContract_DepositEvent.map((d: { pubkey: string }) => d.pubkey);
@@ -148,7 +146,7 @@ function useDappnodeDeposit(contractConfig: ContractNetwork, address: `0x${strin
 
       return { deposits: newDeposits, _isBatch };
     },
-    [apolloClient, chainId, contractConfig, user]
+    [client, chainId, contractConfig, user]
   );
 
   const setDappnodeDepositData = useCallback(
