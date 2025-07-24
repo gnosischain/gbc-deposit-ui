@@ -15,7 +15,7 @@ import { FileRejection, useDropzone } from 'react-dropzone';
 import { Address } from 'viem';
 import Loader from './loader';
 import { ContractNetwork } from '@/utils/contracts';
-import { DepositDataJson } from '@/utils/deposit';
+import { DepositDataJson } from '@/types/deposit';
 import { toast } from 'react-toastify';
 
 interface DappNodeDepositProps {
