@@ -1,4 +1,4 @@
-import { CredentialType } from '@/utils/constants';
+import { CredentialType } from '@/types/validators';
 import Link from 'next/link';
 
 interface WarningStepProps {
@@ -10,7 +10,7 @@ export function WarningStep({ goToStep, credentialType }: WarningStepProps) {
   return (
     <div className='w-full flex flex-col items-center justify-center'>
       <div className='text-center'>
-        You are about to make a deposit with a deprecated credential type. You
+        You are about to make a deposit of a 0x01 credential type. You
         can regenerate new keys for Gnosis Chain{' '}
         <Link href='https://github.com/eth-educators/ethstaker-deposit-cli' className='text-blue-500 underline'>
           here
@@ -24,7 +24,7 @@ export function WarningStep({ goToStep, credentialType }: WarningStepProps) {
       >
         I understand
       </button>
-      {credentialType === '00' ? (
+      {credentialType === 0 ? (
         <p className='text-orange-400 text-xs text-center'>
           Your deposit file contains BLS credentials (starting with 0x00),
           you&apos;ll be asked to sign a transaction for each of them.

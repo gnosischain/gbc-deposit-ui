@@ -1,62 +1,42 @@
 // NOTE: Ideally this should use { assert: { type: 'json' } },
 // but this would require significant changes in the build process
 
-import { gql } from "@apollo/client";
-import { Address } from "viem";
+import { BatchDepositData, DepositDataJson } from "@/types/deposit";
+import { CredentialType } from "@/types/validators";
+import { parseGwei } from "viem";
 
-type DepositData = {
-  lastBlock: bigint;
-  deposits: Address[];
-};
-
-export type DepositDataJson = {
-  pubkey: string;
-  withdrawal_credentials: string;
-  amount: bigint;
-  signature: string;
-  deposit_message_root: string;
-  deposit_data_root: string;
-  fork_version: string;
-};
-
-export async function loadCachedDeposits(chainId: number, depositStartBlockNumber: bigint): Promise<DepositData> {
-  try {
-    const {
-      deposits = [],
-      lastBlock = depositStartBlockNumber,
-    } = await import(`../data/${chainId}/deposits.json`);
-    return { deposits, lastBlock };
-  } catch (err) {
-    console.error(err);
-  }
+export const generateDepositData = (deposits: DepositDataJson[]): BatchDepositData => {
+  console.log(deposits);
+  const pubkeys = `0x${deposits.map(d => d.pubkey).join("")}` as `0x${string}`;
+  const withdrawal_credentials = `0x${deposits[0].withdrawal_credentials}` as `0x${string}`;
+  const signatures = `0x${deposits.map(d => d.signature).join("")}` as `0x${string}`;
+  const deposit_data_roots = deposits.map(d => `0x${d.deposit_data_root}` as `0x${string}`);
+  const amounts = deposits.map(d => parseGwei(d.amount.toString()) / 32n);
 
   return {
-    lastBlock: depositStartBlockNumber,
-    deposits: [],
+    pubkeys,
+    withdrawal_credentials,
+    signatures,
+    deposit_data_roots,
+    amounts
   };
-}
-
-export const generateDepositData = (deposits: DepositDataJson[], isBatch: boolean): string => {
-  let data = "";
-  if (isBatch) {
-    data += deposits[0].withdrawal_credentials;
-    deposits.forEach((deposit) => {
-      data += deposit.pubkey;
-      data += deposit.signature;
-      data += deposit.deposit_data_root;
-    });
-  } else {
-    deposits.forEach((deposit) => {
-      data += deposit.withdrawal_credentials;
-      data += deposit.pubkey;
-      data += deposit.signature;
-      data += deposit.deposit_data_root;
-    });
-  }
-  return data;
 };
 
-export const GET_DEPOSIT_EVENTS = gql`
+export const getCredentialType = (withdrawalCredential: string): CredentialType | undefined => {
+  
+  if (withdrawalCredential.startsWith("00")) {
+    return 0;
+  }
+  if (withdrawalCredential.startsWith("01")) {
+    return 1;
+  }
+  if (withdrawalCredential.startsWith("02")) {
+    return 2;
+  }
+  return undefined;
+};
+
+export const GET_DEPOSIT_EVENTS = `
 query MyQuery($pubkeys: [String!], $chainId: Int!) {
   SBCDepositContract_DepositEvent(
     where: { 
