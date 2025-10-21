@@ -22,7 +22,7 @@ type Contracts = {
 const CONTRACTS: Contracts = {
   100: {
     forkVersion: "00000064",
-    beaconExplorerUrl: 'https://gnosischa.in',
+    beaconExplorerUrl: 'https://beaconchain.gnosis02.apyos.dev',
     addresses: {
       token: "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb",
       deposit: "0x0B98057eA310F4d31F2a452B414647007d1645d9",
