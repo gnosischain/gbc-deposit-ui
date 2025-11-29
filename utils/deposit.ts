@@ -48,7 +48,6 @@ query MyQuery($pubkeys: [String!], $chainId: Int!) {
   ) {
     id
     amount
-    db_write_timestamp
     index
     withdrawal_credentials
     pubkey
