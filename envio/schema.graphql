@@ -3,8 +3,25 @@ type SBCDepositContract_DepositEvent {
   id: ID!
   pubkey: String!
   withdrawal_credentials: String!
+  withdrawal_address: String!
   amount: String!
   signature: String!
   index: String!
+}
+
+type Validator {
+  id: ID!
+  chainId: Int!
+  pubkey: String!
+}
+
+type ConsolidationContract_ConsolidationRequested {
+  id: ID!
+  chainId: Int!
+  sender: String!
+  source_pubkey: String!
+  target_pubkey: String!
+  blockNumber: Int!
+  transactionHash: String!
 }
 

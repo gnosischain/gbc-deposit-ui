@@ -6,6 +6,10 @@ contracts:
   handler: src/EventHandlers.ts
   events:
   - event: DepositEvent(bytes pubkey, bytes withdrawal_credentials, bytes amount, bytes signature, bytes index)
+- name: ConsolidationContract
+  handler: src/EventHandlers.ts
+  events:
+  - event: ConsolidationRequested(address indexed sender, bytes source_pubkey, bytes target_pubkey)
 networks:
 - id: 100
   rpc:
@@ -16,6 +20,9 @@ networks:
   - name: SBCDepositContract
     address:
     - 0x0B98057eA310F4d31F2a452B414647007d1645d9
+  - name: ConsolidationContract
+    address:
+    - 0x00431F263cE400f4455c2dCf564e53007Ca4bbBb
 - id: 10200
   rpc:
     - url: https://rpc.chiadochain.net
@@ -25,3 +32,6 @@ networks:
   - name: SBCDepositContract
     address:
     - 0xb97036A26259B7147018913bD58a774cf91acf25
+  - name: ConsolidationContract
+    address:
+    - 0x0000BBdDc7CE488642fb579F8B00f3a590007251

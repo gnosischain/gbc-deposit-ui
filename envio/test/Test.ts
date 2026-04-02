@@ -30,6 +30,7 @@ describe("SBCDepositContract contract DepositEvent event tests", () => {
       id: `${event.chainId}_${event.block.number}_${event.logIndex}`,
       pubkey: event.params.pubkey,
       withdrawal_credentials: event.params.withdrawal_credentials,
+      withdrawal_address: "0x" + event.params.withdrawal_credentials.slice(-40),
       amount: event.params.amount,
       signature: event.params.signature,
       index: event.params.index,
