@@ -12,8 +12,8 @@ import { HypersyncClient } from "@envio-dev/hypersync-client";
 const CONSOLIDATION_ADDRESS = "0x0000BBdDc7CE488642fb579F8B00f3a590007251";
 
 const hypersyncClients: Record<number, HypersyncClient> = {
-  100: new HypersyncClient({ url: "https://100.hypersync.xyz", apiToken: process.env.HYPERSYNC_API_KEY! }),
-  10200: new HypersyncClient({ url: "https://10200.hypersync.xyz", apiToken: process.env.HYPERSYNC_API_KEY! }),
+  100: new HypersyncClient({ url: "https://100.hypersync.xyz", apiToken: process.env.ENVIO_HYPERSYNC_API_KEY! }),
+  10200: new HypersyncClient({ url: "https://10200.hypersync.xyz", apiToken: process.env.ENVIO_HYPERSYNC_API_KEY! }),
 };
 
 SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
