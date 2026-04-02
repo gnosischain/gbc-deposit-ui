@@ -5,7 +5,6 @@ import {
   onBlock,
   SBCDepositContract,
   SBCDepositContract_DepositEvent,
-  Validator,
 } from "generated";
 import { createEffect, S } from "envio";
 import { HypersyncClient } from "@envio-dev/hypersync-client";
@@ -120,7 +119,9 @@ const initChain = (
           toBlock: block.number + interval,
         });
 
+
         for (const log of logs) {
+          context.log.debug(`Processing consolidation log: ${JSON.stringify(log)}`);
           const targetValidatorId = `${chainId}_${log.targetPubkey}`;
           const existingTarget = await context.Validator.get(targetValidatorId);
           if (!existingTarget) {
@@ -201,11 +202,6 @@ function decodeConsolidationLog(rawData: string) {
   if (hex.length < 232) {
     return null;
   }
-
-  console.log("DEBUG: Decoded consolidation log:", {
-    sender: "0x" + hex.slice(0, 40),
-    targetPubkey: "0x" + hex.slice(136, 232),
-  });
 
   return {
     sender: "0x" + hex.slice(0, 40),
