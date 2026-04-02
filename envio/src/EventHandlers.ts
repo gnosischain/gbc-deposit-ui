@@ -128,6 +128,13 @@ const initChain = (
             const withdrawal_address = log.sender.toLowerCase();
             const withdrawal_credentials =
               "0x020000000000000000000000" + withdrawal_address.slice(2);
+            context.log.debug(`Setting validator: ${JSON.stringify({
+              id: targetValidatorId,
+              chainId,
+              pubkey: log.targetPubkey,
+              withdrawal_address,
+              withdrawal_credentials,
+            })}`);
             context.Validator.set({
               id: targetValidatorId,
               chainId,
