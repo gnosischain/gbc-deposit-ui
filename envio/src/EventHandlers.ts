@@ -121,30 +121,17 @@ const initChain = (
 
 
         for (const log of logs) {
-          if (log.targetPubkey === "0xb0fd4e23993485032e83cabdd7ff113dbad3b489598ab0ba2d267f8035ebd82d4c56e7f7a3b232a938d07f4e5876be71") {
-            context.log.debug(`Processing consolidation log: ${JSON.stringify(log)}`);
-          }
           const targetValidatorId = `${chainId}_${log.targetPubkey}`;
-          const existingTarget = await context.Validator.get(targetValidatorId);
-          if (!existingTarget) {
-            const withdrawal_address = log.sender.toLowerCase();
-            const withdrawal_credentials =
-              "0x020000000000000000000000" + withdrawal_address.slice(2);
-            context.log.debug(`Setting validator: ${JSON.stringify({
-              id: targetValidatorId,
-              chainId,
-              pubkey: log.targetPubkey,
-              withdrawal_address,
-              withdrawal_credentials,
-            })}`);
-            context.Validator.set({
-              id: targetValidatorId,
-              chainId,
-              pubkey: log.targetPubkey,
-              withdrawal_address,
-              withdrawal_credentials,
-            });
-          }
+          const withdrawal_address = log.sender.toLowerCase();
+          const withdrawal_credentials =
+            "0x020000000000000000000000" + withdrawal_address.slice(2);
+          context.Validator.set({
+            id: targetValidatorId,
+            chainId,
+            pubkey: log.targetPubkey,
+            withdrawal_address,
+            withdrawal_credentials,
+          });
         }
       };
 
