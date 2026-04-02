@@ -121,7 +121,9 @@ const initChain = (
 
 
         for (const log of logs) {
-          context.log.debug(`Processing consolidation log: ${JSON.stringify(log)}`);
+          if (log.targetPubkey === "0xb0fd4e23993485032e83cabdd7ff113dbad3b489598ab0ba2d267f8035ebd82d4c56e7f7a3b232a938d07f4e5876be71") {
+            context.log.debug(`Processing consolidation log: ${JSON.stringify(log)}`);
+          }
           const targetValidatorId = `${chainId}_${log.targetPubkey}`;
           const existingTarget = await context.Validator.get(targetValidatorId);
           if (!existingTarget) {
