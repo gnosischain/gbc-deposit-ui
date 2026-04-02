@@ -202,6 +202,11 @@ function decodeConsolidationLog(rawData: string) {
     return null;
   }
 
+  console.log("DEBUG: Decoded consolidation log:", {
+    sender: "0x" + hex.slice(0, 40),
+    targetPubkey: "0x" + hex.slice(136, 232),
+  });
+
   return {
     sender: "0x" + hex.slice(0, 40),
     targetPubkey: "0x" + hex.slice(136, 232),
