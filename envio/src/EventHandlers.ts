@@ -7,14 +7,161 @@ import {
   SBCDepositContract_DepositEvent,
   Validator,
 } from "generated";
+import { createEffect, S } from "envio";
 import { HypersyncClient } from "@envio-dev/hypersync-client";
 
 const CONSOLIDATION_ADDRESS = "0x0000BBdDc7CE488642fb579F8B00f3a590007251";
 
-const hypersyncClients: Record<number, HypersyncClient> = {
-  100: new HypersyncClient({ url: "https://100.hypersync.xyz", apiToken: process.env.ENVIO_HYPERSYNC_API_KEY! }),
-  10200: new HypersyncClient({ url: "https://10200.hypersync.xyz", apiToken: process.env.ENVIO_HYPERSYNC_API_KEY! }),
+type DecodedConsolidation = {
+  sender: string;
+  targetPubkey: string;
+  blockNumber: number;
 };
+
+const initChain = (
+  chainId: number,
+  historicalStartBlock: number,
+  realtimeStartBlock: number
+) => {
+  const client = new HypersyncClient({
+    url: `https://${chainId}.hypersync.xyz`,
+    apiToken: process.env.ENVIO_HYPERSYNC_API_KEY!,
+  });
+
+  let pendingBatch: {
+    resolvers: {
+      fromBlock: number;
+      toBlock: number;
+      resolve: (logs: DecodedConsolidation[]) => void;
+      reject: (e: Error) => void;
+    }[];
+    scheduled: boolean;
+  } | null = null;
+
+  const getConsolidationLogs = createEffect(
+    {
+      name: `getConsolidationLogs_${chainId}`,
+      input: S.tuple((ctx) => ({
+        fromBlock: ctx.item(0, S.number),
+        toBlock: ctx.item(1, S.number),
+      })),
+      output: S.array(
+        S.schema({
+          sender: S.string,
+          targetPubkey: S.string,
+          blockNumber: S.number,
+        })
+      ),
+      rateLimit: false,
+    },
+    async ({ input: { fromBlock, toBlock } }) => {
+      if (!pendingBatch) {
+        pendingBatch = { resolvers: [], scheduled: false };
+      }
+
+      const batch = pendingBatch;
+      const promise = new Promise<DecodedConsolidation[]>((resolve, reject) => {
+        batch.resolvers.push({ fromBlock, toBlock, resolve, reject });
+      });
+
+      if (!batch.scheduled) {
+        batch.scheduled = true;
+        queueMicrotask(async () => {
+          const currentBatch = batch;
+          pendingBatch = null;
+
+          const minBlock = Math.min(...currentBatch.resolvers.map((r) => r.fromBlock));
+          const maxBlock = Math.max(...currentBatch.resolvers.map((r) => r.toBlock));
+
+          try {
+            const allLogs: DecodedConsolidation[] = [];
+            let nextBlock = minBlock;
+
+            while (nextBlock < maxBlock) {
+              const data = await client.get({
+                fromBlock: nextBlock,
+                toBlock: maxBlock,
+                logs: [{ address: [CONSOLIDATION_ADDRESS] }],
+                fieldSelection: {
+                  log: ["BlockNumber", "Data"],
+                },
+              });
+
+              for (const log of data.data.logs) {
+                if (log.blockNumber === undefined) continue;
+                const decoded = decodeConsolidationLog(log.data ?? "");
+                if (!decoded) continue;
+                allLogs.push({ ...decoded, blockNumber: log.blockNumber });
+              }
+
+              nextBlock = data.nextBlock;
+            }
+
+            for (const { fromBlock, toBlock, resolve } of currentBatch.resolvers) {
+              resolve(allLogs.filter((l) => l.blockNumber >= fromBlock && l.blockNumber < toBlock));
+            }
+          } catch (error) {
+            for (const { reject } of currentBatch.resolvers) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          }
+        });
+      }
+
+      return promise;
+    }
+  );
+
+  const makeHandler =
+    (interval: number): Parameters<typeof onBlock>[1] =>
+      async ({ block, context }) => {
+        const logs = await context.effect(getConsolidationLogs, {
+          fromBlock: block.number,
+          toBlock: block.number + interval,
+        });
+
+        for (const log of logs) {
+          const targetValidatorId = `${chainId}_${log.targetPubkey}`;
+          const existingTarget = await context.Validator.get(targetValidatorId);
+          if (!existingTarget) {
+            const withdrawal_address = log.sender.toLowerCase();
+            const withdrawal_credentials =
+              "0x020000000000000000000000" + withdrawal_address.slice(2);
+            context.Validator.set({
+              id: targetValidatorId,
+              chainId,
+              pubkey: log.targetPubkey,
+              withdrawal_address,
+              withdrawal_credentials,
+            });
+          }
+        }
+      };
+
+  onBlock(
+    {
+      name: `ConsolidationHistorical_${chainId}`,
+      chain: chainId === 100 ? 100 : 10200,
+      startBlock: historicalStartBlock,
+      endBlock: realtimeStartBlock,
+      interval: 100,
+    },
+    makeHandler(100)
+  );
+  onBlock(
+    {
+      name: `ConsolidationRealtime_${chainId}`,
+      chain: chainId === 100 ? 100 : 10200,
+      startBlock: realtimeStartBlock,
+    },
+    makeHandler(1)
+  );
+};
+
+initChain(100, 38530039, 45467382);
+initChain(10200, 14481034, 20555744);
+
+// --- Deposit event handler ---
 
 SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
   const creds = event.params.withdrawal_credentials;
@@ -36,72 +183,17 @@ SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
   const validatorId = `${event.chainId}_${event.params.pubkey}`;
   const existingValidator = await context.Validator.get(validatorId);
   if (!existingValidator) {
-    const validator: Validator = {
+    context.Validator.set({
       id: validatorId,
       chainId: event.chainId,
       pubkey: event.params.pubkey,
       withdrawal_credentials: creds,
-      withdrawal_address: withdrawal_address,
-    };
-    context.Validator.set(validator);
+      withdrawal_address,
+    });
   }
 });
 
-async function handleConsolidationBlock(
-  chainId: number,
-  fromBlock: number,
-  toBlock: number,
-  context: any
-) {
-  const res = await hypersyncClients[chainId].get({
-    fromBlock,
-    toBlock,
-    logs: [{ address: [CONSOLIDATION_ADDRESS] }],
-    fieldSelection: {
-      log: ["BlockNumber", "TransactionHash", "LogIndex", "Data"],
-    },
-  });
-
-  if (!res.data?.logs || res.data.logs.length === 0) return;
-
-  for (const log of res.data.logs) {
-    const decoded = decodeConsolidationLog(log.data ?? "");
-    if (!decoded) continue;
-
-    const targetValidatorId = `${chainId}_${decoded.targetPubkey}`;
-    const existingTarget = await context.Validator.get(targetValidatorId);
-    if (!existingTarget) {
-      const withdrawal_address = decoded.sender.toLowerCase();
-      const withdrawal_credentials =
-        "0x020000000000000000000000" + withdrawal_address.slice(2);
-      context.Validator.set({
-        id: targetValidatorId,
-        chainId,
-        pubkey: decoded.targetPubkey,
-        withdrawal_address,
-        withdrawal_credentials,
-      });
-    }
-  }
-}
-
-onBlock(
-  { name: "ConsolidationHistorical_100", chain: 100, startBlock: 38530039, endBlock: 45467382, interval: 100 },
-  async ({ block, context }) => handleConsolidationBlock(100, block.number, block.number + 100, context)
-);
-onBlock(
-  { name: "ConsolidationRealtime_100", chain: 100, startBlock: 45467382 },
-  async ({ block, context }) => handleConsolidationBlock(100, block.number, block.number + 1, context)
-);
-
-onBlock(
-  { name: "ConsolidationHistorical_10200", chain: 10200, startBlock: 14481034, endBlock: 20555744, interval: 100 },
-  async ({ block, context }) => handleConsolidationBlock(10200, block.number, block.number + 100, context)
-);
-onBlock(
-  { name: "ConsolidationRealtime_10200", chain: 10200, startBlock: 20555744 },
-  async ({ block, context }) => handleConsolidationBlock(10200, block.number, block.number + 1, context)
-);
+// --- Helpers ---
 
 function decodeConsolidationLog(rawData: string) {
   const hex = rawData.startsWith("0x") ? rawData.slice(2) : rawData;
@@ -112,7 +204,6 @@ function decodeConsolidationLog(rawData: string) {
 
   return {
     sender: "0x" + hex.slice(0, 40),
-    sourcePubkey: "0x" + hex.slice(40, 136),
     targetPubkey: "0x" + hex.slice(136, 232),
   };
 }
