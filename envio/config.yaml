@@ -14,16 +14,18 @@ contracts:
   - event: ConsolidationRequested(address indexed sender, bytes source_pubkey, bytes target_pubkey)
 networks:
 - id: 100
-  rpc_config:
+  rpc:
     url: https://rpc.gnosischain.com/
+    for: fallback
   start_block: 19469076
   contracts:
   - name: SBCDepositContract
     address:
     - 0x0B98057eA310F4d31F2a452B414647007d1645d9
 - id: 10200
-  rpc_config:
+  rpc:
     url: https://rpc.chiadochain.net
+    for: fallback
   start_block: 155434
   contracts:
   - name: SBCDepositContract
