@@ -1,7 +1,6 @@
 packages: [
   "./",
   "envio",
-  "hardhat"
 ]
 
 minimumReleaseAge: 4320
