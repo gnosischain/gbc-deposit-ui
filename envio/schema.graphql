@@ -13,15 +13,7 @@ type Validator {
   id: ID!
   chainId: Int!
   pubkey: String!
-}
-
-type ConsolidationContract_ConsolidationRequested {
-  id: ID!
-  chainId: Int!
-  sender: String!
-  source_pubkey: String!
-  target_pubkey: String!
-  blockNumber: Int!
-  transactionHash: String!
+  withdrawal_address: String
+  withdrawal_credentials: String
 }
 
