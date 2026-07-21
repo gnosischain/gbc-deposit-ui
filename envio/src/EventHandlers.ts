@@ -1,8 +1,13 @@
 /*
  * Please refer to https://docs.envio.dev for a thorough guide on all Envio indexer features
  */
-import { indexer, SBCDepositContract, SBCDepositContract_DepositEvent } from "envio";
-import { createEffect, S } from "envio";
+import {
+  indexer,
+  SBCDepositContract_DepositEvent,
+  createEffect,
+  S,
+  type EvmOnBlockHandler,
+} from "envio";
 import { HypersyncClient } from "@envio-dev/hypersync-client";
 
 const CONSOLIDATION_ADDRESS = "0x0000BBdDc7CE488642fb579F8B00f3a590007251";
@@ -13,6 +18,16 @@ type DecodedConsolidation = {
   blockNumber: number;
 };
 
+const hypersyncApiToken =
+  process.env.ENVIO_API_TOKEN?.trim() ||
+  process.env.ENVIO_HYPERSYNC_API_KEY?.trim();
+
+if (!hypersyncApiToken) {
+  throw new Error(
+    "Missing HyperSync apiToken: set ENVIO_API_TOKEN (or ENVIO_HYPERSYNC_API_KEY)"
+  );
+}
+
 const initChain = (
   chainId: number,
   historicalStartBlock: number,
@@ -20,7 +35,7 @@ const initChain = (
 ) => {
   const client = new HypersyncClient({
     url: `https://${chainId}.hypersync.xyz`,
-    apiToken: process.env.ENVIO_HYPERSYNC_API_KEY!,
+    apiToken: hypersyncApiToken,
   });
 
   let pendingBatch: {
@@ -108,7 +123,7 @@ const initChain = (
   );
 
   const makeHandler =
-    (interval: number): Parameters<typeof onBlock>[1] =>
+    (interval: number): EvmOnBlockHandler =>
       async ({ block, context }) => {
         const logs = await context.effect(getConsolidationLogs, {
           fromBlock: block.number,
