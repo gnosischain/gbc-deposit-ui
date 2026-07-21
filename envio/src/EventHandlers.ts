@@ -2,11 +2,12 @@
  * Please refer to https://docs.envio.dev for a thorough guide on all Envio indexer features
  */
 import {
-  onBlock,
-  SBCDepositContract,
+  indexer,
   SBCDepositContract_DepositEvent,
-} from "generated";
-import { createEffect, S } from "envio";
+  createEffect,
+  S,
+  type EvmOnBlockHandler,
+} from "envio";
 import { HypersyncClient } from "@envio-dev/hypersync-client";
 
 const CONSOLIDATION_ADDRESS = "0x0000BBdDc7CE488642fb579F8B00f3a590007251";
@@ -17,6 +18,16 @@ type DecodedConsolidation = {
   blockNumber: number;
 };
 
+const hypersyncApiToken =
+  process.env.ENVIO_API_TOKEN?.trim() ||
+  process.env.ENVIO_HYPERSYNC_API_KEY?.trim();
+
+if (!hypersyncApiToken) {
+  throw new Error(
+    "Missing HyperSync apiToken: set ENVIO_API_TOKEN (or ENVIO_HYPERSYNC_API_KEY)"
+  );
+}
+
 const initChain = (
   chainId: number,
   historicalStartBlock: number,
@@ -24,7 +35,7 @@ const initChain = (
 ) => {
   const client = new HypersyncClient({
     url: `https://${chainId}.hypersync.xyz`,
-    apiToken: process.env.ENVIO_HYPERSYNC_API_KEY!,
+    apiToken: hypersyncApiToken,
   });
 
   let pendingBatch: {
@@ -112,13 +123,12 @@ const initChain = (
   );
 
   const makeHandler =
-    (interval: number): Parameters<typeof onBlock>[1] =>
+    (interval: number): EvmOnBlockHandler =>
       async ({ block, context }) => {
         const logs = await context.effect(getConsolidationLogs, {
           fromBlock: block.number,
           toBlock: block.number + interval,
         });
-
 
         for (const log of logs) {
           const targetValidatorId = `${chainId}_${log.targetPubkey}`;
@@ -135,7 +145,7 @@ const initChain = (
         }
       };
 
-  onBlock(
+  indexer.onBlock(
     {
       name: `ConsolidationHistorical_${chainId}`,
       chain: chainId === 100 ? 100 : 10200,
@@ -145,7 +155,7 @@ const initChain = (
     },
     makeHandler(100)
   );
-  onBlock(
+  indexer.onBlock(
     {
       name: `ConsolidationRealtime_${chainId}`,
       chain: chainId === 100 ? 100 : 10200,
@@ -160,7 +170,9 @@ initChain(10200, 14481034, 20555744);
 
 // --- Deposit event handler ---
 
-SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
+indexer.onEvent(
+  { contract: "SBCDepositContract", event: "DepositEvent" },
+  async ({ event, context }) => {
   const creds = event.params.withdrawal_credentials;
   const withdrawal_address = "0x" + creds.slice(-40);
 
@@ -188,7 +200,8 @@ SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
       withdrawal_address,
     });
   }
-});
+}
+);
 
 // --- Helpers ---
 
