@@ -1,8 +1,6 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: deposit-indexer
 rollback_on_reorg: false
-unordered_multichain_mode: true
-preload_handlers: true
 contracts:
 - name: SBCDepositContract
   handler: src/EventHandlers.ts
@@ -12,7 +10,7 @@ contracts:
   handler: src/EventHandlers.ts
   events:
   - event: ConsolidationRequested(address indexed sender, bytes source_pubkey, bytes target_pubkey)
-networks:
+chains:
 - id: 100
   rpc:
     url: https://rpc.gnosischain.com/

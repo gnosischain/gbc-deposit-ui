@@ -1,11 +1,7 @@
 /*
  * Please refer to https://docs.envio.dev for a thorough guide on all Envio indexer features
  */
-import {
-  onBlock,
-  SBCDepositContract,
-  SBCDepositContract_DepositEvent,
-} from "generated";
+import { indexer, SBCDepositContract, SBCDepositContract_DepositEvent } from "envio";
 import { createEffect, S } from "envio";
 import { HypersyncClient } from "@envio-dev/hypersync-client";
 
@@ -119,7 +115,6 @@ const initChain = (
           toBlock: block.number + interval,
         });
 
-
         for (const log of logs) {
           const targetValidatorId = `${chainId}_${log.targetPubkey}`;
           const withdrawal_address = log.sender.toLowerCase();
@@ -135,7 +130,7 @@ const initChain = (
         }
       };
 
-  onBlock(
+  indexer.onBlock(
     {
       name: `ConsolidationHistorical_${chainId}`,
       chain: chainId === 100 ? 100 : 10200,
@@ -145,7 +140,7 @@ const initChain = (
     },
     makeHandler(100)
   );
-  onBlock(
+  indexer.onBlock(
     {
       name: `ConsolidationRealtime_${chainId}`,
       chain: chainId === 100 ? 100 : 10200,
@@ -160,7 +155,9 @@ initChain(10200, 14481034, 20555744);
 
 // --- Deposit event handler ---
 
-SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
+indexer.onEvent(
+  { contract: "SBCDepositContract", event: "DepositEvent" },
+  async ({ event, context }) => {
   const creds = event.params.withdrawal_credentials;
   const withdrawal_address = "0x" + creds.slice(-40);
 
@@ -188,7 +185,8 @@ SBCDepositContract.DepositEvent.handler(async ({ event, context }) => {
       withdrawal_address,
     });
   }
-});
+}
+);
 
 // --- Helpers ---
 

@@ -1,8 +1,5 @@
 import assert from "assert";
-import {
-  TestHelpers,
-  SBCDepositContract_DepositEvent
-} from "generated";
+import { TestHelpers, SBCDepositContract_DepositEvent } from "envio";
 const { MockDb, SBCDepositContract } = TestHelpers;
 
 describe("SBCDepositContract contract DepositEvent event tests", () => {
